@@ -5,7 +5,13 @@ const leadData = require("../../models/Lead")
 const LeadAddWithfile=(req,res)=>{
     
 }
+const leadView=async(req,res,next)=>{
+    console.log(req.query);
+    res.json(req.query)
+    next()
+}
 const leadShow=async(req,res)=>{
+   
     let resultdata=[]
     let leaddata=await leadData.find({}).then((user)=>{return user })
     if(Object.keys(leaddata).length>0){
@@ -101,5 +107,6 @@ module.exports={
     leadAdd,
     leadStatusUpadate,
     leadShow,
-    leadDelete
+    leadDelete,
+    leadView
 }

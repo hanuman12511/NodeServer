@@ -19,6 +19,39 @@ const userSchema = new mongoose.Schema({
 
 
 const userData = require("../../models/User")   
+const userData1 = require("../../models/userSign")   
+
+
+const userSign = async(req,res,next)=>{
+    console.log("req.body.phone",req.body.phone);
+
+    let resultdata=[]
+    let len = Object.keys(req.body).length
+    if(len){
+        if(req.body.phone!='' ){
+            let user = await userData1.findOne({phone:req.body.phone}).then((user)=> {return user})
+            if(user){   
+                resultdata={success:true,message:" user register  successfully","length":1,"data":req.body}
+        }else{
+           
+            const user = new userData1({
+                phone: req.body.phone,
+            });
+            user.save(); 
+            resultdata={success:true,message:" user register  successfully","length":1,"data":req.body}
+        }
+               
+        }
+        else{
+            resultdata={success:false,message:"pls enter phone","length":1}
+        }
+    }
+    else{
+        resultdata={success:false,message:"user  not register  successfully","length":0}
+    }
+   // res.send(resultdata)
+   res.json(resultdata)
+}
 const userRegister= async(req,res,next)=>{
 
     let resultdata=[]
@@ -36,7 +69,7 @@ const userRegister= async(req,res,next)=>{
                 confirmpassword: req.body.confirmpassword,
             });
             user.save(); 
-            resultdata={success:true,message:" user register  successfully","length":1}
+            resultdata={success:true,message:" user register  successfully","length":1,"data":req.body}
         }
                
         }
@@ -82,4 +115,4 @@ const userLogin= async(req,res,next)=>{
 }
 
 
-module.exports={userLogin,userRegister}
+module.exports={userLogin,userRegister,userSign}
