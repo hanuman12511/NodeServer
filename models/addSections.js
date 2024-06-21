@@ -2,7 +2,8 @@ var mongoose=require("mongoose");
 
 // Creating EmployeeSchema 
 var employeeSchema= new mongoose.Schema({
-    SessionName:String,
+    sectionId:Number,
+    SectionName:String,
     Displayorder:String
 });
 

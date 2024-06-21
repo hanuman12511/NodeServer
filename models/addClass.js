@@ -2,6 +2,7 @@ var mongoose=require("mongoose");
 
 // Creating EmployeeSchema 
 var employeeSchema= new mongoose.Schema({
+    classId:Number,
     ClassName:String,
     DisplayOrder:String
 });

@@ -2,9 +2,10 @@ var mongoose=require("mongoose");
 
 // Creating EmployeeSchema 
 var employeeSchema= new mongoose.Schema({
+    sessionId:Number,
     SessionName:String,
     StartMonth:String
 });
 
 //Exporting Employee Schema
-module.exports= mongoose.model("Session", employeeSchema);
+module.exports= mongoose.model("SessionHeads", employeeSchema);
