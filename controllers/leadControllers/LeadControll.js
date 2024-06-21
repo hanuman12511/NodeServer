@@ -1,4 +1,4 @@
-const leadData = require("../../models/Lead")   
+/* const leadData = require("../../models/Lead")   
 
 
 
@@ -109,4 +109,4 @@ module.exports={
     leadShow,
     leadDelete,
     leadView
-}
+} */

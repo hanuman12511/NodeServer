@@ -1,10 +1,23 @@
 const mongoose = require("mongoose")
 
 const userSchema = new mongoose.Schema({
-    email: String,
+    
+    adminemail:String,
     password: String,
-    confirmpassword: String
+    name:String,
+    institutename:String,
+    affiliation:String,
+    affiliated:String,
+    medium:String,
+    phone:String,
+    branchemail:String,
+    mobile:String,
+    contactperson:String,
+    address:String,
+    registerno:String,
+    established:String,
+    website:String
    });
    
 
-module.exports = mongoose.model("seldom", userSchema)
+module.exports = mongoose.model("user", userSchema)

@@ -1,6 +1,6 @@
 
-/* const mongoose = require('mongoose');
-mongoose.connect("mongodb://127.0.0.1:27017/db", {useNewUrlParser: true});
+const mongoose1 = require('mongoose');
+/*mongoose.connect("mongodb://127.0.0.1:27017/db", {useNewUrlParser: true});
 const userSchema = new mongoose.Schema({
     email: String,
     password: String,
@@ -18,13 +18,11 @@ const userSchema = new mongoose.Schema({
  */
 
 
-const userData = require("../../models/User")   
-const userData1 = require("../../models/userSign")   
-
-
+const userData = require("../../models/User");   
+const Student = require('../../models/Student');
+/* 
 const userSign = async(req,res,next)=>{
     console.log("req.body.phone",req.body.phone);
-
     let resultdata=[]
     let len = Object.keys(req.body).length
     if(len){
@@ -51,27 +49,39 @@ const userSign = async(req,res,next)=>{
     }
    // res.send(resultdata)
    res.json(resultdata)
+} */
+//const connect = require("../../db")
+/* 
+const BranchRegister=(schooldb)=>{
+    connect.Connection(schooldb)
 }
-const userRegister= async(req,res,next)=>{
+ */
 
+const TestApi= async(req,res,next)=>{
+    res.send({"success":true})
+}
+
+const userRegister= async(req,res,next)=>{
     let resultdata=[]
     let len = Object.keys(req.body).length
     if(len){
         if(req.body.email!='' && req.body.password!='' ){
-            let user = await userData.findOne({email:req.body.email}).then((user)=> {return user})
+            let user = await userData.findOne({adminemail:req.body.email}).then((user)=> {return user})
             if(user){   
                 resultdata={success:false,message:" user exits   ","length":0}
         }else{
-           
             const user = new userData({
-                email: req.body.email,
+                adminemail: req.body.email,
                 password: req.body.password,
-                confirmpassword: req.body.confirmpassword,
             });
-            user.save(); 
-            resultdata={success:true,message:" user register  successfully","length":1,"data":req.body}
-        }
-               
+            user.save();
+           try {
+            BranchRegister(req.body.email) 
+            
+           } catch (error) {
+            console.log("erro=>>",error);
+           } resultdata={success:true,message:" user register  successfully","length":1,"data":req.body}
+        }       
         }
         else{
             resultdata={success:false,message:"pls enter email and password","length":1}
@@ -83,6 +93,43 @@ const userRegister= async(req,res,next)=>{
    // res.send(resultdata)
    res.json(resultdata)
 }
+
+
+
+const studentsAdd = async(req,res,next)=>{
+    console.log("student add api",req.body);
+    let resultdata=[]
+    let len = Object.keys(req.body).length
+    
+    try {
+if(len){
+    const student = new Student({
+        firstname:req.body.firstname,
+        lastname:req.body.lastname,
+         fathername:req.body.fathername,
+         email:req.body.email
+    });
+    student.save(); 
+    console.log(student);
+       
+        resultdata={ data:req.body,success:true,message:"students data get successfully",status:200}
+    }
+    else{
+        resultdata={success:false,message:"user  not register  successfully","length":0}
+    } 
+ res.json(resultdata)
+// res.send(student)
+//res.send({code: 200, message: 'I have arrived!'})
+}
+ catch (error) {
+ res.status(400).json({message: error.message})
+}
+
+}
+
+
+
+
 const userLogin= async(req,res,next)=>{
 
     let resultdata=[]
@@ -92,16 +139,12 @@ const userLogin= async(req,res,next)=>{
         if(req.body.email!='' && req.body.password!='' ){
          
             let user = await userData.findOne({email:req.body.email,password:req.body.password}).then((user)=> {return user})
-            
                 if(user){
                     resultdata.push({success:true,message:"login data get successfully",data:user,"length":1})
                 }
                 else{
                     resultdata.push({success:false,message:"user not login  successfully",data:user,"length":1})
-                
                 }
-        
-          
         }
         else{
             resultdata={success:false,message:"pls enter email and password",data:logdata,"length":1}
@@ -110,9 +153,9 @@ const userLogin= async(req,res,next)=>{
     else{
         resultdata={success:false,message:"login data not get",data:logdata,"length":0}
     }
-   // res.send(resultdata)
-   res.json(resultdata)
+    res.send(resultdata)
+   //res.json(resultdata)
 }
 
 
-module.exports={userLogin,userRegister,userSign}
+module.exports={userLogin,userRegister,studentsAdd,TestApi}
