@@ -319,6 +319,24 @@ res.json(result)
 
 
 
+const getClassDetailApiByclass= async(req,res,next)=>{
+   
+
+    let resp = await ClassDetails.find({Class:req.body.Class}).then((res)=>res)
+   
+    if(resp.length>0){
+        result={success:true,message:"  get successfully",status:200,data:resp}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:resp}  
+    }
+    
+
+
+    res.json( result)
+}
+
+
 
 
 
@@ -332,5 +350,6 @@ module.exports={
     getSectionApi,
     SectionApi ,
     getClassDetailApi,
-    ClassDetailApi
+    ClassDetailApi,
+    getClassDetailApiByclass
 }

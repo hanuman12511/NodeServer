@@ -1,21 +1,24 @@
 const express = require('express');
 const router  = express.Router();
 const UserControll = require('../controllers/userControllers/UserControll')
-const FileContrill = require('../controllers/userControllers/FileContrill')
 const studentsController = require('../controllers/studentsController/studentsController')
 const MasterController = require('../controllers/MasterController/MasterController')
+
+//user
+
 router.post("/loginuser", UserControll.userLogin )
 router.post("/registeruser", UserControll.userRegister )
-router.post("/studentadd", UserControll.studentsAdd )
-router.get("/test", UserControll.TestApi )
-router.post("/file", FileContrill.upload )
+
 //students
 
-router.post("/students", studentsController.students )
-router.post("/studentFee", studentsController.studentsFee )
-router.get("/allStudentDisplay", studentsController.allStudentDisplay )
+router.post("/studentLogin", studentsController.studentLogin)
+router.post("/StudentsApi", studentsController.studentsApi )
+router.post("/studentFeeApi", studentsController.studentsFeeApi )
+router.get("/getStudentsApi", studentsController.getStudentsApi )
 router.post("/displayStudentsClassBy", studentsController.displayStudentsClassBy )
 router.post("/studentAttendance", studentsController.studentAttendance )
+router.get("/getstudentsFeeApi", studentsController.getstudentsFeeApi )
+
 
 // master
 
@@ -29,5 +32,6 @@ router.get("/getSectionApi", MasterController.getSectionApi)
 router.post("/SectionApi", MasterController.SectionApi)
 router.post("/classDetailsApi", MasterController.ClassDetailApi)
 router.get("/getclassDetailsApi", MasterController.getClassDetailApi)
+router.post("/getClassDetailApiByclass", MasterController.getClassDetailApiByclass)
 
 module.exports=router

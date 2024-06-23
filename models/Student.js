@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 const userSchema = new mongoose.Schema({ 
-    studentid:String,
+    studentid:Number,
     firstname:String,
     lastname:String,
      fathername:String,
@@ -34,9 +34,11 @@ const userSchema = new mongoose.Schema({
        admissiondate:String,
       root:String,
       stand:String,
-      fare:String
+      fare:String,
+      status:String,
+      otp:String
 
 });
    
 
-module.exports = mongoose.model("students", userSchema)
+module.exports = mongoose.model("Student", userSchema)

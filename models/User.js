@@ -16,7 +16,9 @@ const userSchema = new mongoose.Schema({
     address:String,
     registerno:String,
     established:String,
-    website:String
+    website:String,
+    status:String,
+    otp:String
    });
    
 
