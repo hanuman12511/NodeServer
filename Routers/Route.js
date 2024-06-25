@@ -18,7 +18,9 @@ router.get("/getStudentsApi", studentsController.getStudentsApi )
 router.post("/displayStudentsClassBy", studentsController.displayStudentsClassBy )
 router.post("/studentAttendance", studentsController.studentAttendance )
 router.get("/getstudentsFeeApi", studentsController.getstudentsFeeApi )
-
+/* router.get("/uploadFileApi", studentsController.uploadExcelFile )
+router.get("/downloadApi", studentsController.downloadApi )
+ */
 
 // master
 
@@ -33,5 +35,9 @@ router.post("/SectionApi", MasterController.SectionApi)
 router.post("/classDetailsApi", MasterController.ClassDetailApi)
 router.get("/getclassDetailsApi", MasterController.getClassDetailApi)
 router.post("/getClassDetailApiByclass", MasterController.getClassDetailApiByclass)
+router.post("/addBranch", MasterController.addBranchApi)
+router.get("/getBranchApi", MasterController.getBranchApi)
+router.post("/getBranchGroupIdApi", MasterController.getBranchGroupIdApi)
+router.post("/getSessionByBranchIdApi", MasterController.getSessionByBranchIdApi)
 
 module.exports=router

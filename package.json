@@ -20,6 +20,11 @@
     "mysql2": "^3.10.1",
     "read-excel-file": "^5.8.1",
     "reload": "^3.2.1",
-    "sequelize": "^6.37.3"
+    "sequelize": "^6.37.3",
+    "csvtojson": "^2.0.10",
+    "ejs": "^3.1.10",
+    "https": "^1.0.0",
+    "multiparty": "^4.2.3",
+    "xlsx": "^0.18.5"
   }
 }

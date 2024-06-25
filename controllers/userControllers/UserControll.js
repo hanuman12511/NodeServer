@@ -1,5 +1,6 @@
 
 const userData = require("../../models/User");   
+const addBranch = require("../../models/addBranch");
 
 
 const userRegister= async(req,res,next)=>{
@@ -56,7 +57,7 @@ const userLogin= async(req,res,next)=>{
     if(len){
         if(req.body.email!='' ){
          
-            let user = await userData.findOne({$or: [{adminemail:req.body.mobile},{mobile:req.body.mobile}]}).then((user)=> {return user})
+            let user = await addBranch.findOne({$or: [{email:req.body.mobile},{mobile:req.body.mobile}]}).then((user)=> {return user})
             console.log(user);    
             if(user){
                     resultdata.push({success:true,message:"login data get successfully",data:user,"length":1})

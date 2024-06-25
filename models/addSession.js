@@ -4,7 +4,10 @@ var mongoose=require("mongoose");
 var employeeSchema= new mongoose.Schema({
     sessionId:Number,
     SessionName:String,
-    StartMonth:String
+    StartMonth:String,
+    branchid:String,
+    groupid:String,
+           
 });
 
 //Exporting Employee Schema
