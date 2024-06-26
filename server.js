@@ -120,7 +120,11 @@ app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{
                 //    console.log("data row",res);
                     res["studentsId"]=id++
                     res["ClassSection"]=req.body.class
-                      data.push(res) 
+                    res["branchId"]=req.body.branchId
+                    res["groupId"]=req.body.groupId
+                    res["sessionName"]=req.body.sessionName
+                   
+                    data.push(res) 
                    }) 
                 } 
             //   console.log(data);    

@@ -1,6 +1,9 @@
 const mongoose = require("mongoose")
 
 const userSchema = new mongoose.Schema({ 
+  branchId:Number,
+  groupId:String,
+  sessionName:String,
   studentsId:Number,
   RegistrationEnrollNo:String,	
   RegiterPageNo:String,	

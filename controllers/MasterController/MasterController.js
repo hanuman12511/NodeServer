@@ -4,6 +4,9 @@ const addClass = require("../../models/addClass")
 const addSection = require("../../models/addSections")   
 const ClassDetails = require("../../models/ClassDetails")  
 const addBranch = require("../../models/addBranch")
+const Subjects = require("../../models/Subjects")
+const SubjectHead = require("../../models/SubjectHead")
+const SubjectToHead = require("../../models/SubjectToHead")
 const addBranchApi = async(req,res) =>{
     let result=""
     let status= false
@@ -242,7 +245,7 @@ const getSessionApi = async(req,res,next)=>{
 
 const getSessionByBranchIdApi = async(req,res,next)=>{
    
-    let resp = await SessionHeads.find({ branchid:req.body.branchid}).then((res)=>res)
+    let resp = await SessionHeads.find({ branchid:req.body.id}).then((res)=>res)
    
 if(resp.length>0){
     result={success:true,message:" session  get successfully",status:200,data:resp}
@@ -269,8 +272,10 @@ const classApi = async(req,res,next)=>{
                     const res = new addClass({
                        
                         classId:id,
+                        branchId:req.body.branchId,
+                        groupId:req.body.branchId,
                         ClassName:req.body.CLassName,
-                                            });
+                        });
                 res.save();
                 status=true
                 }
@@ -278,6 +283,8 @@ const classApi = async(req,res,next)=>{
                     const res = new addClass({
                        
                         classId:1,
+                        branchId:req.body.branchId,
+                        groupId:req.body.branchId,
                         ClassName:req.body.CLassName,
                     });
                 res.save();
@@ -344,7 +351,8 @@ const SectionApi = async(req,res,next)=>{
                 })
                  id++  
                     const res = new addSection({
-                       
+                        branchId:req.body.branchId,
+                        groupId:req.body.branchId,
                         sectionId:id,
                         SectionName:req.body.SectionName
                     });
@@ -353,7 +361,8 @@ const SectionApi = async(req,res,next)=>{
                 }
                 else{
                     const res = new addSection({
-                       
+                        branchId:req.body.branchId,
+                        groupId:req.body.branchId,
                         sectionId:1,
                         SectionName:req.body.SectionName
                     });
@@ -405,9 +414,11 @@ const ClassDetailApi = async(req,res,next)=>{
                 })
                  id++  
                     const res = new ClassDetails({
-                       
-                     classDetailId:id,
-                       Class:req.body.Class,
+                        sessionId:req.body.sessionId,
+                        branchId:req.body.branchId,
+                        groupId:req.body.branchId,
+                        classDetailId:id,
+                         Class:req.body.Class,
                         Section:req.body.Section,
                         Subject:req.body.Subject,
                         Teacher:req.body.Teacher,
@@ -420,7 +431,9 @@ const ClassDetailApi = async(req,res,next)=>{
                 }
                 else{
                     const res = new ClassDetails({
-                       
+                        sessionId:req.body.sessionId,
+                        branchId:req.body.branchId,
+                        groupId:req.body.branchId,
                         classDetailId:1,
                         Class:req.body.Class,
                          Section:req.body.Section,
@@ -482,7 +495,219 @@ const getClassDetailApiByclass= async(req,res,next)=>{
     res.json( result)
 }
 
+const subjectHeadApi=async(req,res)=>{
+    let result=""
+    let status= false
+  
+    if(req.body.Class!==""){
+            let resp = await SubjectHead.find({}).then((res)=>res)
+            if(resp.length>0){
+                let id = 0
+                resp.map(d=>{
+                    id=d.subjectHeadId
+                })
+                 id++  
+                    const res = new SubjectHead({
+                        branchId:req.body.branchId,
+                        groupId:req.body.branchId,
+                        subjectHeadId:id,
+                        SubjectHead:req.body.SubjectHead,
+                        Display:req.body.Display
+                   
+                    });
+                res.save();
+                status=true
+                }
+                else{
+                    const res = new SubjectHead({
+                       
+                        branchId:req.body.branchId,
+                        groupId:req.body.branchId,
+                        subjectHeadId:1,
+                        SubjectHead:req.body.SubjectHead,
+                        Display:req.body.Display
+                    });
+                res.save();
+                
+                    status=true
+                }
+        }
+        else{
+         result= {success:false,message:" pls insert Data",status:200}
+        }
+        if(status){
+            result={success:true,message:"  create  successfully",status:200}
+        }
+        else{
+            result={success:false,message:"  not create",status:200}  
+        }
+        res.json( result)
+}
+const  getAllsubjectHeadApi=async(req,res)=>{
+     let resp = await SubjectHead.find({}).then((res)=>res)
+    if(resp.length>0){
+        result={success:true,message:"  get successfully",status:200,data:resp}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:resp}  
+    }
+    res.json( result)
+}
+const getsubjectHeadApi=async(req,res)=>{
+    let resp = await SubjectHead.find({subjectHeadId:req.body.subjectHeadId}).then((res)=>res)
+    if(resp.length>0){
+        result={success:true,message:"  get successfully",status:200,data:resp}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:resp}  
+    }    
+    res.json( result)
+}
 
+const subjectApi=async(req,res)=>{
+    let result=""
+    let status= false
+  
+    if(req.body.Class!==""){
+            let resp = await Subjects.find({}).then((res)=>res)
+            if(resp.length>0){
+                let id = 0
+                resp.map(d=>{
+                    id=d.subjectId
+                })
+                 id++  
+                    const res = new Subjects({
+                       
+                        branchId:req.body.branchId,
+                        groupId:req.body.groupId,
+                        subjectId:id,
+                        Subjects:req.body.Subjects,
+                        SubjectCode:req.body.SubjectCode,
+                        Display:req.body.Display
+                    });
+                res.save();
+                status=true
+                }
+                else{
+                    const res = new Subjects({
+                       
+                        branchId:req.body.branchId,
+                        groupId:req.body.groupId,
+                        subjectId:1,
+                        Subjects:req.body.Subjects,
+                        SubjectCode:req.body.SubjectCode,
+                        Display:req.body.Display
+                    });
+                res.save();
+                
+                    status=true
+                }
+        }
+        else{
+         result= {success:false,message:" pls insert Data",status:200}
+        }
+        if(status){
+            result={success:true,message:"  create  successfully",status:200}
+        }
+        else{
+            result={success:false,message:"  not create",status:200}  
+        }
+        res.json( result)
+}
+
+const getsubjectApi=async(req,res)=>{
+    let resp = await Subjects.find({subjectId:req.body.subjectId}).then((res)=>res)
+    if(resp.length>0){
+        result={success:true,message:"  get successfully",status:200,data:resp}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:resp}  
+    }
+    res.json( result)
+}
+
+const getAllsubjectApi=async(req,res)=>{
+    let resp = await Subjects.find({}).then((res)=>res)
+    if(resp.length>0){
+        result={success:true,message:"  get successfully",status:200,data:resp}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:resp}  
+    }
+    res.json( result)
+}
+
+
+const subjecttoHeadApi=async(req,res)=>{
+    let result=""
+    let status= false
+  
+    if(req.body.Class!==""){
+            let resp = await SubjectToHead.find({}).then((res)=>res)
+            if(resp.length>0){
+                let id = 0
+                resp.map(d=>{
+                    id=d.subjecttoHeadId
+                })
+                 id++  
+                    const res = new SubjectToHead({
+                       
+                        branchId:req.body.branchId,
+                        groupId:req.body.groupId,
+                        subjecttoHeadId:id,
+                        SubjectHead:req.body.SubjectHead,
+                        Subjects:req.body.Subjects
+                    });
+                res.save();
+                status=true
+                }
+                else{
+                    const res = new SubjectToHead({
+                       
+                        branchId:req.body.branchId,
+                        groupId:req.body.groupId,
+                        subjecttoHeadId:1,
+                        SubjectHead:req.body.SubjectHead,
+                        Subjects:req.body.Subjects
+                    });
+                res.save();
+                
+                    status=true
+                }
+        }
+        else{
+         result= {success:false,message:" pls insert Data",status:200}
+        }
+        if(status){
+            result={success:true,message:"  create  successfully",status:200}
+        }
+        else{
+            result={success:false,message:"  not create",status:200}  
+        }
+    
+        res.json( result)
+}
+const getAllsubjecttoHeadApi=async(req,res)=>{
+    let resp = await SubjectToHead.find({}).then((res)=>res)
+    if(resp.length>0){
+        result={success:true,message:"  get successfully",status:200,data:resp}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:resp}  
+    }
+    res.json( result)
+}
+
+const getsubjecttoHeadApi=async(req,res)=>{
+    let resp = await SubjectToHead.find({ subjecttoHeadId:req.body. subjecttoHeadId}).then((res)=>res)
+    if(resp.length>0){
+        result={success:true,message:"  get successfully",status:200,data:resp}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:resp}  
+    }
+    res.json( result)
+}
 
 
 
@@ -502,5 +727,14 @@ module.exports={
     addBranchApi,
     getBranchApi,
     getBranchGroupIdApi,
-    getSessionByBranchIdApi
+    getSessionByBranchIdApi,
+    subjectHeadApi,
+getAllsubjectHeadApi,
+getsubjectHeadApi,
+subjectApi,
+getsubjectApi,
+getAllsubjectApi,
+subjecttoHeadApi,
+getAllsubjecttoHeadApi,
+getsubjecttoHeadApi,
 }

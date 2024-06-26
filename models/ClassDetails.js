@@ -3,13 +3,15 @@ var mongoose=require("mongoose");
 // Creating EmployeeSchema 
 var employeeSchema= new mongoose.Schema({
     classDetailId:Number,
-    Class:String,
-    Section:String,
-    Subject:String,
-    Teacher:String,
+    ClassId:String,
+    SectionId:String,
+    SubjectId:String,
+    TeacherId:String,
     RoomNo:String,
     TuitionFee:Number,
     AdmissionFee:Number,
+    branchid:String,
+    groupid:String,
 });
 
 //Exporting Employee Schema

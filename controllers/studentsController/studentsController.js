@@ -187,7 +187,11 @@ const studentsApi = async(req,res,next)=>{
       Fare:req.body.fare,
       status:"students",
       otp:req.body.otp,
-      PreviousDueFees:req.body.PreviousDueFees
+      PreviousDueFees:req.body.PreviousDueFees,
+      branchId: bid,
+      groupId: gid,
+      sessionName: sname,
+     
                         
                     });
                 res.save();
@@ -234,7 +238,11 @@ const studentsApi = async(req,res,next)=>{
       Fare:req.body.fare,
       status:"students",
       otp:req.body.otp,
-      PreviousDueFees:req.body.PreviousDueFees
+      PreviousDueFees:req.body.PreviousDueFees,
+      branchId: bid,
+      groupId: gid,
+      sessionName: sname,
+     
                     
                     });
                     res.save();
@@ -258,7 +266,7 @@ const studentsApi = async(req,res,next)=>{
 const  getStudentsApi = async(req,res,next)=>{
 
    
-    let resp = await Student.find({}).then((res)=>res)
+    let resp = await Student.find({ branchId:req.body.branchId}).then((res)=>res)
    
 if(resp.length>0){
     result={success:true,message:"  get successfully",status:200,data:resp}
