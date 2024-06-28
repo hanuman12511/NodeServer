@@ -8,10 +8,10 @@ var employeeSchema= new mongoose.Schema({
     SubjectId:String,
     TeacherId:String,
     RoomNo:String,
-    TuitionFee:Number,
-    AdmissionFee:Number,
     branchid:String,
     groupid:String,
+    feeDetails:Array,
+    
 });
 
 //Exporting Employee Schema

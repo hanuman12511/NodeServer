@@ -2,9 +2,12 @@ var mongoose=require("mongoose");
 
 // Creating EmployeeSchema 
 var employeeSchema= new mongoose.Schema({
+    branchid:String,
+    groupid:String,
     feeHeadId:Number,
     FeeHead:String,
-    FeeFrequency:String,
+    FeeFrequencyId:Number,
+   
     Display:String
 });
 

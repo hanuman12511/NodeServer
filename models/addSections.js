@@ -2,9 +2,10 @@ var mongoose=require("mongoose");
 
 // Creating EmployeeSchema 
 var employeeSchema= new mongoose.Schema({
+    branchid:Number,
+    groupid:Number,
     sectionId:Number,
-    SectionName:String,
-    Displayorder:String
+    SectionName:String
 });
 
 //Exporting Employee Schema
