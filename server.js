@@ -15,7 +15,7 @@ const multer = require('multer')
 
 const csvtojson = require('csvtojson')
 const reader = require('xlsx') 
-connect.Connection("student")
+connect.Connection("test")
 app.use('/', routes);
 const port = 4000
 /* const options = {key:"",cert:""};
