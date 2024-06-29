@@ -2,15 +2,18 @@ var mongoose=require("mongoose");
 
 // Creating EmployeeSchema 
 var employeeSchema= new mongoose.Schema({
+    groupName:String,
     branchId:Number,
     groupId:String,
+    groupStatus:String,
+    adminemail:String,
     name:String,
     institutename:String,
     affiliation:String,
     affiliated:String,
     medium:String,
     phone:String,
-    email:String,
+    branchemail:String,
     password:String,
     mobile:String,
     contactperson:String,
@@ -20,7 +23,8 @@ var employeeSchema= new mongoose.Schema({
     website:String,
     logo:String,
     status:String,
-    branchControl:String
+    branchControl:String,
+    otp:Number
 });
 
 //Exporting Employee Schema

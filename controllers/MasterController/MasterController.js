@@ -8,10 +8,13 @@ const SubjectHead = require("../../models/SubjectHead")
 const SubjectToHead = require("../../models/SubjectToHead")
 const Class = require("../../models/Class")
 const FeeFrequency = require("../../models/FeeFrequency")
+
+
 const addBranchApi = async(req,res) =>{
     let result=""
     let status= false
-    if(req.body.name!=="" && req.body.groupId!==""){
+    console.log("data=>>",req.body);
+    if(true){
             let resp = await addBranch.find({}).then((res)=>res)
             if(resp.length>0){
                 let resp1 = await addBranch.find({mobile:req.body.mobile}).then((res)=>res)
@@ -22,9 +25,11 @@ const addBranchApi = async(req,res) =>{
                     id=d.branchId
                 })
                  id++  
-        const res = new addBranch({
-                        
+                     const res = new addBranch({
+                    groupName:req.body.groupName,
+                    groupStatus:req.body.groupStatus?req.body.groupStatus:"",
                     branchId:id,
+                    adminemail:req.body.adminemail,
                     groupId:req.body.groupId,
                     name:req.body.name,
                     institutename:req.body.institutename,
@@ -32,7 +37,7 @@ const addBranchApi = async(req,res) =>{
                     affiliated:req.body.affiliated,
                     medium:req.body.medium,
                     phone:req.body.phone,
-                    email:req.body.email,
+                    branchemail:req.body.email,
                     password:req.body.password,
                     mobile:req.body.mobile,
                     contactperson:req.body.contactperson,
@@ -43,6 +48,12 @@ const addBranchApi = async(req,res) =>{
                     logo:req.body.logo,
                     branchControl:req.body.branchControl,
                     status:"admin",
+                    otp:"0000"
+                    
+ 
+    
+  
+    
                                     
                     });
                 res.save();
@@ -55,8 +66,10 @@ const addBranchApi = async(req,res) =>{
             }
                 else{
                     const res = new addBranch({
-                        
+                        groupName:req.body.groupName,
+                        groupStatus:req.body.groupStatus?req.body.groupStatus:"",
                         branchId:1,
+                        adminemail:req.body.adminemail,
                         groupId:req.body.groupId,
                         name:req.body.name,
                         institutename:req.body.institutename,
@@ -64,7 +77,7 @@ const addBranchApi = async(req,res) =>{
                         affiliated:req.body.affiliated,
                         medium:req.body.medium,
                         phone:req.body.phone,
-                        email:req.body.email,
+                        branchemail:req.body.email,
                         password:req.body.password,
                         mobile:req.body.mobile,
                         contactperson:req.body.contactperson,
@@ -74,7 +87,10 @@ const addBranchApi = async(req,res) =>{
                         website:req.body.website,
                         logo:req.body.logo,
                         branchControl:req.body.branchControl,
-                        status:"admin",              
+                        status:"admin",
+                        otp:"0000"
+                        
+                                     
                         });
                     res.save();
                 
@@ -108,7 +124,7 @@ res.json(result)
 
 
 const getBranchGroupIdApi = async(req,res,next)=>{
-    let resp = await addBranch.find({groupId:req.body.id}).then((res)=>res)
+    let resp = await addBranch.find({groupId:req.body.id,groupStatus:""}).then((res)=>res)
    if(resp.length>0){
     result={success:true,message:" get successfully",status:200,data:resp}
 }
@@ -510,7 +526,7 @@ res.json(result)
 const ClassDetailApi = async(req,res,next)=>{
     let result=""
     let status= false
-  console.log(req.body);
+  console.log("class details=>>",req.body);
     if(req.body.Class!==""){
             let resp = await ClassDetails.find({}).then((res)=>res)
             if(resp.length>0){

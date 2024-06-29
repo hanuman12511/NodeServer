@@ -5,6 +5,8 @@ const studentsController = require('../controllers/studentsController/studentsCo
 const MasterController = require('../controllers/MasterController/MasterController');
 const { employeeApi, getEmployeeApi } = require('../controllers/EmployeeController/EmployeeController');
 
+
+router.get("/", UserControll.Test )
 //user
 
 router.post("/loginuser", UserControll.userLogin )
@@ -24,7 +26,10 @@ router.get("/downloadApi", studentsController.downloadApi )
  */
 
 // master
-
+router.post("/addBranchApi", MasterController.addBranchApi)
+router.get("/getBranchApi", MasterController.getBranchApi)
+router.post("/getBranchGroupIdApi", MasterController.getBranchGroupIdApi)
+router.post("/getSessionByBranchIdApi", MasterController.getSessionByBranchIdApi)
 router.post("/feeheadApi", MasterController.feeHeadApi)
 router.post("/getfeeHeadApi", MasterController.getfeeHeadsApi)
 router.post("/getAllfeeHeadApi", MasterController.getAllfeeHeadsApi)
@@ -37,10 +42,6 @@ router.post("/SectionApi", MasterController.SectionApi)
 router.post("/classDetailsApi", MasterController.ClassDetailApi)
 router.get("/getclassDetailsApi", MasterController.getClassDetailApi)
 router.post("/getClassDetailApiByclass", MasterController.getClassDetailApiByclass)
-router.post("/addBranch", MasterController.addBranchApi)
-router.get("/getBranchApi", MasterController.getBranchApi)
-router.post("/getBranchGroupIdApi", MasterController.getBranchGroupIdApi)
-router.post("/getSessionByBranchIdApi", MasterController.getSessionByBranchIdApi)
 router.post("/subjectHeadApi", MasterController.subjectHeadApi)
 router.get("/getAllsubjectHeadApi", MasterController.getAllsubjectHeadApi)
 router.post("/getsubjectHeadApi", MasterController.getsubjectHeadApi)

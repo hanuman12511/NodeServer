@@ -3,6 +3,12 @@ const userData = require("../../models/User");
 const addBranch = require("../../models/addBranch");
 
 
+const Test=(req,res,next)=>{
+
+    res.json("data show get")
+
+}
+
 const userRegister= async(req,res,next)=>{
     let resultdata=[]
     let len = Object.keys(req.body).length
@@ -55,7 +61,7 @@ const userLogin= async(req,res,next)=>{
     console.log(logdata);
     let len = Object.keys(req.body).length
     if(len){
-        if(req.body.email!='' ){
+        if(true ){
          
             let user = await addBranch.findOne({$or: [{email:req.body.mobile},{mobile:req.body.mobile}]}).then((user)=> {return user})
             console.log(user);    
@@ -78,4 +84,4 @@ const userLogin= async(req,res,next)=>{
 }
 
 
-module.exports={userLogin,userRegister}
+module.exports={userLogin,userRegister,Test}
