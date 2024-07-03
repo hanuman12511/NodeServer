@@ -10,9 +10,18 @@ const Class = require("../../models/Class")
 const FeeFrequency = require("../../models/FeeFrequency")
 const AddEmployee = require("../../models/Employee/AddEmployee")
 const addSections = require("../../models/addSections")
+const multer = require('multer')
+const sharp = require("sharp")
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+
+
+
 
 
 const addBranchApi = async(req,res) =>{
+    
     let result=""
     let status= false
     console.log("data=>>",req.body);
@@ -20,7 +29,6 @@ const addBranchApi = async(req,res) =>{
             let resp = await addBranch.find({}).then((res)=>res)
             if(resp.length>0){
                 let resp1 = await addBranch.find({mobile:req.body.mobile}).then((res)=>res)
-                console.log("data get",resp1);
                 if(resp1.length==0){
                 let id = 0
                 resp.map(d=>{
@@ -33,7 +41,7 @@ const addBranchApi = async(req,res) =>{
                     branchId:id,
                     adminemail:req.body.adminemail,
                     groupId:req.body.groupId,
-                    name:req.body.name,
+                    branchname:req.body.name,
                     institutename:req.body.institutename,
                     affiliation:req.body.affiliation,
                     affiliated:req.body.affiliated,
@@ -52,13 +60,7 @@ const addBranchApi = async(req,res) =>{
                     branchControl:req.body.branchControl,
                     status:"admin",
                     otp:"0000"
-                    
- 
-    
-  
-    
-                                    
-                    });
+                     });
                 res.save();
                 status=true
                 }
@@ -74,7 +76,7 @@ const addBranchApi = async(req,res) =>{
                         branchId:1,
                         adminemail:req.body.adminemail,
                         groupId:req.body.groupId,
-                        name:req.body.name,
+                        branchname:req.body.name,
                         institutename:req.body.institutename,
                         affiliation:req.body.affiliation,
                         affiliated:req.body.affiliated,
@@ -121,12 +123,12 @@ const addBranchUpdateApi = async(req,res) =>{
     if(true){
            // let resp = await addBranch.find({}).then((res)=>res)
             let resp =  await addBranch.updateOne( 
-                { branchId:req.body. branchId}, 
+                {$or:[{ branchId:req.body. branchId}, { groupId:req.body.groupId  }]}, 
                 {
                   $set: 
-                    {
+                            {
                        
-                       
+                        groupName:req.body.groupName,
                         name:req.body.name,
                         institutename:req.body.institutename,
                         affiliation:req.body.affiliation,
@@ -180,7 +182,8 @@ res.json(result)
 
 
 const getBranchOneApi = async(req,res,next)=>{
-    let resp = await addBranch.find({branchId:req.body.branchId}).then((res)=>res)
+  
+    let resp = await addBranch.findOne({$or: [{branchId:req.body.branchId},{ groupId:req.body. groupId}]}).then((res)=>res)
    if(resp.length>0){
     result={success:true,message:" get successfully",status:200,data:resp}
 }

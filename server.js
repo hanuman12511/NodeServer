@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 global.__basedir = __dirname + "/..";
 const connect = require("./db")
 const multer = require('multer')
-
+const sharp = require("sharp")
 const csvtojson = require('csvtojson')
 const reader = require('xlsx') 
 connect.Connection("student")
@@ -58,108 +58,72 @@ app.get("/download", (req, res) => {
     });
 });  
 
-const Student = require("./models/Student") 
+const Student = require("./models/Student"); 
+const addBranch = require('./models/addBranch');
 
 
-const storage = multer.diskStorage({
-    destination: "./uploads/",
-    filename: function (req, file, cb) {
-      cb(null,  "SomeImage" + "." + file.originalname.split(".").pop());
-    },
-  });
-  
-  const diskStorage = multer({ storage: storage });
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
-app.post('/uploadimage', diskStorage.single("image"),async (req, res) =>{  
-    try {
-    console.log(req.file); // File which is uploaded in /uploads folder.
-    console.log(req.body); // Body
-    res.send({ congrats: "data recieved" });
-  } catch (error) {
-    console.log("data=>>");
-    res.status(500).send("Error");
-  } 
-   /* 
-    console.log("1");
-        var multiparty = require('multiparty');
-        var form = new multiparty.Form();
-        var fs = require('fs');
-        
-    console.log("2");
-        form.parse(req, function(err, fields, files) {  
-        
-        console.log("file data=>>",files);
-        var imgArray = files.imatges;
-        
-        
-            for (var i = 0; i < imgArray.length; i++) {
-                var newPath = './public/image/'+fields.file+'/';
-                var singleImg = imgArray[i];
-                newPath+= singleImg.originalFilename;
-                readAndWriteFile(singleImg, newPath);           
-            }
-            res.send("File uploaded to: " + newPath);
-        
-        });
-        
-        function readAndWriteFile(singleImg, newPath) {
-        
-                fs.readFile(singleImg.path , function(err,data) {
-                    fs.writeFile(newPath,data, function(err) {
-                        if (err) console.log('ERRRRRR!! :'+err);
-                        console.log('Fitxer: '+singleImg.originalFilename +' - '+ newPath);
-                    })
-                }
-                
-                
-                )
+app.post('/uploadimage',  upload.single('file'), async (req, res) => {
+    fs.access("./public/uploads", (error) => {
+        if (error) {
+          fs.mkdirSync("./public/uploads");
         }
+      });
+      const { buffer, originalname } = req.file;
+       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);  
+      const ref = `${uniqueSuffix}.png`;
+   
+  await sharp(buffer)
+   .resize(100, 100)
+   .png()
+    .toFile("./public/uploads/" + ref); 
     
-   */
-    
-    
-    
-               res.json("fbfhfghgfh")
-    })
-    
+    const{ groupName, branchId,  groupId,institutename,affiliation,
+        affiliated,medium, phone, password,username, mobile,contactperson,Address,
+        registerno, established, website}=JSON.parse(req.body.params)
 
+       await addBranch.updateOne( 
+            {$or:[{ branchId:branchId}, { groupId:groupId  }]}, 
+            {
+              $set: 
+                        {
+                   
+                    groupName:groupName,
+                   
+                    institutename:institutename,
+                    affiliation:affiliation,
+                    affiliated:affiliated,
+                    medium:medium,
+                    phone:phone,
+                  
+                    password:password,
+                    username:username,
+                    mobile:mobile,
+                    contactperson:contactperson,
+                    Address:Address,
+                    registerno:registerno,
+                    established:established,
+                    website:website,
+                    logo: ref,
+                   
+                }
+            }, 
+            { upsert: true }
+          ).then((res)=>res).then(data=>{
+            console.log(data);
+          })
+
+          res.json("data")
+
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+})
 
 
 app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{  
    
-
-/* 
-
-    var multiparty = require('multiparty');
-    var form = new multiparty.Form();
-    var fs = require('fs');
-    
-    form.parse(req, function(err, fields, files) {  
-        var imgArray = files.imatges;
-    
-    
-        for (var i = 0; i < imgArray.length; i++) {
-            var newPath = './public/uploads/'+fields.file+'/';
-            var singleImg = imgArray[i];
-            newPath+= singleImg.originalFilename;
-            readAndWriteFile(singleImg, newPath);           
-        }
-        res.send("File uploaded to: " + newPath);
-    
-    });
-    
-    function readAndWriteFile(singleImg, newPath) {
-    
-            fs.readFile(singleImg.path , function(err,data) {
-                fs.writeFile(newPath,data, function(err) {
-                    if (err) console.log('ERRRRRR!! :'+err);
-                    console.log('Fitxer: '+singleImg.originalFilename +' - '+ newPath);
-                })
-            })
-    }
-
- */
-
 
 
     console.log("file=>>>",req.body.class);
@@ -315,3 +279,4 @@ mongodb+srv://hanuplusitsolution:o8IJY8a7hlKrcJX2@cluster0.wzwpge2.mongodb.net/?
         res.send(resultdata)
     }
   )  */
+

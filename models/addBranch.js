@@ -7,7 +7,7 @@ var employeeSchema= new mongoose.Schema({
     groupId:String,
     groupStatus:String,
     adminemail:String,
-    name:String,
+    branchname:String,
     institutename:String,
     affiliation:String,
     affiliated:String,
