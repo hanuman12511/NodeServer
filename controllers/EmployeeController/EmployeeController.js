@@ -54,6 +54,20 @@ const employeeApi= async(req,res,next)=>{
         res.json( result)
     }
     
+    const  getEmployeeByIdApi = async(req,res,next)=>{
+       
+        let resp = await AddEmployee.find({employeeId:req.body.employeeId}).then((res)=>res)
+        
+    if(resp.length>0){
+        result={success:true,message:"  get successfully",status:200,data:resp}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:resp}  
+    }
+    
+    res.json(result)
+    }
+    
     const  getEmployeeApi = async(req,res,next)=>{
        
         let resp = await AddEmployee.find({branchId:req.body.branchid}).then((res)=>res)
@@ -70,5 +84,6 @@ const employeeApi= async(req,res,next)=>{
     
     module.exports={
         employeeApi,
-        getEmployeeApi
+        getEmployeeApi,
+        getEmployeeByIdApi
     }

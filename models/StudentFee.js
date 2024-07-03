@@ -2,14 +2,18 @@ var mongoose=require("mongoose");
 
 // Creating EmployeeSchema 
 var employeeSchema= new mongoose.Schema({
+    branchId:Number,
+    groupId:String,
+    sessionName:String,
+    studentsId:Number,
     feeId:Number,
-    studentId:Number,
     classDetailId:Number,
     Deposited:Number,
     Rebat:Number,
     Due:Number,
-    NextDate:Date,
-    RecDate:Date,
+    feeDetails:Array,
+    NextDate:String,
+    RecDate:String,
 
 });
 

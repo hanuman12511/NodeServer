@@ -1,3 +1,4 @@
+const ClassDetails = require("../../models/ClassDetails");
 const Student = require("../../models/Student") 
 const StudentFee = require("../../models/StudentFee") 
 const multer = require('multer')
@@ -10,22 +11,19 @@ var excelStorage = multer.diskStorage({
     }  
 });  
 var excelUploads = multer({storage:excelStorage});
-
-
-
-
 const studentsFeeApi= async(req,res,next)=>{
 let result=""
+let resp=[]
             let status= false
             if(req.body.firstname!==""){
-                    let resp = await studentsFee.find({}).then((res)=>res)
+                     resp = await StudentFee.find({}).then((res)=>res)
                     if(resp.length>0){
                         let id = 0
                         resp.map(d=>{
                             id=d.feeId
                         })
                          id++  
-                            const res = new studentsFee({
+                            const res = new StudentFee({
                                 feeId:id,
                                 studentId:req.body.studentId,
                                 classDetailId:req.body.classDetailId,
@@ -41,7 +39,7 @@ let result=""
                         status=true
                         }
                         else{
-                            const res = new studentsFee({
+                            const res = new StudentFee({
                                 feeId:1,
                                 studentId:req.body.studentId,
                                 classDetailId:req.body.classDetailId,
@@ -71,10 +69,32 @@ let result=""
 
 const  getstudentsFeeApi = async(req,res,next)=>{
    
-    let resp = await studentsFee.find({}).then((res)=>res)
+    let resp = await Student.find({ branchId:req.body.branchid}).then((res)=>res)
+   let classd =  await ClassDetails.find({ branchid:req.body.branchid}).then((res)=>res)
+    let dataclasss = []
+   resp.map(d=>{
+    
+    
+let amount=0
+    classd.map(cc=>{
+       
+        if(d.ClassSection==cc.ClassId){
+         
+          
+            cc.feeDetails.map(ff=>{
+             
+                amount+=parseInt(ff.fee)
+            })
+          
    
+    }
+   
+    })
+    let dat = {...d._doc,amount:amount}
+    dataclasss.push(dat)    
+   })
 if(resp.length>0){
-    result={success:true,message:"  get successfully",status:200,data:resp}
+    result={success:true,message:"  get successfully",status:200,data:dataclasss }
 }
 else{
     result={success:false,message:"   not  get",status:200,data:resp}  
@@ -84,10 +104,83 @@ res.json(result)
 }
 
 
-const studentLogin= async(req,res,next)=>{
-    console.log(req.body);
+
+const  addStudentsFeeApi = async(req,res,next)=>{ 
+let status=false
+   let resfee = await  StudentFee.find({ branchid:req.body.branchid}).then((res)=>res)
+   if(resfee.length>0){
+       let id = 0
+       resfee.map(d=>{
+           id=d. feeId
+       })
+        id++  
+           const res = new StudentFee({
+            branchId:req.body.branchId,
+            groupId:req.body.groupId,
+            sessionName:req.body. sessionName,
+            studentsId:req.body.studentsId,
+            feeId:id,
+            classDetailId:req.body.classDetailId,
+            Deposited:req.body.Deposited,
+            Rebat:req.body. Rebat,
+            Due:req.body.Due,
+            feeDetails:req.body.feeDetails,
+            NextDate:req.body. NextDate,
+            RecDate:new Date(),
+           });
+       res.save();
+       status=true
+       }
+       else{
+           const res = new StudentFee({   
+            branchId:req.body.branchId,
+            groupId:req.body.groupId,
+            sessionName:req.body. sessionName,
+            studentsId:req.body.studentsId,
+            feeId:1,
+            classDetailId:req.body.classDetailId,
+            Deposited:req.body.Deposited,
+            Rebat:req.body. Rebat,
+            Due:req.body.Due,
+            feeDetails:req.body.feeDetails,
+            NextDate:req.body.NextDate,
+            RecDate:new Date(),
+              });
+       res.save();
+       
+           status=true
+       }
+
+if(status){
+   result={success:true,message:"  create  successfully",status:200}
+}
+else{
+   result={success:false,message:"  not create",status:200}  
+}
+res.json( result)
+}
+
+
+const getStudentByBranchFeeApi= async(req,res,next)=>{
    
-    let resp = await Student.find({dob:req.body.dob,mobile:req.body.mobile}).then((res)=>res)
+   
+    let resp = await StudentFee.find({branchId:req.body.branchId,studentsId:req.body.studentsId}).then((res)=>res)
+   console.log("data=>>",resp);
+    if(resp.length>0){
+        result={success:true,message:"  get successfully",status:200,data:resp}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:resp}  
+    }
+    res.json( result)
+}
+
+
+
+const studentLogin= async(req,res,next)=>{
+   
+   
+    let resp = await Student.find({DOB:req.body.dob,MobileNo:req.body.mobile}).then((res)=>res)
    console.log("data=>>",resp);
     if(resp.length>0){
         result={success:true,message:"  get successfully",status:200,data:resp}
@@ -181,6 +274,8 @@ const studentsApi = async(req,res,next)=>{
      
       Schoolname:req.body.previousschoolname,
       SRNo:req.body.srno,
+    
+
       previousclassname:req.body.previousclassname,
       Root:req.body.root,
       Stand:req.body.stand,
@@ -188,9 +283,10 @@ const studentsApi = async(req,res,next)=>{
       status:"students",
       otp:req.body.otp,
       PreviousDueFees:req.body.PreviousDueFees,
-      branchId: bid,
-      groupId: gid,
-      sessionName: sname,
+      branchId:req.body.branchId,
+      groupId: req.body.groupId,
+      sessionName: req.body.sessionName,
+     
      
                         
                     });
@@ -239,9 +335,9 @@ const studentsApi = async(req,res,next)=>{
       status:"students",
       otp:req.body.otp,
       PreviousDueFees:req.body.PreviousDueFees,
-      branchId: bid,
-      groupId: gid,
-      sessionName: sname,
+      branchId:req.body.branchId,
+      groupId: req.body.groupId,
+      sessionName: req.body.sessionName,
      
                     
                     });
@@ -388,5 +484,7 @@ module.exports={
     getstudentsFeeApi,
     studentLogin,
     uploadExcelFile,
-    downloadApi
+    downloadApi,
+    addStudentsFeeApi,
+    getStudentByBranchFeeApi
 }

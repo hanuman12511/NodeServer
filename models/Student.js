@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema({
   PCity:String,
   PState:String, 
   PCountry:String,
+  previousclassname:String,
   ClassSection:String,
   AdmissionDate:String,
   RTE:String,

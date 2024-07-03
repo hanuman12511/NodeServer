@@ -7,6 +7,7 @@ const routes = require('./Routers/Route');
 const app = express()
 app.use(cors())
 app.use(express.json())
+const path = require('path');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 global.__basedir = __dirname + "/..";
@@ -20,6 +21,12 @@ app.use('/', routes);
 const port = 4000
 /* const options = {key:"",cert:""};
 https.createServer(options, app) */
+
+app.use(express.static('public'));
+
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+
 app.listen(port, () => console.log(`The server is listening on port ${port}`))
 
 
@@ -52,6 +59,72 @@ app.get("/download", (req, res) => {
 });  
 
 const Student = require("./models/Student") 
+
+
+const storage = multer.diskStorage({
+    destination: "./uploads/",
+    filename: function (req, file, cb) {
+      cb(null,  "SomeImage" + "." + file.originalname.split(".").pop());
+    },
+  });
+  
+  const diskStorage = multer({ storage: storage });
+
+app.post('/uploadimage', diskStorage.single("image"),async (req, res) =>{  
+    try {
+    console.log(req.file); // File which is uploaded in /uploads folder.
+    console.log(req.body); // Body
+    res.send({ congrats: "data recieved" });
+  } catch (error) {
+    console.log("data=>>");
+    res.status(500).send("Error");
+  } 
+   /* 
+    console.log("1");
+        var multiparty = require('multiparty');
+        var form = new multiparty.Form();
+        var fs = require('fs');
+        
+    console.log("2");
+        form.parse(req, function(err, fields, files) {  
+        
+        console.log("file data=>>",files);
+        var imgArray = files.imatges;
+        
+        
+            for (var i = 0; i < imgArray.length; i++) {
+                var newPath = './public/image/'+fields.file+'/';
+                var singleImg = imgArray[i];
+                newPath+= singleImg.originalFilename;
+                readAndWriteFile(singleImg, newPath);           
+            }
+            res.send("File uploaded to: " + newPath);
+        
+        });
+        
+        function readAndWriteFile(singleImg, newPath) {
+        
+                fs.readFile(singleImg.path , function(err,data) {
+                    fs.writeFile(newPath,data, function(err) {
+                        if (err) console.log('ERRRRRR!! :'+err);
+                        console.log('Fitxer: '+singleImg.originalFilename +' - '+ newPath);
+                    })
+                }
+                
+                
+                )
+        }
+    
+   */
+    
+    
+    
+               res.json("fbfhfghgfh")
+    })
+    
+
+
+
 app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{  
    
 

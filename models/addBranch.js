@@ -15,6 +15,7 @@ var employeeSchema= new mongoose.Schema({
     phone:String,
     branchemail:String,
     password:String,
+    username:String,
     mobile:String,
     contactperson:String,
     Address:String,

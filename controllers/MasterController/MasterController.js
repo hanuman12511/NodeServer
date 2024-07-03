@@ -8,6 +8,8 @@ const SubjectHead = require("../../models/SubjectHead")
 const SubjectToHead = require("../../models/SubjectToHead")
 const Class = require("../../models/Class")
 const FeeFrequency = require("../../models/FeeFrequency")
+const AddEmployee = require("../../models/Employee/AddEmployee")
+const addSections = require("../../models/addSections")
 
 
 const addBranchApi = async(req,res) =>{
@@ -39,6 +41,7 @@ const addBranchApi = async(req,res) =>{
                     phone:req.body.phone,
                     branchemail:req.body.email,
                     password:req.body.password,
+                    username:req.body.username,
                     mobile:req.body.mobile,
                     contactperson:req.body.contactperson,
                     Address:req.body.Address,
@@ -79,6 +82,7 @@ const addBranchApi = async(req,res) =>{
                         phone:req.body.phone,
                         branchemail:req.body.email,
                         password:req.body.password,
+                        username:req.body.username,
                         mobile:req.body.mobile,
                         contactperson:req.body.contactperson,
                         Address:req.body.Address,
@@ -110,9 +114,73 @@ const addBranchApi = async(req,res) =>{
     res.json(result)     
 }
 
+const addBranchUpdateApi = async(req,res) =>{
+    let result=""
+    let status= false
+    console.log("data=>>",req.body);
+    if(true){
+           // let resp = await addBranch.find({}).then((res)=>res)
+            let resp =  await addBranch.updateOne( 
+                { branchId:req.body. branchId}, 
+                {
+                  $set: 
+                    {
+                       
+                       
+                        name:req.body.name,
+                        institutename:req.body.institutename,
+                        affiliation:req.body.affiliation,
+                        affiliated:req.body.affiliated,
+                        medium:req.body.medium,
+                        phone:req.body.phone,
+                        branchemail:req.body.email,
+                        password:req.body.password,
+                        username:req.body.username,
+                        mobile:req.body.mobile,
+                        contactperson:req.body.contactperson,
+                        Address:req.body.Address,
+                        registerno:req.body.registerno,
+                        established:req.body.established,
+                        website:req.body.website,
+                        logo:req.body.logo,
+                       
+                    }
+                }, 
+                { upsert: true }
+              ).then((res)=>res)
+                  
+                    status=true
+                    console.log("update=>>",resp);
+                
+        }
+        else{
+         result= {success:false,message:" pls insert Data",status:200}
+        }
+        if(status){
+            result={success:true,message:" branch create  successfully",status:200}
+        }
+        else{
+            result={success:false,message:" branch head not create",status:200}  
+        }
+        
+    res.json(result)     
+}
+
 
 const getBranchApi = async(req,res,next)=>{
     let resp = await addBranch.find({}).then((res)=>res)
+   if(resp.length>0){
+    result={success:true,message:" get successfully",status:200,data:resp}
+}
+else{
+    result={success:false,message:"  not  get",status:200,data:resp}  
+}
+res.json(result)
+}
+
+
+const getBranchOneApi = async(req,res,next)=>{
+    let resp = await addBranch.find({branchId:req.body.branchId}).then((res)=>res)
    if(resp.length>0){
     result={success:true,message:" get successfully",status:200,data:resp}
 }
@@ -537,13 +605,13 @@ const ClassDetailApi = async(req,res,next)=>{
                  id++  
                     const res = new ClassDetails({
                         sessionId:req.body.sessionId,
-                        branchId:req.body.branchId,
-                        groupId:req.body.branchId,
+                        branchid:req.body.branchId,
+                        groupid:req.body.groupId,
                         classDetailId:id,
-                        ClassId:req.body.Classid,
-                        Section:req.body.Section,
-                        Subject:req.body.Subject,
-                        Teacher:req.body.Teacher,
+                        ClassId:req.body.Class,
+                        SectionId:req.body.Section,
+                        SubjectId:req.body.Subject,
+                        TeacherId:req.body.Teacher,
                         RoomNo:req.body.RoomNo,
                         feeDetails:req.body.feeDetails
                     });
@@ -553,16 +621,18 @@ const ClassDetailApi = async(req,res,next)=>{
                 else{
                     const res = new ClassDetails({
                         sessionId:req.body.sessionId,
-                        branchId:req.body.branchId,
-                        groupId:req.body.branchId,
+                        branchid:req.body.branchId,
+                        groupid:req.body.groupId,
                         classDetailId:1,
-                        ClassId:req.body.Classid,
-                        Section:req.body.Section,
-                        Subject:req.body.Subject,
-                        Teacher:req.body.Teacher,
+                        ClassId:req.body.Class,
+                        SectionId:req.body.Section,
+                        SubjectId:req.body.Subject,
+                        TeacherId:req.body.Teacher,
                         RoomNo:req.body.RoomNo,
                         feeDetails:req.body.feeDetails
                     });
+
+
                 res.save();
                 
                     status=true
@@ -583,15 +653,51 @@ const ClassDetailApi = async(req,res,next)=>{
 
 
 const getClassDetailApi = async(req,res,next)=>{
-   
-    let resp = await ClassDetails.find({}).then((res)=>res)
-   
-if(resp.length>0){
-    result={success:true,message:" get successfully",status:200,data:resp}
+    let result=""
+    let classinfo=[]
+    let resp =await ClassDetails.find({branchid:req.body.branchid}).then((res)=>res)
+    if(resp.length>0){
+    let employee = await AddEmployee.find().then((res)=>res)
+    let class1 = await Class.find().then((res)=>res)
+    let section1 = await addSections.find().then((res)=>res)
+    
+    console.log(section1);
+     resp.map(async(d)=>{
+       employee.map(dd=>{
+           
+           if(d.TeacherId==dd.employeeId){
+                classinfo.push({...d._doc,employeename:dd.employeeName})
+           }
+       })
+    })
+
+let dataclass=[]
+  classinfo.map(d=>{
+    class1.map(dd=>{
+        if(d.ClassId==dd.classId){
+            dataclass.push({...d,employeename:d. employeename,Class:dd.Class})
+       }
+
+    })
+  })
+
+
+
+  let sec1 =[]
+  dataclass.map(d=>{
+    section1.map(s=>{
+        if(s.sectionId==d.SectionId){
+            sec1.push({...d,SectionName:s.SectionName})  
+        }
+    })
+  })
+ 
+
+    result={success:true,message:" get successfully",status:200,data:sec1}
 }
 else{
     result={success:false,message:" not  get",status:200,data:resp}  
-}
+} 
 
 res.json(result)
 }
@@ -599,9 +705,9 @@ res.json(result)
 
 
 const getClassDetailApiByclass= async(req,res,next)=>{
-   
+    let result=""
 
-    let resp = await ClassDetails.find({Class:req.body.Class}).then((res)=>res)
+    let resp = await ClassDetails.find({ClassId:req.body.Class}).then((res)=>res)
    
     if(resp.length>0){
         result={success:true,message:"  get successfully",status:200,data:resp}
@@ -870,4 +976,6 @@ getsubjecttoHeadApi,
 FeeFrequencyApi,
 getFeeFrequencyApi,
 getAllFeeFrequencyApi,
+addBranchUpdateApi,
+getBranchOneApi
 }
