@@ -25,24 +25,80 @@ https.createServer(options, app) */
 app.use(express.static('public'));
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/uploads', express.static(path.join(__dirname, 'images')));
 
 
 app.listen(port, () => console.log(`The server is listening on port ${port}`))
 
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
 
+/* var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        // Uploads is the Upload_folder_name
+        cb(null, "uploads");
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + "-" + Date.now() + ".jpg");
+    },
+});
+ 
+// Define the maximum size for uploading
+// picture i.e. 1 MB. it is optional
+const maxSize = 1 * 1000 * 1000;
+ 
+var upload = multer({
+    storage: storage,
+    limits: { fileSize: maxSize },
+    fileFilter: function (req, file, cb) {
+        // Set the filetypes, it is optional
+        var filetypes = /jpeg|jpg|png/;
+        var mimetype = filetypes.test(file.mimetype);
+ 
+        var extname = filetypes.test(
+            path.extname(file.originalname).toLowerCase()
+        );
+ 
+        if (mimetype && extname) {
+            return cb(null, true);
+        }
+ 
+        cb(
+            "Error: File upload only supports the " +
+                "following filetypes - " +
+                filetypes
+        );
+    },
+ 
+    // mypic is the name of file attribute
+}).single("mypic"); */
+ 
 
+ 
+app.post("/uploadProfilePicture", function (req, res, next) {
 
-var excelStorage = multer.diskStorage({  
+    console.log(req.body);
+    console.log(req.file);
+    upload(req, res, function (err) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(req);
+        }
+    });
+})
+
+/* var excelStorage = multer.diskStorage({  
     destination:(req,file,cb)=>{  
          cb(null,'./public/excelUploads');      // file added to the public folder of the root directory
     },  
     filename:(req,file,cb)=>{  
          cb(null,file.originalname);  
     }  
-});  
-var excelUploads = multer({storage:excelStorage}); 
+});  */ 
+//var excelUploads = multer({storage:excelStorage}); 
 
-
+/* 
 app.get("/download", (req, res) => {
     const filePath = __dirname + "/public/excelUploads/studentmgmt.xlsx";
     res.download(
@@ -57,7 +113,7 @@ app.get("/download", (req, res) => {
             }
     });
 });  
-
+ */
 const Student = require("./models/Student"); 
 const addBranch = require('./models/addBranch');
 
@@ -66,7 +122,11 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 app.post('/uploadimage',  upload.single('file'), async (req, res) => {
-    fs.access("./public/uploads", (error) => {
+
+
+    console.log(req.file);
+    console.log(req.body);
+  /*   fs.access("./public/uploads", (error) => {
         if (error) {
           fs.mkdirSync("./public/uploads");
         }
@@ -78,9 +138,9 @@ app.post('/uploadimage',  upload.single('file'), async (req, res) => {
   await sharp(buffer)
    .resize(100, 100)
    .png()
-    .toFile("./public/uploads/" + ref); 
+    .toFile("./public/uploads/" + ref);  */
     
-    const{ groupName, branchId,  groupId,institutename,affiliation,
+    const{name, groupName, branchId,  groupId,institutename,affiliation,
         affiliated,medium, phone, password,username, mobile,contactperson,Address,
         registerno, established, website}=JSON.parse(req.body.params)
 
@@ -97,7 +157,7 @@ app.post('/uploadimage',  upload.single('file'), async (req, res) => {
                     affiliated:affiliated,
                     medium:medium,
                     phone:phone,
-                  
+                    branchname:name,
                     password:password,
                     username:username,
                     mobile:mobile,
@@ -106,7 +166,7 @@ app.post('/uploadimage',  upload.single('file'), async (req, res) => {
                     registerno:registerno,
                     established:established,
                     website:website,
-                    logo: ref,
+                    logo:req.body.file,
                    
                 }
             }, 
@@ -122,6 +182,7 @@ app.post('/uploadimage',  upload.single('file'), async (req, res) => {
 })
 
 
+/* 
 app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{  
    
 
@@ -143,18 +204,18 @@ app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{
             
        importFile('./public' + '/excelUploads/' + req.file.filename);
             function importFile(filePath){
-               // console.log(filePath);
+            
                 const file = reader.readFile(filePath) 
                  let data = [] 
                 const sheets = file.SheetNames 
-               // console.log(sheets.length);
+             
                for(let i = 0; i < 1; i++) 
                 { 
                    const temp = reader.utils.sheet_to_json( 
                         file.Sheets[file.SheetNames[0]]) 
                        
                    temp.forEach((res,index) => { 
-                //    console.log("data row",res);
+              
                     res["studentsId"]=id++
                     res["ClassSection"]=req.body.class
                     res["branchId"]=req.body.branchId
@@ -164,7 +225,7 @@ app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{
                     data.push(res) 
                    }) 
                 } 
-            //   console.log(data);    
+              
         Student.insertMany(data)
                     .then(function () {
         console.log("Successfully saved defult items to DB");
@@ -178,105 +239,4 @@ app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{
 
            res.json("fbfhfghgfh")
 })
-
-
-/* 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://hanuplusitsolution:o8IJY8a7hlKrcJX2@cluster0.wzwpge2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir); */
-
-
-
-/* 
-mongodb+srv://hanuplusitsolution:o8IJY8a7hlKrcJX2@cluster0.wzwpge2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0 */
-
-
-/* app.post("/loginuser", UserControll.userLogin ) */
-/* app.post("/loginuser", (req, res) => {
-    let resultdata=[]
-    let logdata = req.body
-    let len = Object.keys(req.body).length
-    if(len){
-        if(req.body.email!='' && req.body.password!='' ){
-            resultdata={success:true,message:"login data get successfully",data:logdata}
-        }
-        else{
-            resultdata={success:false,message:"pls enter email and password",data:logdata}
-        }
-    }
-    else{
-        resultdata={success:false,message:"login data not get",data:logdata}
-    }
-    res.send(resultdata)
-    }
-  ) */
- 
-/* 
-  app.post("/registeruser", (req, res) => {
-    let resultdata=[]
-    let logdata = req.body
-    let len = Object.keys(req.body).length
-    if(len){
-        resultdata={success:true,message:" register data get successfully",data:logdata}
-    }
-    else{
-        resultdata={success:false,message:"register data not get ",data:logdata}
-    }
-    res.send(resultdata)
-    }
-  ) 
-
-  app.post("/leadadd", (req, res) => {
-    let resultdata=[]
-    let logdata = req.body
-    let len = Object.keys(req.body).length
-    if(len){
-        resultdata={success:true,message:" lead data get successfully",data:logdata}
-    }
-    else{
-        resultdata={success:false,message:"lead data not get ",data:logdata}
-    }
-    res.send(resultdata)
-    }
-  ) 
-
-  
-  app.get("/leadshow", (req, res) => {
-    let resultdata=[]
-        let data={
-            "name":"",
-            "phone":"",
-            "status":[],
-            "rating":"",
-            "acquired":"time",
-            "addnote":"",
-            "followp":"datetime",
-            "pdf":'',
-            "amount":[]
-            }
-         
-        resultdata={success:true,message:"lead data  show successfully ",data:data}
-        res.send(resultdata)
-    }
-  )  */
-
+ */

@@ -119,7 +119,7 @@ const addBranchApi = async(req,res) =>{
 const addBranchUpdateApi = async(req,res) =>{
     let result=""
     let status= false
-    console.log("data=>>",req.body);
+    console.log("data=>>",req);
     if(true){
            // let resp = await addBranch.find({}).then((res)=>res)
             let resp =  await addBranch.updateOne( 
@@ -182,9 +182,9 @@ res.json(result)
 
 
 const getBranchOneApi = async(req,res,next)=>{
-  
-    let resp = await addBranch.findOne({$or: [{branchId:req.body.branchId},{ groupId:req.body. groupId}]}).then((res)=>res)
-   if(resp.length>0){
+
+    let resp = await addBranch.findOne({$or: [{branchId:req.body.branchId},{ groupId:req.body.groupId}]}).then((res)=>res)
+    if(resp.length>0){
     result={success:true,message:" get successfully",status:200,data:resp}
 }
 else{
