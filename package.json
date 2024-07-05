@@ -26,7 +26,6 @@
     "read-excel-file": "^5.8.1",
     "reload": "^3.2.1",
     "sequelize": "^6.37.3",
-    "sharp": "^0.33.4",
     "xlsx": "^0.18.5"
   }
 }

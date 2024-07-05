@@ -11,14 +11,9 @@ const FeeFrequency = require("../../models/FeeFrequency")
 const AddEmployee = require("../../models/Employee/AddEmployee")
 const addSections = require("../../models/addSections")
 const multer = require('multer')
-const sharp = require("sharp")
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
-
-
-
-
-
 
 const addBranchApi = async(req,res) =>{
     
