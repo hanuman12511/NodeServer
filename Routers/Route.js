@@ -28,6 +28,7 @@ router.get("/downloadApi", studentsController.downloadApi )
  */
 
 // master
+router.post("/getBranchControlApi", MasterController.getBranchControlApi)
 router.post("/addBranchUpdateApi", MasterController.addBranchUpdateApi)
 router.post("/addBranchApi", MasterController.addBranchApi)
 router.get("/getBranchApi", MasterController.getBranchApi)

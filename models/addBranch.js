@@ -24,7 +24,7 @@ var employeeSchema= new mongoose.Schema({
     website:String,
     logo:String,
     status:String,
-    branchControl:String,
+    branchControl:Boolean ,
     otp:Number
 });
 

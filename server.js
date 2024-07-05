@@ -54,3 +54,82 @@ const storage = multer.diskStorage({
     fileName: file.filename });
     });
     
+
+    const maxSize = 1 * 1000 * 1000;
+
+    var upload = multer({
+        storage: storage,
+        limits: { fileSize: maxSize },
+        fileFilter: function (req, file, cb) {
+            // Set the filetypes, it is optional
+            var filetypes = /jpeg|jpg|png/;
+            var mimetype = filetypes.test(file.mimetype);
+     
+            var extname = filetypes.test(
+                path.extname(file.originalname).toLowerCase()
+            );
+     
+            if (mimetype && extname) {
+                return cb(null, true);
+            }
+     
+            cb(
+                "Error: File upload only supports the " +
+                    "following filetypes - " +
+                    filetypes
+            );
+        },
+     
+        // mypic is the name of file attribute
+    }).single("file"); 
+app.post('/uploadimage', uploadFiles.single("file"), async (req, res) => {
+    
+ /*    upload(req, res, function (err) {
+        console.log("file",req.file);
+    console.log("body",req.body);
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(req);
+        }
+    }); */
+   const{name, groupName, branchId,  groupId,institutename,affiliation,
+        affiliated,medium, phone, password,username, mobile,contactperson,Address,
+        registerno, established, website}=JSON.parse(req?.body?.params) 
+
+     await addBranch.updateOne( 
+            {$or:[{ branchId:branchId}, { groupId:groupId  }]}, 
+            {
+              $set: 
+                        {
+                   
+                    groupName:groupName,
+                   
+                    institutename:institutename,
+                    affiliation:affiliation,
+                    affiliated:affiliated,
+                    medium:medium,
+                    phone:phone,
+                    branchname:name,
+                    password:password,
+                    username:username,
+                    mobile:mobile,
+                    contactperson:contactperson,
+                    Address:Address,
+                    registerno:registerno,
+                    established:established,
+                    website:website,
+                    logo:req.body.file,
+                   
+                }
+            }, 
+            { upsert: true }
+          ).then((res)=>res).then(data=>{
+            console.log(data);
+          }) 
+
+          res.json("data")
+
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+})

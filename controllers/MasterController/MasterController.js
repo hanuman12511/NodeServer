@@ -16,14 +16,13 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 const addBranchApi = async(req,res) =>{
-    
     let result=""
     let status= false
-    console.log("data=>>",req.body);
     if(true){
             let resp = await addBranch.find({}).then((res)=>res)
             if(resp.length>0){
                 let resp1 = await addBranch.find({mobile:req.body.mobile}).then((res)=>res)
+                console.log(resp1);
                 if(resp1.length==0){
                 let id = 0
                 resp.map(d=>{
@@ -114,7 +113,8 @@ const addBranchApi = async(req,res) =>{
 const addBranchUpdateApi = async(req,res) =>{
     let result=""
     let status= false
-    console.log("data=>>",req);
+    console.log("data=>>",req.file);
+    console.log("data=>>",req.body);
     if(true){
            // let resp = await addBranch.find({}).then((res)=>res)
             let resp =  await addBranch.updateOne( 
@@ -187,6 +187,48 @@ else{
 }
 res.json(result)
 }
+
+
+
+
+const getBranchControlApi = async(req,res,next)=>{
+
+    let result=""
+    let status= false
+    console.log("data=>>",req.file);
+    console.log("data=>>",req.body);
+    if(true){
+          
+            let resp =  await addBranch.updateOne( 
+                { branchId:req.body. branchId}, 
+                {
+                  $set: 
+                            {
+                       
+                                branchControl:req.body.branchControl,
+                       
+                    }
+                }, 
+                { upsert: true }
+              ).then((res)=>res)
+                  console.log(res);
+                    status=true
+        
+                
+        }
+        else{
+         result= {success:false,message:" pls insert Data",status:200}
+        }
+        if(status){
+            result={success:true,message:" branch   control update successfully",status:200}
+        }
+        else{
+            result={success:false,message:" branch control update not ",status:200}  
+        }
+        
+    res.json(result)  
+}
+
 
 
 const getBranchGroupIdApi = async(req,res,next)=>{
@@ -975,5 +1017,6 @@ FeeFrequencyApi,
 getFeeFrequencyApi,
 getAllFeeFrequencyApi,
 addBranchUpdateApi,
-getBranchOneApi
+getBranchOneApi,
+getBranchControlApi
 }
