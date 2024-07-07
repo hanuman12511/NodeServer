@@ -1,3 +1,4 @@
+
 const https = require('https');
 const fs = require('fs');
 const express = require("express")
@@ -31,105 +32,66 @@ app.use('/uploads', express.static(path.join(__dirname, 'images')));
 
 app.listen(port, () => console.log(`The server is listening on port ${port}`))
 
-// SET STORAGE
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, "uploads");
+        cb(null, 'uploads/')
     },
-    filename: function(req, file, cb) {
+ /*    filename: function(req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        cb(null, uniqueSuffix+file.originalname)
+    }, */
+    filename: function (req, file, cb) {
         cb(null, file.fieldname + "-" + Date.now() + ".jpg");
-    }
-    });
-    const uploadFiles = multer({ storage: storage });
-    app.post("/fileupload", uploadFiles.single("file"), (req, res, next) => {
-    const file = req.file;
-    if (!file) {
-    const error = new Error("Please upload a file");
-    error.httpStatusCode = 400;
-    return next(error);
-    }
-    res.json({
-    success: true,
-    statusCode: 200,
-    fileName: file.filename });
-    });
-    
+    },
+})
+const upload = multer({ storage: storage })
 
-    const maxSize = 1 * 1000 * 1000;
 
-    var upload = multer({
-        storage: storage,
-        limits: { fileSize: maxSize },
-        fileFilter: function (req, file, cb) {
-            // Set the filetypes, it is optional
-            var filetypes = /jpeg|jpg|png/;
-            var mimetype = filetypes.test(file.mimetype);
-     
-            var extname = filetypes.test(
-                path.extname(file.originalname).toLowerCase()
-            );
-     
-            if (mimetype && extname) {
-                return cb(null, true);
-            }
-     
-            cb(
-                "Error: File upload only supports the " +
-                    "following filetypes - " +
-                    filetypes
-            );
-        },
-     
-        // mypic is the name of file attribute
-    }).single("file"); 
-app.post('/uploadimage', uploadFiles.single("file"), async (req, res) => {
-    
- /*    upload(req, res, function (err) {
-        console.log("file",req.file);
-    console.log("body",req.body);
-        if (err) {
-            res.send(err);
-        } else {
-            res.send(req);
-        }
-    }); */
+app.post('/upload', upload.single('file'), async(req, res) => {
+
+    console.log(req.body);
+    console.log(req.file);
+    console.log(req);
+    console.log(req.url);
    const{name, groupName, branchId,  groupId,institutename,affiliation,
-        affiliated,medium, phone, password,username, mobile,contactperson,Address,
-        registerno, established, website}=JSON.parse(req?.body?.params) 
+    affiliated,medium, phone, password,username, mobile,contactperson,Address,
+    registerno, established, website}=JSON.parse(req?.body?.params) 
 
-     await addBranch.updateOne( 
-            {$or:[{ branchId:branchId}, { groupId:groupId  }]}, 
-            {
-              $set: 
-                        {
-                   
-                    groupName:groupName,
-                   
-                    institutename:institutename,
-                    affiliation:affiliation,
-                    affiliated:affiliated,
-                    medium:medium,
-                    phone:phone,
-                    branchname:name,
-                    password:password,
-                    username:username,
-                    mobile:mobile,
-                    contactperson:contactperson,
-                    Address:Address,
-                    registerno:registerno,
-                    established:established,
-                    website:website,
-                    logo:req.body.file,
-                   
-                }
-            }, 
-            { upsert: true }
-          ).then((res)=>res).then(data=>{
-            console.log(data);
-          }) 
+ await addBranch.updateOne( 
+        {$or:[{ branchId:branchId}, { groupId:groupId  }]}, 
+        {
+          $set: 
+                    {
+               
+                groupName:groupName,
+               
+                institutename:institutename,
+                affiliation:affiliation,
+                affiliated:affiliated,
+                medium:medium,
+                phone:phone,
+                branchname:name,
+                password:password,
+                username:username,
+                mobile:mobile,
+                contactperson:contactperson,
+                Address:Address,
+                registerno:registerno,
+                established:established,
+                website:website,
+                logo:req.file.filename,
+               
+            }
+        }, 
+        { upsert: true }
+      ).then((res)=>res).then(data=>{
+        console.log("data=>",data);
+        try {
+            res.status(200).json({ success: "file upload successful" })
+        } catch (error) {
+            res.status(500).json({ error: error })
+        }
+      }) 
 
-          res.json("data")
-
-}, (error, req, res, next) => {
-    res.status(400).send({ error: error.message })
+   
 })

@@ -112,9 +112,12 @@ const addBranchApi = async(req,res) =>{
 
 const addBranchUpdateApi = async(req,res) =>{
     let result=""
+    try {
+        
+  
     let status= false
-    console.log("data=>>",req.file);
-    console.log("data=>>",req.body);
+    console.log("data=>>",req.file?req.file:null);
+    console.log("data=>>",req.body?req.body:null);
     if(true){
            // let resp = await addBranch.find({}).then((res)=>res)
             let resp =  await addBranch.updateOne( 
@@ -144,11 +147,11 @@ const addBranchUpdateApi = async(req,res) =>{
                     }
                 }, 
                 { upsert: true }
-              ).then((res)=>res)
+              ).then((res1)=>res1)
                   
                     status=true
-                    console.log("update=>>",resp);
-                
+                    result={success:true,message:" branch create  successfully",status:200}
+                res.json(result)
         }
         else{
          result= {success:false,message:" pls insert Data",status:200}
@@ -159,6 +162,11 @@ const addBranchUpdateApi = async(req,res) =>{
         else{
             result={success:false,message:" branch head not create",status:200}  
         }
+
+        
+    } catch (error) {
+    next(error)   
+    }
         
     res.json(result)     
 }
