@@ -9,6 +9,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 global.__basedir = __dirname + "/..";
@@ -23,14 +24,14 @@ const port = 4000
 /* const options = {key:"",cert:""};
 https.createServer(options, app) */
 
-app.use(express.static('public'));
+app.use(express.static(__dirname+'/public'));
 const Student = require("./models/Student"); 
 const addBranch = require('./models/addBranch');
 
 app.listen(port, () => console.log(`The server is listening on port ${port}`))
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, 'uploads/')
+        cb(null, 'public/uploads/')
     },
     filename: function (req, file, cb) {
         cb(null, file.fieldname + "-" + Date.now() + ".jpg");
@@ -47,7 +48,6 @@ app.post('/upload', upload.single('file'), async(req, res) => {
     affiliated,medium, phone, password,username, mobile,contactperson,Address,
     registerno, established, website}=JSON.parse(req?.body?.params) 
 
-    console.log(req.body.params);
  await addBranch.updateOne( 
         {$or:[{ branchId:branchId}]}, 
         {
