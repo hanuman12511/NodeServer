@@ -26,51 +26,39 @@ https.createServer(options, app) */
 app.use(express.static('public'));
 const Student = require("./models/Student"); 
 const addBranch = require('./models/addBranch');
-app.use('/images', express.static(path.join(__dirname, 'images')));
-app.use('/uploads', express.static(path.join(__dirname, 'images')));
-
 
 app.listen(port, () => console.log(`The server is listening on port ${port}`))
-
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, 'uploads/')
     },
- /*    filename: function(req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-        cb(null, uniqueSuffix+file.originalname)
-    }, */
     filename: function (req, file, cb) {
         cb(null, file.fieldname + "-" + Date.now() + ".jpg");
     },
 })
 const upload = multer({ storage: storage })
-
-
 app.post('/upload', upload.single('file'), async(req, res) => {
 
-    console.log(req.body);
+ /*  console.log(req.body);
     console.log(req.file);
     console.log(req);
-    console.log(req.url);
+    console.log(req.url); */
    const{name, groupName, branchId,  groupId,institutename,affiliation,
     affiliated,medium, phone, password,username, mobile,contactperson,Address,
     registerno, established, website}=JSON.parse(req?.body?.params) 
 
+    console.log(req.body.params);
  await addBranch.updateOne( 
-        {$or:[{ branchId:branchId}, { groupId:groupId  }]}, 
+        {$or:[{ branchId:branchId}]}, 
         {
           $set: 
-                    {
-               
-                groupName:groupName,
-               
+            {   groupName:groupName,
+                branchname:name,
                 institutename:institutename,
                 affiliation:affiliation,
                 affiliated:affiliated,
                 medium:medium,
                 phone:phone,
-                branchname:name,
                 password:password,
                 username:username,
                 mobile:mobile,
@@ -91,7 +79,5 @@ app.post('/upload', upload.single('file'), async(req, res) => {
         } catch (error) {
             res.status(500).json({ error: error })
         }
-      }) 
-
-   
+      })  
 })

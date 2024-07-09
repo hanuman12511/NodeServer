@@ -221,6 +221,27 @@ const displayStudentsClassBy= async(req,res,next)=>{
 
 
 
+const getDataStudentsApi= async(req,res,next)=>{
+   
+
+    let resp = await Student.find({branchId:req.body.branchId}).then((res)=>res)
+   
+    if(resp.length>0){
+        result={success:true,message:"  get successfully",status:200,data:resp}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:resp}  
+    }
+    
+
+
+    res.json( result)
+}
+
+
+
+
+
 
 const studentAttendance= async(req,res,next)=>{
 
@@ -489,5 +510,6 @@ module.exports={
     uploadExcelFile,
     downloadApi,
     addStudentsFeeApi,
-    getStudentByBranchFeeApi
+    getStudentByBranchFeeApi,
+    getDataStudentsApi
 }

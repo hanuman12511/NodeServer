@@ -6,7 +6,8 @@ var employeeSchema= new mongoose.Schema({
     groupid:String,
     feefrequencyId:Number,
     FeeFrequency:String,
-    Display:String
+    Display:String,
+    branchControl:Boolean ,
 });
 
 //Exporting Employee Schema

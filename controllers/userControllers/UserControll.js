@@ -58,13 +58,24 @@ const userLogin= async(req,res,next)=>{
 
     let resultdata=[]
     let logdata = req.body
-    console.log(logdata);
     let len = Object.keys(req.body).length
     if(len){
         if(true ){
          
             let user = await addBranch.findOne({$or: [{email:req.body.mobile},{mobile:req.body.mobile}]}).then((user)=> {return user})
-            console.log(user);    
+            let resp=await addBranch.find({}).then((user)=>user)
+           
+
+            let dataprofile = resp.filter(data=>{
+                if (user.groupId===data.groupId && data.groupStatus!==""){
+                    let  name1=data.groupName
+                    return name1
+                }
+            })
+console.log("user filena=>>",dataprofile[0].groupName);
+user["groupName"] = dataprofile[0].groupName
+console.log("userdata=>>",user);
+
             if(user){
                     resultdata.push({success:true,message:"login data get successfully",data:user,"length":1})
                 }

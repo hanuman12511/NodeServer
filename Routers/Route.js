@@ -14,6 +14,7 @@ router.post("/registeruser", UserControll.userRegister )
 
 //students
 
+router.post("/getDataStudentsApi", studentsController.getDataStudentsApi)
 router.post("/getStudentByBranchFeeApi", studentsController.getStudentByBranchFeeApi)
 router.post("/studentLogin", studentsController.studentLogin)
 router.post("/StudentsApi", studentsController.studentsApi )
@@ -28,6 +29,11 @@ router.get("/downloadApi", studentsController.downloadApi )
  */
 
 // master
+router.post("/feefrequencyControlApi", MasterController.feefrequencyControlApi)
+router.post("/sectionControlApi", MasterController.sectionControlApi)
+router.post("/sectionUpdateApi", MasterController.sectionUpdateApi)
+router.post("/classControlApi", MasterController.classControlApi)
+router.post("/classUpdateApi", MasterController.classUpdateApi)
 router.post("/getBranchControlApi", MasterController.getBranchControlApi)
 router.post("/addBranchUpdateApi", MasterController.addBranchUpdateApi)
 router.post("/addBranchApi", MasterController.addBranchApi)
@@ -38,7 +44,9 @@ router.post("/getSessionByBranchIdApi", MasterController.getSessionByBranchIdApi
 router.post("/feeheadApi", MasterController.feeHeadApi)
 router.post("/getfeeHeadApi", MasterController.getfeeHeadsApi)
 router.post("/getAllfeeHeadApi", MasterController.getAllfeeHeadsApi)
+router.post("/sessionControlApi", MasterController.sessionControlApi)
 router.post("/sessionApi", MasterController.sessionApi)
+router.post("/sessionUpdateApi", MasterController.sessionUpdateApi)
 router.get("/getSessionApi", MasterController.getSessionApi)
 router.post("/classApi", MasterController.classApi)
 router.post("/getClassApi", MasterController.getClassApi)

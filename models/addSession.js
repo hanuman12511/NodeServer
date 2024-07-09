@@ -7,6 +7,7 @@ var employeeSchema= new mongoose.Schema({
     StartMonth:String,
     branchid:String,
     groupid:String,
+    branchControl:Boolean ,
            
 });
 

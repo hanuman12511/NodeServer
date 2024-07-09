@@ -30,7 +30,7 @@ const addBranchApi = async(req,res) =>{
                 })
                  id++  
                      const res = new addBranch({
-                    groupName:req.body.groupName,
+                    groupName:req.body.groupName?req.body.groupName:"",
                     groupStatus:req.body.groupStatus?req.body.groupStatus:"",
                     branchId:id,
                     adminemail:req.body.adminemail,
@@ -338,9 +338,14 @@ res.json(result)
 const sessionApi = async(req,res,next)=>{
     let result=""
     let status= false
-  
-    if(req.body.SessionName!=="" && req.body.StartMonth!==""){
+  console.log(req.body);
+    if(req.body.session!=="" && req.body.month!==""){
+        
+        let resp1= await SessionHeads.find({SessionName:req.body.session}).then((res)=>res)
+ 
+        if(Object.keys(resp1).length==0){
             let resp = await SessionHeads.find({}).then((res)=>res)
+           
             if(resp.length>0){
                 let id = 0
                 resp.map(d=>{
@@ -354,6 +359,7 @@ const sessionApi = async(req,res,next)=>{
                         StartMonth:req.body.month,
                         branchid:req.body.branchid,
                         groupid:req.body.groupid,
+                        branchControl:true,
                       
                     });
                 res.save();
@@ -366,6 +372,7 @@ const sessionApi = async(req,res,next)=>{
                         StartMonth:req.body.month,
                         branchid:req.body.branchid,
                         groupid:req.body.groupid,
+                        branchControl:true,
                     });
                 res.save();
                 
@@ -379,8 +386,11 @@ const sessionApi = async(req,res,next)=>{
             result={success:true,message:"  session head create  successfully",status:200}
         }
         else{
-            result={success:false,message:"  session head not create",status:200}  
+            result={success:false,message:"  session head already exists ",status:200}  
         }
+    }else{
+        result={success:false,message:"pls change session name",status:200}  
+    }
         
     res.json(result)
 }
@@ -400,6 +410,93 @@ const getSessionApi = async(req,res,next)=>{
     res.json(result)
 }
 
+const sessionUpdateApi = async(req,res,next)=>{
+    let result=""
+    let status= false
+   
+    console.log("data=>>",req.body);
+    let resp1= await SessionHeads.find({SessionName:req.body.session}).then((res)=>res)
+    console.log(Object.keys(resp1).length);
+    if(Object.keys(resp1).length==0){
+    
+          
+           await SessionHeads.updateOne( 
+                { branchid:req.body. branchId, sessionId:req.body.sessionId,groupid:req.body.groupid}, 
+                {
+                  $set: 
+                     {
+                       
+                        SessionName:req.body.session,
+                        StartMonth:req.body.month
+                       }
+                }, 
+                { upsert: true }
+              ).then((res)=>res).then((data)=>{
+                console.log(data);
+                status=true
+                if(status){
+                    result={success:true,message:" session update successfully",status:200}
+                }
+                else{
+                    result={success:false,message:" session update not ",status:200}  
+                }
+              })
+                   
+         }
+        else{
+         result= {success:false,message:" pls change Data",status:200}
+        }
+        
+        
+    res.json(result)  
+}
+
+
+
+
+
+
+
+const sessionControlApi = async(req,res,next)=>{
+
+    let result=""
+    let status= false
+    if(true){
+          
+             await SessionHeads.updateOne( 
+                {  sessionId:req.body. sessionId}, 
+                {
+                  $set: 
+                            {
+                       
+                                branchControl:req.body.branchControl,
+                       
+                    }
+                }, 
+                { upsert: true }
+              ).then((res)=>res)
+                  console.log(res);
+                    status=true
+        
+                
+        }
+        else{
+         result= {success:false,message:" pls insert Data",status:200}
+        }
+        if(status){
+            result={success:true,message:" session  control update successfully",status:200}
+        }
+        else{
+            result={success:false,message:" session control update not ",status:200}  
+        }
+        
+    res.json(result)  
+}
+
+
+
+
+
 
 const getSessionByBranchIdApi = async(req,res,next)=>{
    
@@ -418,7 +515,11 @@ res.json(result)
 const classApi = async(req,res,next)=>{
     let result=""
     let status= false
-  console.log(req.body);
+    console.log("data=>>",req.body);
+    let resp1= await Class.find({Class:req.body.ClassName}).then((res)=>res)
+    console.log(Object.keys(resp1).length);
+    if(Object.keys(resp1).length==0){
+
     if(req.body.ClassName!==""){
             let resp = await Class.find({}).then((res)=>res)
             if(resp.length>0){
@@ -433,6 +534,7 @@ const classApi = async(req,res,next)=>{
                         branchid:req.body.branchid,
                         groupid:req.body.branchid,
                         Class:req.body.ClassName,
+                        branchControl:true
                         });
                 res.save();
                 status=true
@@ -444,6 +546,7 @@ const classApi = async(req,res,next)=>{
                         branchid:req.body.branchId,
                         groupid:req.body.branchId,
                         Class:req.body.ClassName,
+                        branchControl:true
                         
                     });
                 res.save();
@@ -454,15 +557,107 @@ const classApi = async(req,res,next)=>{
         else{
          result= {success:false,message:" pls insert Data",status:200}
         }
+
+    }else{
+        result= {success:false,message:" pls change class name ",status:200}  
+    }
         if(status){
-            result={success:true,message:"  class head create  successfully",status:200}
+            result={success:true,message:"  class create  successfully",status:200}
         }
         else{
-            result={success:false,message:"  class head not create",status:200}  
+            result={success:false,message:"  class not create",status:200}  
         }
         
     res.json(result)
 }
+
+
+
+const classUpdateApi = async(req,res,next)=>{
+    let result=""
+    let status= false
+   
+    console.log("data=>>",req.body);
+    let resp1= await Class.find({Class:req.body.Class}).then((res)=>res)
+    console.log(Object.keys(resp1).length);
+    if(Object.keys(resp1).length==0){
+    
+          
+           await Class.updateOne( 
+                { branchid:req.body.branchId,groupid:req.body.groupid,classId:req.body.classId}, 
+                {
+                  $set: 
+                     {
+                       
+                        Class:req.body.Class,
+                       
+                       }
+                }, 
+                { upsert: true }
+              ).then((res)=>res).then((data)=>{
+                console.log(data);
+                status=true
+                if(status){
+                    result={success:true,message:" class update successfully",status:200}
+                }
+                else{
+                    result={success:false,message:" class update not ",status:200}  
+                }
+              })
+                   
+         }
+        else{
+         result= {success:false,message:" pls change Data",status:200}
+        }
+        
+        
+    res.json(result)  
+}
+
+
+
+
+const classControlApi = async(req,res,next)=>{
+
+    let result=""
+    let status= false
+    if(true){
+          
+             await Class.updateOne( 
+                {  classId:req.body.classId}, 
+                {
+                  $set: 
+                            {
+                       
+                                branchControl:req.body.branchControl,
+                       
+                    }
+                }, 
+                { upsert: true }
+              ).then((res)=>res)
+                  console.log(res);
+                    status=true
+        
+                
+        }
+        else{
+         result= {success:false,message:" pls insert Data",status:200}
+        }
+        if(status){
+            result={success:true,message:" class  control update successfully",status:200}
+        }
+        else{
+            result={success:false,message:" class control update not ",status:200}  
+        }
+        
+    res.json(result)  
+}
+
+
+
+
+
+
 
 const getClassApi = async(req,res,next)=>{
    console.log(req.body);
@@ -514,10 +709,13 @@ res.json(result)
 const SectionApi = async(req,res,next)=>{
     let result=""
     let status= false
-  
-    if(req.body.CLassName!==""){
-            let resp = await addSection.find({}).then((res)=>res)
-            if(resp.length>0){
+    if(req.body.Sectionname!==""){
+        console.log(req.body);
+        let resp1= await addSection.find({ SectionName:req.body.SectionName}).then((res)=>res)
+       console.log(resp1);
+        if(Object.keys(resp1).length==0){
+             let resp = await addSection.find({}).then((res)=>res)
+             if(resp.length>0){
                 let id = 0
                 resp.map(d=>{
                     id=d.sectionId
@@ -527,7 +725,8 @@ const SectionApi = async(req,res,next)=>{
                         branchid:req.body.branchid,
                         groupid:req.body.branchid,
                         sectionId:id,
-                        SectionName:req.body.SectionName
+                        SectionName:req.body.SectionName,
+                        branchControl:true
                     });
                 res.save();
                 status=true
@@ -537,7 +736,8 @@ const SectionApi = async(req,res,next)=>{
                         branchid:req.body.branchid,
                         groupid:req.body.branchid,
                         sectionId:1,
-                        SectionName:req.body.SectionName
+                        SectionName:req.body.SectionName,
+                        branchControl:true
                     });
                 res.save();
                 
@@ -551,18 +751,111 @@ const SectionApi = async(req,res,next)=>{
             result={success:true,message:"  create  successfully",status:200}
         }
         else{
-            result={success:false,message:"  not create",status:200}  
+            result={success:false,message:"  section already exists",status:200}  
         }
+    }else{
+        result={success:false,message:" pls fill data",status:200}  
+    }
         
     res.json(result)
 }
 
 
+
+const sectionUpdateApi = async(req,res,next)=>{
+    let result=""
+    let status= false
+   
+    console.log("data=>>",req.body);
+    let resp1= await addSection.find({ SectionName:req.body.Sectionname}).then((res)=>res)
+    console.log(Object.keys(resp1).length);
+    if(Object.keys(resp1).length==0){
+    
+          
+           await addSection.updateOne( 
+                { branchid:req.body.branchId,groupid:req.body.groupid,sectionId:req.body.sectionId}, 
+                {
+                  $set: 
+                     {
+                       
+                        SectionName:req.body.Sectionname,
+                       
+                       }
+                }, 
+                { upsert: true }
+              ).then((res)=>res).then((data)=>{
+                console.log(data);
+                status=true
+                if(status){
+                    result={success:true,message:" section update successfully",status:200}
+                }
+                else{
+                    result={success:false,message:" section update not ",status:200}  
+                }
+              })
+                   
+         }
+        else{
+         result= {success:false,message:" pls change Data",status:200}
+        }
+        
+        
+    res.json(result)  
+}
+
+
+
+
+const sectionControlApi = async(req,res,next)=>{
+
+    let result=""
+    let status= false
+    if(true){
+          
+             await addSection.updateOne( 
+                { sectionId:req.body.sectionId}, 
+                {
+                  $set: 
+                            {
+                       
+                                branchControl:req.body.branchControl,
+                       
+                    }
+                }, 
+                { upsert: true }
+              ).then((res)=>res)
+                  console.log(res);
+                    status=true
+        
+                
+        }
+        else{
+         result= {success:false,message:" pls insert Data",status:200}
+        }
+        if(status){
+            result={success:true,message:" class  control update successfully",status:200}
+        }
+        else{
+            result={success:false,message:" sectioncontrol update not ",status:200}  
+        }
+        
+    res.json(result)  
+}
+
+
+
+
+
+
 const FeeFrequencyApi = async(req,res,next)=>{
     let result=""
     let status= false
-  
-    if(req.body.CLassName!==""){
+    if(req.body.feefrequency!==""){
+        console.log(req.body);
+        let resp1= await  FeeFrequency.find({ FeeFrequency:req.body.feefrequency}).then((res)=>res)
+        console.log("=>",resp1);
+        if(Object.keys(resp1).length==0){
+   
             let resp = await FeeFrequency.find({}).then((res)=>res)
             if(resp.length>0){
                 let id = 0
@@ -575,7 +868,8 @@ const FeeFrequencyApi = async(req,res,next)=>{
                         groupid:req.body.groupid,
                         feefrequencyId:id,
                         FeeFrequency:req.body.feefrequency,
-                        Display:req.body.Display
+                        Display:req.body.Display,
+                        branchControl:true
                     });
                 res.save();
                 status=true
@@ -586,7 +880,8 @@ const FeeFrequencyApi = async(req,res,next)=>{
                         groupid:req.body.groupId,
                         feefrequencyId:1,
                         FeeFrequency:req.body.FeeFrequency,
-                        Display:req.body.Display
+                        Display:req.body.Display,
+                        branchControl:true
                     });
                 res.save();
                 
@@ -602,9 +897,95 @@ const FeeFrequencyApi = async(req,res,next)=>{
         else{
             result={success:false,message:"  not create",status:200}  
         }
+    }else{
+
+    }
         
     res.json(result)
 }
+
+
+
+const feefrequencyUpdateApi = async(req,res,next)=>{
+    let result=""
+    let status= false
+   
+    console.log("data=>>",req.body);
+    let resp1= await FeeFrequency.find({ FeeFrequency:req.body.FeeFrequency}).then((res)=>res)
+    console.log(Object.keys(resp1).length);
+    if(Object.keys(resp1).length==0){
+         await FeeFrequency.updateOne( 
+                { branchid:req.body.branchId,groupid:req.body.groupid, feefrequencyId:req.body. feefrequencyId}, 
+                {
+                  $set: 
+                     {
+                       
+                        FeeFrequency:req.body. FeeFrequency,
+                       
+                       }
+                }, 
+                { upsert: true }
+              ).then((res)=>res).then((data)=>{
+                console.log(data);
+                status=true
+                if(status){
+                    result={success:true,message:" section update successfully",status:200}
+                }
+                else{
+                    result={success:false,message:" section update not ",status:200}  
+                }
+              })
+                   
+         }
+        else{
+         result= {success:false,message:" pls change Data",status:200}
+        }
+        
+        
+    res.json(result)  
+}
+
+
+
+
+const feefrequencyControlApi = async(req,res,next)=>{
+
+    let result=""
+    let status= false
+    if(true){
+          
+             await FeeFrequency.updateOne( 
+                { feefrequencyId:req.body.feefrequencyId}, 
+                {
+                  $set: 
+                            {
+                       
+                                branchControl:req.body.branchControl,
+                       
+                    }
+                }, 
+                { upsert: true }
+              ).then((res)=>res)
+                  console.log(res);
+                    status=true
+        
+                
+        }
+        else{
+         result= {success:false,message:" pls insert Data",status:200}
+        }
+        if(status){
+            result={success:true,message:" class  control update successfully",status:200}
+        }
+        else{
+            result={success:false,message:" sectioncontrol update not ",status:200}  
+        }
+        
+    res.json(result)  
+}
+
+
+
 
 const getFeeFrequencyApi = async(req,res,next)=>{
    
@@ -642,59 +1023,71 @@ res.json(result)
 const ClassDetailApi = async(req,res,next)=>{
     let result=""
     let status= false
-  console.log("class details=>>",req.body);
+   
     if(req.body.Class!==""){
-            let resp = await ClassDetails.find({}).then((res)=>res)
-            if(resp.length>0){
-                let id = 0
-                resp.map(d=>{
-                    id=d.classDetailId
-                })
-                 id++  
-                    const res = new ClassDetails({
-                        sessionId:req.body.sessionId,
-                        branchid:req.body.branchId,
-                        groupid:req.body.groupId,
-                        classDetailId:id,
-                        ClassId:req.body.Class,
-                        SectionId:req.body.Section,
-                        SubjectId:req.body.Subject,
-                        TeacherId:req.body.Teacher,
-                        RoomNo:req.body.RoomNo,
-                        feeDetails:req.body.feeDetails
-                    });
-                res.save();
-                status=true
-                }
-                else{
-                    const res = new ClassDetails({
-                        sessionId:req.body.sessionId,
-                        branchid:req.body.branchId,
-                        groupid:req.body.groupId,
-                        classDetailId:1,
-                        ClassId:req.body.Class,
-                        SectionId:req.body.Section,
-                        SubjectId:req.body.Subject,
-                        TeacherId:req.body.Teacher,
-                        RoomNo:req.body.RoomNo,
-                        feeDetails:req.body.feeDetails
-                    });
+    
+        await ClassDetails.find({ClassId:req.body.Class}).then((res)=>res).then(async(data)=>{
 
-
-                res.save();
-                
+            if(Object.keys(data).length>0){
+                console.log("class deatisl; present");
+              result={success:true,message:"class Details exist",status:200}
+            }
+            else{
+              
+                let resp = await ClassDetails.find({}).then((res)=>res)
+                if(resp.length>0){
+                    let id = 0
+                    resp.map(d=>{
+                        id=d.classDetailId
+                    })
+                     id++  
+                        const res = new ClassDetails({
+                            sessionId:req.body.sessionId,
+                            branchid:req.body.branchId,
+                            groupid:req.body.groupId,
+                            classDetailId:id,
+                            ClassId:req.body.Class,
+                            SectionId:req.body.Section,
+                            SubjectId:req.body.Subject,
+                            TeacherId:req.body.Teacher,
+                            RoomNo:req.body.RoomNo,
+                            feeDetails:req.body.feeDetails
+                        });
+                    res.save();
+                    
                     status=true
-                }
+                    }
+                    else{
+                        const res = new ClassDetails({
+                            sessionId:req.body.sessionId,
+                            branchid:req.body.branchId,
+                            groupid:req.body.groupId,
+                            classDetailId:1,
+                            ClassId:req.body.Class,
+                            SectionId:req.body.Section,
+                            SubjectId:req.body.Subject,
+                            TeacherId:req.body.Teacher,
+                            RoomNo:req.body.RoomNo,
+                            feeDetails:req.body.feeDetails
+                        });
+    
+    
+                    res.save();
+                   
+                        status=true
+                    }
+
+            }
+        })
+           
         }
         else{
          result= {success:false,message:" pls insert Data",status:200}
         }
         if(status){
-            result={success:true,message:"  create  successfully",status:200}
+            result={success:true,message:" create  successfully",status:200}
         }
-        else{
-            result={success:false,message:"  not create",status:200}  
-        }
+       
         
     res.json(result)
 }
@@ -708,12 +1101,9 @@ const getClassDetailApi = async(req,res,next)=>{
     let employee = await AddEmployee.find().then((res)=>res)
     let class1 = await Class.find().then((res)=>res)
     let section1 = await addSections.find().then((res)=>res)
-    
-    console.log(section1);
      resp.map(async(d)=>{
        employee.map(dd=>{
-           
-           if(d.TeacherId==dd.employeeId){
+            if(d.TeacherId==dd.employeeId){
                 classinfo.push({...d._doc,employeename:dd.employeeName})
            }
        })
@@ -728,10 +1118,7 @@ let dataclass=[]
 
     })
   })
-
-
-
-  let sec1 =[]
+ let sec1 =[]
   dataclass.map(d=>{
     section1.map(s=>{
         if(s.sectionId==d.SectionId){
@@ -739,9 +1126,7 @@ let dataclass=[]
         }
     })
   })
- 
-
-    result={success:true,message:" get successfully",status:200,data:sec1}
+     result={success:true,message:" get successfully",status:200,data:sec1}
 }
 else{
     result={success:false,message:" not  get",status:200,data:resp}  
@@ -763,10 +1148,7 @@ const getClassDetailApiByclass= async(req,res,next)=>{
     else{
         result={success:false,message:"   not  get",status:200,data:resp}  
     }
-    
-
-
-    res.json( result)
+     res.json( result)
 }
 
 const subjectHeadApi=async(req,res)=>{
@@ -981,14 +1363,27 @@ const getAllsubjecttoHeadApi=async(req,res)=>{
 const getsubjecttoHeadApi=async(req,res)=>{
     console.log(req.body);
     let resp = await SubjectToHead.find({branchId:req.body.branchid}).then((res)=>res)
+    let resp1 = await SubjectHead.find({branchId:req.body.branchid}).then((res)=>res)
+    console.log(resp);
+    console.log(resp1);
+let data = []
+    resp.map(d1=>{
+        resp1.filter(d=>{
+            if(d1.SubjectHead==d.subjectHeadId){
+               data.push({...d1,"SubjectHeadName":d.SubjectHead})
+            }
+        })
+    })
+
+
+   console.log("data api = >>",data); 
     if(resp.length>0){
-        result={success:true,message:"  get successfully",status:200,data:resp}
+        result={success:true,message:"  get successfully",status:200,data:data}
     }
     else{
-        result={success:false,message:"   not  get",status:200,data:resp}  
+        result={success:false,message:"   not  get",status:200,data:data  }
     }
 
-    console.log(resp);
     res.json( result)
 }
 
@@ -1000,6 +1395,7 @@ module.exports={
     getAllfeeHeadsApi,
     sessionApi,
     getSessionApi,
+    sessionControlApi,
     classApi,
     getClassApi,
     getSectionApi,
@@ -1026,5 +1422,12 @@ getFeeFrequencyApi,
 getAllFeeFrequencyApi,
 addBranchUpdateApi,
 getBranchOneApi,
-getBranchControlApi
+getBranchControlApi,
+sessionUpdateApi,
+classUpdateApi,
+classControlApi,
+sectionUpdateApi,
+sectionControlApi,
+feefrequencyUpdateApi,
+feefrequencyControlApi
 }
