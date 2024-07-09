@@ -196,9 +196,6 @@ else{
 res.json(result)
 }
 
-
-
-
 const getBranchControlApi = async(req,res,next)=>{
 
     let result=""
