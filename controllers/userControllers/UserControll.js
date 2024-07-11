@@ -1,4 +1,5 @@
 
+const LoginApp = require("../../models/LoginApp");
 const userData = require("../../models/User");   
 const addBranch = require("../../models/addBranch");
 
@@ -8,6 +9,102 @@ const Test=(req,res,next)=>{
     res.json("data show get")
 
 }
+const loginAppApi= async(req,res,next)=>{
+    let result=""
+                let status= false
+                if(req.body.mobile!==""){
+                   await LoginApp.find({ mobile:req.body.mobile}).then(async(res)=>{
+                       if(res.length==0){
+                            let resp = await LoginApp.find({}).then((res)=>res)
+                            if(resp.length>0){
+                                let id = 0
+                                resp.map(d=>{
+                                    id=d.loginId
+                                })
+                                 id++  
+                                    const res = new LoginApp({
+                                        
+                                        loginId:id,
+                                        employeeId:req.body.employeeid,
+                                        groupId:req.body.groupId,
+                                        branchId:req.body.branchId,
+                                        mobile:req.body.mobile,
+                                        email:req.body.email,
+                                        password:req.body.passord,
+                                        otp:1111,
+                                        status:req.body.status
+                                        
+                                    });
+                                res.save();
+                              
+                                if(Object.keys(res).length>0){
+                                    result={success:true,message:"  create  successfully",status:200}
+                                }
+                                else{
+                                    result={success:false,message:"not create",status:200}  
+                                }
+                                }
+                                else{
+                                    const res = new LoginApp({
+                                        
+                                        loginId:1,
+                                        employeeId:req.body.employeeid,
+                                        groupId:req.body.groupId,
+                                        branchId:req.body.branchId,
+                                        mobile:req.body.mobile,
+                                        email:req.body.email,
+                                        password:req.body.passord,
+                                        otp:1111,
+                                        status:req.body.status
+                                        
+                                    });
+                                res.save();
+                               
+                                if(Object.keys(res).length>0){
+                                    result={success:true,message:"  create  successfully",status:200}
+                                }
+                                else{
+                                    result={success:false,message:"not create",status:200}  
+                                }
+                            }
+                        }
+                        else{
+                            result={success:false,message:"loginid already exits",status:200}
+                        }
+                })
+                        
+                    }
+                    else{
+                     result= {success:false,message:" pls insert Data",status:200}
+                    }
+                 
+        res.json( result)
+    }
+    
+
+const getloginAppApi= async(req,res,next)=>{
+    let result=""
+                let status= false
+                if(req.body.mobile!==""){
+                   await LoginApp.find({ mobile:req.body.mobile}).then(async(res)=>{
+                       if(res.length==0){
+                            
+                              
+                                    result={success:false,message:" user Not Register",status:200}
+                                }
+                                else{
+                                    result={success:true,message:"user login successfully",status:200}  
+                                }
+                          })
+                        
+                 }
+      else{
+         result= {success:false,message:" pls insert Data",status:200}
+      }
+               
+        res.json( result)
+    }
+    
 
 const userRegister= async(req,res,next)=>{
     let resultdata=[]
@@ -95,4 +192,10 @@ console.log("userdata=>>",user);
 }
 
 
-module.exports={userLogin,userRegister,Test}
+module.exports={
+    userLogin,
+    userRegister,
+    Test,
+    loginAppApi,
+    getloginAppApi
+}

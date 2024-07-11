@@ -15,6 +15,38 @@ const multer = require('multer')
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+
+
+
+const LoginData=async(data,employeeid)=>{
+    console.log("branch login employeeid=>>",employeeid);
+    console.log("dbranch login data=>>",data);
+    let params={
+     
+        employeeId:employeeid,
+        groupId:data.groupId,
+        branchId:data.branchId,
+        mobile:data.mobile,
+        email:data.email,
+        password:data.passord?data.passord:"",
+        otp:1111,
+        status:"admin"
+    }
+
+    let info ={};
+    info.method = 'POST';
+    info.headers= {
+        'Content-Type': 'application/json',
+      }
+    info.body=JSON.stringify(params)
+    let url= "http://localhost:4000/loginAppApi"
+await fetch(url,info)
+.then(response => response.json())
+.then(data => {
+console.log("data loging after ",data);
+})
+
+}
 const addBranchApi = async(req,res) =>{
     let result=""
     let status= false
@@ -24,6 +56,7 @@ const addBranchApi = async(req,res) =>{
                 let resp1 = await addBranch.find({mobile:req.body.mobile}).then((res)=>res)
                 console.log(resp1);
                 if(resp1.length==0){
+                   
                 let id = 0
                 resp.map(d=>{
                     id=d.branchId
@@ -57,6 +90,7 @@ const addBranchApi = async(req,res) =>{
                      });
                 res.save();
                 status=true
+                LoginData(req.body,id)
                 }
                 else{
                     result={success:false,message:" pls change mobile number",status:200}   
@@ -95,6 +129,7 @@ const addBranchApi = async(req,res) =>{
                     res.save();
                 
                     status=true
+                    LoginData(req.body,1)
                 }
         }
         else{
