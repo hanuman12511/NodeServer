@@ -1,3 +1,4 @@
+const Class = require("../../models/Class");
 const ClassDetails = require("../../models/ClassDetails");
 const Student = require("../../models/Student") 
 const StudentFee = require("../../models/StudentFee") 
@@ -385,11 +386,25 @@ const studentsApi = async(req,res,next)=>{
 
 const  getStudentsApi = async(req,res,next)=>{
 
-   
-    let resp = await Student.find({ branchId:req.body.branchId}).then((res)=>res)
-   
+   let studata=[]
+let resp = await Student.find({ branchId:req.body.branchId,sessionName:req.body.sessionName}).then((res)=>res)
+ 
+   let classres = await Class.find({branchid:req.body.branchId}).then((res)=>res) 
+
+datar=resp.map(d=>{
+
+let classname=""
+classres.map(classdaat=>{
+       if(d.ClassSection==classdaat.classId){
+           classname=classdaat.Class
+       }
+})
+studata.push({...d._doc,className:classname})
+})
+console.log((studata));
+
 if(resp.length>0){
-    result={success:true,message:"  get successfully",status:200,data:resp}
+    result={success:true,message:"  get successfully",status:200,data:studata}
 }
 else{
     result={success:false,message:"   not  get",status:200,data:resp}  

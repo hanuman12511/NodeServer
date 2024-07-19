@@ -58,6 +58,7 @@ router.post("/getClassDetailApiByclass", MasterController.getClassDetailApiBycla
 router.post("/subjectHeadApi", MasterController.subjectHeadApi)
 router.get("/getAllsubjectHeadApi", MasterController.getAllsubjectHeadApi)
 router.post("/getsubjectHeadApi", MasterController.getsubjectHeadApi)
+router.post("/getsubjectheadtosubjectApi", MasterController.getsubjectheadtosubjectApi)
 router.post("/subjectApi", MasterController.subjectApi)
 router.post("/getsubjectApi", MasterController.getsubjectApi)
 router.get("/getAllsubjectApi", MasterController.getAllsubjectApi)
@@ -71,6 +72,5 @@ router.post("/getAllFeeFrequencyApi", MasterController.getAllFeeFrequencyApi)
 //teacher
 router.post("/getEmployeeApi", getEmployeeApi)
 router.post("/employeeApi",employeeApi)
-router.post("/getEmployeeByIdApi",getEmployeeByIdApi)
 
 module.exports=router

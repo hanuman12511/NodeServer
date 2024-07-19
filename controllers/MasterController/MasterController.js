@@ -547,7 +547,7 @@ const classApi = async(req,res,next)=>{
     let result=""
     let status= false
     console.log("data=>>",req.body);
-    let resp1= await Class.find({Class:req.body.ClassName}).then((res)=>res)
+    let resp1= await Class.find({Class:req.body.ClassName,branchid:req.body.branchid}).then((res)=>res)
     console.log(Object.keys(resp1).length);
     if(Object.keys(resp1).length==0){
 
@@ -1170,9 +1170,9 @@ res.json(result)
 
 const getClassDetailApiByclass= async(req,res,next)=>{
     let result=""
-
-    let resp = await ClassDetails.find({ClassId:req.body.Class}).then((res)=>res)
    
+    let resp = await ClassDetails.find({branchid:req.body.branchid,ClassId:req.body.classid}).then((res)=>res)
+   console.log("data head",resp);
     if(resp.length>0){
         result={success:true,message:"  get successfully",status:200,data:resp}
     }
@@ -1316,6 +1316,8 @@ const getsubjectApi=async(req,res)=>{
     res.json( result)
 }
 
+
+
 const getAllsubjectApi=async(req,res)=>{
     let resp = await Subjects.find({}).then((res)=>res)
     if(resp.length>0){
@@ -1382,6 +1384,17 @@ const subjecttoHeadApi=async(req,res)=>{
 }
 const getAllsubjecttoHeadApi=async(req,res)=>{
     let resp = await SubjectToHead.find({}).then((res)=>res)
+    if(resp.length>0){
+        result={success:true,message:"  get successfully",status:200,data:resp}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:resp}  
+    }
+    res.json( result)
+}
+const getsubjectheadtosubjectApi=async(req,res)=>{
+   
+    let resp = await SubjectToHead.find({ branchId:req.body.branchid, subjecttoHeadId:req.body.subjectheadid}).then((res)=>res)
     if(resp.length>0){
         result={success:true,message:"  get successfully",status:200,data:resp}
     }
@@ -1460,5 +1473,6 @@ classControlApi,
 sectionUpdateApi,
 sectionControlApi,
 feefrequencyUpdateApi,
-feefrequencyControlApi
+feefrequencyControlApi,
+getsubjectheadtosubjectApi
 }

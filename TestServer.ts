@@ -1,4 +1,5 @@
 
+
 const https = require('https');
 const fs = require('fs');
 const express = require("express")
@@ -36,20 +37,22 @@ const addBranch = require('./models/addBranch');
 app.listen(port, () => console.log(`The server is listening on port ${port}`))
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
+          console.log("store=>>",req);
         cb(null, 'public/uploads/')
     },
     filename: function (req, file, cb) {
+          console.log("filename=>>",req);
         cb(null, file.fieldname + "-" + Date.now() + ".jpg");
     },
 })
 const upload = multer({ storage: storage })
-app.post('/upload', upload.single('file'), async(req, res) => {
+app.post('/upload', upload.single('image'), async(req, res) => {
 
- /*  console.log(req.body);
-    console.log(req.file);
-    console.log(req);
-    console.log(req.url); */
-   const{name, groupName, branchId,  groupId,institutename,affiliation,
+ console.log("body",req.body);
+    console.log("file",req.body);
+    
+   
+ const{name, groupName, branchId,  groupId,institutename,affiliation,
     affiliated,medium, phone, password,username, mobile,contactperson,Address,
     registerno, established, website}=JSON.parse(req?.body?.params) 
 
@@ -72,7 +75,7 @@ app.post('/upload', upload.single('file'), async(req, res) => {
                 registerno:registerno,
                 established:established,
                 website:website,
-                logo:req.file.filename,
+                logo:req.body.file,
                
             }
         }, 
@@ -85,6 +88,9 @@ app.post('/upload', upload.single('file'), async(req, res) => {
             res.status(500).json({ error: error })
         }
       })  
+      
+      
+     
 })
 
 //excel data file uploade code

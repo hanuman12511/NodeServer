@@ -1,4 +1,5 @@
 
+
 const https = require('https');
 const fs = require('fs');
 const express = require("express")
@@ -7,11 +8,19 @@ const bodyParser = require('body-parser');
 const routes = require('./Routers/Route');
 const departmentRoutes = require('./Routers/DeparetmentRoute');
 const userAuthRoutes = require('./Routers/UserAuthRoute');
+const employeeRoutes = require('./Routers/EmployeeRouter');
+const studentRoutes = require('./Routers/studentRoute');
+const examRoutes = require('./Routers/ExamRoute');
 const app = express()
 app.use(cors())
 app.use(express.json())
 const path = require('path');
+app.set('uploads', path.join(__dirname, 'uploads'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname+'/public'));
+app.use("/uploads", express.static('uploads'))
+var publicDir = require('path').join(__dirname,'/public');
+app.use(express.static(publicDir));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 global.__basedir = __dirname + "/..";
@@ -21,35 +30,37 @@ const multer = require('multer')
 const csvtojson = require('csvtojson')
 const reader = require('xlsx') 
 connect.Connection("student")
+//connect.Connection("studentmgmt_smt")
 app.use('/', routes);
 app.use('/', departmentRoutes);
 app.use('/', userAuthRoutes);
+app.use('/', employeeRoutes);
+app.use('/', studentRoutes);
+app.use('/', examRoutes);
 const port = 4000
 /* const options = {key:"",cert:""};
 https.createServer(options, app) */
 
-app.use(express.static(__dirname+'/public'));
 const Student = require("./models/Student"); 
 const addBranch = require('./models/addBranch');
+const employeeRoute = require('./Routers/EmployeeRouter');
+const examRoute = require('./Routers/ExamRoute');
 
 
 app.listen(port, () => console.log(`The server is listening on port ${port}`))
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
+          console.log("store=>>",req);
         cb(null, 'public/uploads/')
     },
     filename: function (req, file, cb) {
+          console.log("filename=>>",req);
         cb(null, file.fieldname + "-" + Date.now() + ".jpg");
     },
 })
 const upload = multer({ storage: storage })
-app.post('/upload', upload.single('file'), async(req, res) => {
-
- /*  console.log(req.body);
-    console.log(req.file);
-    console.log(req);
-    console.log(req.url); */
-   const{name, groupName, branchId,  groupId,institutename,affiliation,
+app.post('/upload', upload.single('image'), async(req, resp) => {
+ const{name, groupName, branchId,  groupId,institutename,affiliation,
     affiliated,medium, phone, password,username, mobile,contactperson,Address,
     registerno, established, website}=JSON.parse(req?.body?.params) 
 
@@ -80,11 +91,14 @@ app.post('/upload', upload.single('file'), async(req, res) => {
       ).then((res)=>res).then(data=>{
         console.log("data=>",data);
         try {
-            res.status(200).json({ success: "file upload successful" })
+            resp.status(200).json({ success:true ,message:"upload successful",status:200 })
         } catch (error) {
-            res.status(500).json({ error: error })
+            resp.status(500).json({ error: error })
         }
       })  
+      
+  
+     
 })
 
 //excel data file uploade code
