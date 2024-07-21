@@ -1,4 +1,5 @@
 
+const AddEmployee = require("../../models/Employee/AddEmployee");
 const LoginApp = require("../../models/LoginApp");
 const userData = require("../../models/User");
 const addBranch = require("../../models/addBranch");
@@ -156,35 +157,23 @@ const userLogin = async (req, res, next) => {
     let resultdata = []
     let len = Object.keys(req.body).length
     if (len) {
+         let user = await addBranch.findOne({ $or: [{ email: req.body.mobile }, { mobile: req.body.mobile }] }).then((user) => user)
+         let user1 = await AddEmployee.findOne({ mobile: req.body.mobile }).then((user) => user)
         
-
-            let user = await addBranch.findOne({ $or: [{ email: req.body.mobile }, { mobile: req.body.mobile }] }).then((user) => user)
-            /* let resp = await addBranch.find({}).then((user) => user)
-
-            console.log(user);
-            console.log(resp);
-            let dataprofile = resp.filter(data => {
-                if (user.groupId === data.groupId && data.groupStatus !== "") {
-                    let name1 = data.groupName
-                    return name1
-                }
-            }) */
-            /* console.log("user filena=>>", dataprofile[0].groupName);
-            user["groupName"] = dataprofile[0].groupName
-            console.log("userdata=>>", user); */
-
-            if (user) {
-                resultdata.push({ success: true, message: "login data get successfully", data: user, "length": 1 })
+let data1= user==null?user1:user1==null?user:null
+console.log("data get=>>",data1);
+            if (data1) {
+                resultdata.push({ success: true, message: "login data get successfully", data: data1, "length": 1 })
             }
             else {
-                resultdata.push({ success: false, message: "user not login  successfully", data: user, "length": 1 })
-            }
+                resultdata.push({ success: false, message: "user not login  successfully", data: [], "length": 1 })
+            } 
        
     }
     else {
-        resultdata = { success: false, message: "login data not get", data: logdata, "length": 0 }
+        resultdata = { success: false, message: "login data not get", "length": 0 }
     }
-    //res.send(resultdata)
+    
     res.json(resultdata)
 }
 

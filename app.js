@@ -11,6 +11,8 @@ const userAuthRoutes = require('./Routers/UserAuthRoute');
 const employeeRoutes = require('./Routers/EmployeeRouter');
 const studentRoutes = require('./Routers/studentRoute');
 const examRoutes = require('./Routers/ExamRoute');
+const notificaltionRoutes = require('./Routers/NotificationRoute');
+const DashboardRoutes = require('./Routers/DashboardRoute');
 const app = express()
 app.use(cors())
 app.use(express.json())
@@ -29,22 +31,23 @@ const multer = require('multer')
 
 const csvtojson = require('csvtojson')
 const reader = require('xlsx') 
-connect.Connection("student")
-//connect.Connection("studentmgmt_smt")
+//connect.Connection("student")
+connect.Connection("studentmgmt_smt")
 app.use('/', routes);
 app.use('/', departmentRoutes);
 app.use('/', userAuthRoutes);
 app.use('/', employeeRoutes);
 app.use('/', studentRoutes);
 app.use('/', examRoutes);
+app.use('/', notificaltionRoutes);
+app.use('/', DashboardRoutes);
 const port = 4000
 /* const options = {key:"",cert:""};
 https.createServer(options, app) */
 
 const Student = require("./models/Student"); 
 const addBranch = require('./models/addBranch');
-const employeeRoute = require('./Routers/EmployeeRouter');
-const examRoute = require('./Routers/ExamRoute');
+
 
 
 app.listen(port, () => console.log(`The server is listening on port ${port}`))

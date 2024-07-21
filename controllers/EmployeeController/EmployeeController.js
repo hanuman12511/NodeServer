@@ -1,36 +1,6 @@
 const AddEmployee = require("../../models/Employee/AddEmployee")
 
 
-const LoginData=async(data,employeeid)=>{
-    console.log("dataemployee login employeeid=>>",employeeid);
-    console.log("dataemployee login data=>>",data);
-    let params={
-     
-        employeeId:employeeid,
-        groupId:data.groupId,
-        branchId:data.branchId,
-        mobile:data.mobile,
-        email:data.email,
-        password:data.passord?data.passord:"",
-        otp:1111,
-        status:"employee"
-    }
-
-    let info ={};
-    info.method = 'POST';
-    info.headers= {
-        'Content-Type': 'application/json',
-      }
-    info.body=JSON.stringify(params)
-    let url= "http://localhost:4000/loginAppApi"
-await fetch(url,info)
-.then(response => response.json())
-.then(data => {
-console.log("data loging after ",data);
-})
-
-}
-
 
 const employeeApi= async(req,res,next)=>{
     let result=""
@@ -41,7 +11,7 @@ const employeeApi= async(req,res,next)=>{
                 console.log("mobile=>",res.length);
                     if(res.length==0){
                         
-                        let resp = await  AddEmployee.find({}).then((res)=>res)
+                        let resp = await  AddEmployee.find({branchId:req.body.branchid}).then((res)=>res)
                         if(resp.length>0){
                            let id = 0
                             resp.map(d=>{
@@ -49,6 +19,8 @@ const employeeApi= async(req,res,next)=>{
                             })
                              id++  
                                 const res = new AddEmployee({
+                                  intime:req.body.intime,
+                                  outtime:req.body.outtime,
                                     branchId:req.body.branchid,
                                     groupId:req.body.groupid,
                                     sessionId:req.body.sessionid,
@@ -99,12 +71,14 @@ const employeeApi= async(req,res,next)=>{
                             res.save();
                             status=true
                             result={success:true,message:"  create  successfully",status:200}
-                            LoginData(req.body,id)
+                          
                          
                             }
                             else{
                                 const res = new AddEmployee({
 
+                                    intime:req.body.intime,
+                                    outtime:req.body.outtime,
                                     branchId:req.body.branchid,
                                     groupId:req.body.groupid,
                                     sessionId:req.body.sessionid,
@@ -154,7 +128,7 @@ const employeeApi= async(req,res,next)=>{
                             
                                 status=true
                                 result={success:true,message:"  create  successfully",status:200}
-                                LoginData(req.body,1)
+                              
                                
                             }
                         }else{
@@ -188,49 +162,61 @@ const employeeApi= async(req,res,next)=>{
 }
 
 
+
+
+
 const getemployeeUpdateApi = async(req,res,next)=>{
     let result=""
     let status= false
-     await AddEmployee.updateOne({ branchid:req.body.branchid, employeeId:req.body.employeeId,groupid:req.body.groupid,sessionId:req.body.sessionid}, 
+    console.log(req.body);
+     await AddEmployee.updateOne({  branchId:req.body.branchid,  employeeId:req.body.employeeId,groupId:req.body.groupid}, 
                 {
                   $set: 
                      {
-                        departmentName:req.body.departmentName,
-                        firstName:req.body.firstName,
-                        lastName:req.body.lastName,
-                         fatherName:req.body.fatherName,
-                        motherName:req.body.motherName,
-                        email:req.body.email,
-                       dob:req.body.dob,
-                         gender:req.body.gender,
-                        mobile:req.body.mobile,
-                         maritialstatus:req.body.maritialstatus,
-                         address:req.body.address,
-                       area:req.body.area,
-                        pin:req.body.pin,
-                        city:req.body.city,
-                        state:req.body.state,
-                         country:req.body.country,
-                         paddress:req.body.paddress,
-                       parea:req.body.parea,
-                         ppin:req.body.ppin,
-                        pcity:req.body.pcity,
-                        pstate:req.body.pstate,
-                         idproofdrop:req.body.idproofdrop,
-                    idproof:req.body.idproof,
-                    addressidproof:req.body.addressidproof,
-                    addressidproofdrop:req.body.addressidproofdrop,
-                    qualification:req.body.qualification,
-                    experience:req.body.experience,
-                    referece:req.body.referece,
-                    bankname:req.body.bankname,
-                    bankacno:req.body.bankacno,
-                    bankifsc:req.body.bankifsc,
-                    bankaddress:req.body.bankaddress,
-                    joindate:req.body.joindate,
-                    salary:req.body.salary,
-                    periods:req.body.periods,
-                    paidleave:req.body.paidleave,
+                     
+                      intime:req.body.intime,
+                      outtime:req.body.outtime,
+                      branchId:req.body.branchid,
+                      groupId:req.body.groupid,
+                      sessionId:req.body.sessionid,
+                    
+                      departmentName:req.body.department,
+                      firstName:req.body.firstname,
+                      lastName:req.body.lastname,
+                       fatherName:req.body.fathername,
+                      motherName:req.body.mothername,
+                      email:req.body.email,
+                     dob:req.body.dob,
+                       gender:req.body.gender,
+                      mobile:req.body.mobile,
+                       maritialstatus:req.body.maritialstatus,
+                       address:req.body.address,
+                     area:req.body.area,
+                      pin:req.body.pin,
+                      city:req.body.city,
+                      state:req.body.state,
+                       country:req.body.country,
+                       paddress:req.body.paddress,
+                     parea:req.body.parea,
+                       ppin:req.body.ppin,
+                      pcity:req.body.pcity,
+                      pstate:req.body.pstate,
+                     
+                       idproofdrop:req.body.idproofdrop,
+                  idproof:req.body.idproof,
+                  addressidproof:req.body.addressidproof,
+                  addressidproofdrop:req.body.addressidproofdrop,
+                  qualification:req.body.qualification,
+                  experience:req.body.experience,
+                  referece:req.body.referece,
+                  bankname:req.body.bankname,
+                  bankacno:req.body.bankacno,
+                  bankifsc:req.body.bankifsc,
+                  bankaddress:req.body.bankaddress,
+                  joindate:req.body.joindate,
+                  salary:req.body.salary,
+                  periods:req.body.periods,
+                  paidleave:req.body.paidleave,
                         }
                 }, 
                 { upsert: true }

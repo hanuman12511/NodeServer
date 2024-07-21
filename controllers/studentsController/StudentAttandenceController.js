@@ -4,9 +4,7 @@ const Student = require("../../models/Student")
 const studentAttandence = require("../../models/Students/studentAttendence")
 
 const attandenceApi= async(req,res,next)=>{
-
-  
-    let result=""
+ let result=""
             let status= false
                 if(req.body.date!==""){
                    await studentAttandence.find({ date:req.body.date,branchId:req.body.branchid}).then(async(res)=>{
@@ -15,6 +13,7 @@ const attandenceApi= async(req,res,next)=>{
                                   }
                                 else{
                                     const res = new studentAttandence({
+                                        AttendenceType:req.body.AttendenceType,
                                         branchId:req.body.branchid,
                                         date:req.body.date,
                                         data:req.body.data
@@ -67,7 +66,7 @@ const  getAttandenceBranchbyApi = async(req,res,next)=>{
         let data1=[]
         if(req.body.date==d.date){
           return  d.data.map(dd=>{
-                return {...dd}
+                return {...dd,...d._doc}
             })
             
 
@@ -94,7 +93,7 @@ datar=res1.map(d=>{
             classname=classdaat.Class
         }
  })
-    return{Class:classname,studentsId:d.studentsId,firstName:d.FirstName,lastName:d.LastName, fatherName:d.FName, isChecked: false, intime: "--:--", outtime: "--:--", isInTime: false, isOutTime: false,ontime:"08:00",offtime:"02:00"}
+    return{Class:classname,studentsId:d.studentsId,firstName:d.FirstName,lastName:d.LastName, fatherName:d.FName, isChecked: false, intime: "--:--", outtime: "--:--", isInTime: false, isOutTime: false,ontime:"08:00",offtime:"02:00",AttendenceType:"Manual"}
 })
 }
      if(resp.length>0){
@@ -106,48 +105,37 @@ datar=res1.map(d=>{
     res.json(result)
 }
 
-
-const getAttandenceUpdateApi = async(req,res,next)=>{
+const getstudentAttandenceUpdateApi = async (req, res, next) => {
+    let result = ""
     console.log(req.body);
-    let result=""
-    let status= false
-        await studentAttandence.updateOne({ employeeId:req.body.employeeId,branchid:req.body.branchId,groupid:req.body.groupId}, 
-                {
-                  $set: 
-                     {
-                       
-                        date:req.body.date,
-                        ontime:req.body.ontime,
-                        offtime:req.body.offtime,
-                        isChecked: req.body.isChecked,
-                        intime:req.body.intime,
-                        outtime:req.body.outtime,
-                        isInTime:req.body.isInTime,
-                        isOutTime:req.body.isOutTime
-                        }
-                }, 
-                { upsert: true }
-              ).then((res)=>res).then((data)=>{
-                console.log(data);
-                status=true
-                if(data.modifiedCount>0){
-                    result={success:true,message:" update successfully",status:200}
-                }
-                else{
-                    result={success:false,message:" update not ",status:200}  
-                }
-              })
-                   
-        
-    res.json(result)  
-}
+    await studentAttandence.updateOne({ branchId: req.body.branchid,date:req.body.date,"data.studentsId":req.body.studentsId},
+      {
+             '$set': {
+             'data.$.isChecked': req.body.isChecked,
+            
+     }
+     },
+     { upsert: true }
+     ).then((res) => res).then((data) => {
+         console.log("data return",data);
+       
+         if (data.modifiedCount > 0) {
+             result = { success: true, message: " update successfully", status: 200 }
+         }
+         else {
+             result = { success: false, message: " update not ", status: 200 }
+         }
+     }) 
+     res.json(result)
+ }
+ 
 
 
 
 module.exports={
     attandenceApi,
     getAttandenceApi,
-    getAttandenceUpdateApi,
+    getstudentAttandenceUpdateApi ,
     getAttandenceBranchbyApi,
     AddAttandenceApi
 }

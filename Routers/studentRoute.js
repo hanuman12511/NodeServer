@@ -1,5 +1,5 @@
 const express = require('express');
-const { attandenceApi, getAttandenceApi, getAttandenceUpdateApi, getAttandenceBranchbyApi, AddAttandenceApi } = require('../controllers/studentsController/StudentAttandenceController');
+const { attandenceApi, getAttandenceApi, getAttandenceBranchbyApi, AddAttandenceApi, getstudentAttandenceUpdateApi } = require('../controllers/studentsController/StudentAttandenceController');
 const studentRoute  = express.Router();
 
 
@@ -7,7 +7,7 @@ const studentRoute  = express.Router();
 
 studentRoute.post("/StudentattandenceApi",attandenceApi)
 studentRoute.post("/getStudentAttandenceApi",getAttandenceApi)
-studentRoute.post("/getStudentAttandenceUpdateApi",getAttandenceUpdateApi)
+studentRoute.post("/getstudentAttandenceUpdateApi",getstudentAttandenceUpdateApi)
 studentRoute.post("/getStudentAttandenceBranchbyApi",getAttandenceBranchbyApi)
 studentRoute.post("/AddStudentAttandenceApi",AddAttandenceApi)
 module.exports= studentRoute

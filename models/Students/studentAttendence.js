@@ -6,7 +6,8 @@ var employeeSchema= new mongoose.Schema({
     groupId:String,
     sessionId:String,
    date:String,
-   data:Array
+   data:Array,
+   AttendenceType:String
 });
 
 //Exporting Employee Schema

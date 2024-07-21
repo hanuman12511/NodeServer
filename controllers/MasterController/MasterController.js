@@ -16,45 +16,55 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 
-
-
-const LoginData=async(data,employeeid)=>{
-    console.log("branch login employeeid=>>",employeeid);
-    console.log("dbranch login data=>>",data);
-    let params={
-     
-        employeeId:employeeid,
-        groupId:data.groupId,
-        branchId:data.branchId,
-        mobile:data.mobile,
-        email:data.email,
-        password:data.passord?data.passord:"",
-        otp:1111,
-        status:"admin"
-    }
-
-    let info ={};
-    info.method = 'POST';
-    info.headers= {
-        'Content-Type': 'application/json',
-      }
-    info.body=JSON.stringify(params)
-    let url= "http://localhost:4000/loginAppApi"
-await fetch(url,info)
-.then(response => response.json())
-.then(data => {
-console.log("data loging after ",data);
-})
-
-}
 const addBranchApi = async(req,res) =>{
     let result=""
-    let status= false
+   
     if(true){
-            let resp = await addBranch.find({}).then((res)=>res)
+          
+          
+            if(req.body.groupStatus!==undefined){
+                let resp1 = await addBranch.find({mobile:req.body.mobile}).then((res)=>res)
+                if(resp1.length==0){
+                const res = new addBranch({
+                    groupName:req.body.groupName?req.body.groupName:"",
+                    groupStatus:req.body.groupStatus?req.body.groupStatus:"",
+                    branchId:0,
+                    adminemail:req.body.adminemail,
+                    groupId:req.body.groupId,
+                    branchname:req.body.name,
+                    institutename:req.body.institutename,
+                    affiliation:req.body.affiliation,
+                    affiliated:req.body.affiliated,
+                    medium:req.body.medium,
+                    phone:req.body.phone,
+                    branchemail:req.body.email,
+                    password:req.body.password,
+                    username:req.body.username,
+                    mobile:req.body.mobile,
+                    contactperson:req.body.contactperson,
+                    Address:req.body.Address,
+                    registerno:req.body.registerno,
+                    established:req.body.established,
+                    website:req.body.website,
+                    logo:req.body.logo,
+                    branchControl:req.body.branchControl,
+                    status:"mainadmin",
+                    otp:"0000"
+                     });
+                res.save();
+                result={success:true,message:" Group create  successfully",status:200}
+            }
+                else{
+                    result={success:true,message:"pls enter another number",status:200}
+                }
+            }
+            else{
+
+                let resp = await addBranch.find({}).then((res)=>res)
+            
             if(resp.length>0){
                 let resp1 = await addBranch.find({mobile:req.body.mobile}).then((res)=>res)
-                console.log(resp1);
+              
                 if(resp1.length==0){
                    
                 let id = 0
@@ -89,12 +99,11 @@ const addBranchApi = async(req,res) =>{
                     otp:"0000"
                      });
                 res.save();
-                status=true
-                LoginData(req.body,id)
+                result={success:true,message:" branch create  successfully",status:200}
                 }
                 else{
                     result={success:false,message:" pls change mobile number",status:200}   
-                   return res.json(result)     
+                     
                 }    
             }
                 else{
@@ -127,20 +136,16 @@ const addBranchApi = async(req,res) =>{
                                      
                         });
                     res.save();
-                
-                    status=true
-                    LoginData(req.body,1)
+                    result={success:true,message:" branch create  successfully",status:200}
                 }
+
+            }
         }
         else{
          result= {success:false,message:" pls insert Data",status:200}
         }
-        if(status){
-            result={success:true,message:" branch create  successfully",status:200}
-        }
-        else{
-            result={success:false,message:" branch head not create",status:200}  
-        }
+      
+     
         
     res.json(result)     
 }

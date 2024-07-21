@@ -44,6 +44,8 @@ joindate:String,
 salary:String,
 periods:String,
 paidleave:String,
+intime:String,
+outtime:String,
 
 });
 
