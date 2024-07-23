@@ -8,8 +8,10 @@ var employeeSchema= new mongoose.Schema({
     sessionId:String,
     date:String,
      data:Array,
-     status:String
+     title:String,
+    description: String,
+   
 });
 
 //Exporting Employee Schema
-module.exports= mongoose.model("studentnotification", employeeSchema);
+module.exports= mongoose.model("notification", employeeSchema);

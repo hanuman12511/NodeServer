@@ -1,6 +1,8 @@
 const Departments = require("../../models/Departments")
 const AddEmployee = require("../../models/Employee/AddEmployee")
-const EmployeeAttandence = require("../../models/employee/EmployeeAttandence")
+const EmployeeAttandence = require("../../models/Employee/EmployeeAttandence")
+
+
 
 const attandenceApi = async (req, res, next) => {
 
@@ -21,7 +23,11 @@ const attandenceApi = async (req, res, next) => {
                     data: req.body.data
 
                 });
-                res.save();
+                res.save().then(res=>{
+                   
+
+                
+                })
                 result = { success: true, message: "  create  successfully", status: 200 }
             }
         })

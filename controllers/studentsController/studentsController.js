@@ -186,9 +186,8 @@ const addStudentsFeeApi = async (req, res, next) => {
 
 
 const getStudentByBranchFeeApi = async (req, res, next) => {
-
-
-    let resp = await StudentFee.find({ branchId: req.body.branchId, studentsId: req.body.studentsId }).then((res) => res)
+    console.log(req.body);
+     let resp = await StudentFee.find({ branchId: req.body.branchId, studentsId: req.body.studentsId }).then((res) => res)
     console.log("data=>>", resp);
     if (resp.length > 0) {
         result = { success: true, message: "  get successfully", status: 200, data: resp }
