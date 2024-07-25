@@ -1140,11 +1140,11 @@ const getClassDetailApi = async(req,res,next)=>{
      resp.map(async(d)=>{
        employee.map(dd=>{
             if(d.TeacherId==dd.employeeId){
-                classinfo.push({...d._doc,employeename:dd.employeeName})
+                classinfo.push({...d._doc,employeename:dd.firstName +" "+ dd.lastName})
            }
        })
     })
-
+console.log(classinfo);
 let dataclass=[]
   classinfo.map(d=>{
     class1.map(dd=>{
@@ -1154,6 +1154,8 @@ let dataclass=[]
 
     })
   })
+
+  console.log(classinfo);
  let sec1 =[]
   dataclass.map(d=>{
     section1.map(s=>{
@@ -1162,6 +1164,8 @@ let dataclass=[]
         }
     })
   })
+
+ 
      result={success:true,message:" get successfully",status:200,data:sec1}
 }
 else{

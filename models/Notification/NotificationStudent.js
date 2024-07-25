@@ -10,6 +10,9 @@ var employeeSchema= new mongoose.Schema({
      data:Array,
      title:String,
     description: String,
+    filename: String,
+    status:String,
+    statustype:String
    
 });
 

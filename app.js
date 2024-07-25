@@ -171,3 +171,20 @@ app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{
 })
 
 
+app.get("/download", (req, res) => {
+  console.log(JSON.parse(req.query).file);
+  let file1=JSON.parse(req.query).file
+  const filePath = __dirname + "/public/uploads/"+file1;
+  console.log(filePath);
+  res.download(
+      filePath, 
+      file1, // Remember to include file extension
+      (err) => {
+          if (err) {
+              res.send({
+                  error : err,
+                  msg   : "Problem downloading the file"
+              })
+          }
+  });
+});
