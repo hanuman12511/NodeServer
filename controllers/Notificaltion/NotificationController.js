@@ -52,7 +52,7 @@ const NotificationAllApi = async (req, res, next) => {
             let result = ""
             console.log("ontis", req?.body)
             console.log("ontis file", req?.file)
-            //console.log("ontis",JSON.parse(req?.body?.params)) 
+            console.log("ontis",JSON.parse(req?.body?.params)) 
             const { status,
                 statustype,
                 branchid,
@@ -77,7 +77,7 @@ const NotificationAllApi = async (req, res, next) => {
                         date: date,
                         title: title,
                         description: description,
-                        filename: req.file.filename,
+                        filename: req.file==undefined?"":req.file.filename,
                         status: status,
                         statustype: statustype
                     });
@@ -86,14 +86,13 @@ const NotificationAllApi = async (req, res, next) => {
                 } else {
                     const res = new notification({
                         notificationId: 1,
-                        branchId: req.body.branchid,
-                        groupId: req.body.groupid,
-                        sessionId: req.body.sessionid,
-                        date: req.body.date,
-                        data: req.body.data,
-                        title: req.body.title,
-                        description: req.body.description,
-                        filename: req.file.filename,
+                        branchId: branchid,
+                        groupId: groupid,
+                        sessionId: sessionid,
+                        date: date,
+                        title: title,
+                        description: description,
+                        filename: req.file==undefined?"":req.file.filename,
                         status: status,
                         statustype: statustype
 
@@ -117,7 +116,7 @@ const NotificationApi = async (req, res, next) => {
    
             
         let result = ""
-        console.log("ontis",JSON.parse(req?.body?.params)) 
+    
         if (req.body.date !== "") {
        let resp = await notification.find({ branchId: req.body.branchid })
         if (resp.length > 0) {
@@ -135,7 +134,7 @@ const NotificationApi = async (req, res, next) => {
                 data: req.body.data,
                  title: req.body.title,
                 description: req.body.description,
-                filename: req.file.filename,
+               
                 });
             res.save();
             result = { success: true, message: "notification add successfully", status: 200 }
@@ -149,7 +148,7 @@ const NotificationApi = async (req, res, next) => {
                 data: req.body.data,
                 title: req.body.title,
                 description: req.body.description,
-                filename: req.file.filename,
+             
               
 
             });
@@ -268,6 +267,27 @@ const NotificationByApi = async (req, res, next) => {
 
     let resp = await notification.find({ branchId: req.body.branchid, status: req.body.status }).then((res) => res)
 
+    console.log(resp);
+
+
+    if (resp.length > 0) {
+        result = { success: true, message: "get successfully", status: 200, data: resp }
+    }
+    else {
+        result = { success: false, message: "not  get", status: 200, data: resp }
+    }
+
+    res.json(result)
+}
+const notificationByBranchApi = async (req, res, next) => {
+
+    console.log(req.body);
+
+    let resp = await notification.find({ branchId: req.body.branchid }).then((res) => res)
+
+    console.log(resp);
+
+
     if (resp.length > 0) {
         result = { success: true, message: "get successfully", status: 200, data: resp }
     }
@@ -288,5 +308,6 @@ module.exports = {
     getemployeeNotificationApi,
     notificationUpdateApi,
     studentnotificationUpdateApi,
-    NotificationAllApi
+    NotificationAllApi,
+    notificationByBranchApi
 }

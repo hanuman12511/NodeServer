@@ -5,12 +5,13 @@ var employeeSchema= new mongoose.Schema({
     classDetailId:Number,
     ClassId:String,
     SectionId:String,
-    SubjectId:String,
+    SubjectId:Array,
     TeacherId:String,
     RoomNo:String,
     branchid:String,
     groupid:String,
     feeDetails:Array,
+    classsection:String
     
 });
 

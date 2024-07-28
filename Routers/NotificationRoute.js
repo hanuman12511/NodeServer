@@ -6,7 +6,8 @@ const {
     notificationUpdateApi,
     studentnotificationUpdateApi,
     NotificationByApi,
-    NotificationAllApi} = require('../controllers/Notificaltion/NotificationController');
+    NotificationAllApi,
+    notificationByBranchApi} = require('../controllers/Notificaltion/NotificationController');
 const notificaltionRoute = express.Router();
 
 
@@ -17,5 +18,6 @@ notificaltionRoute.post("/NotificationByApi",NotificationByApi)
 notificaltionRoute.post("/notificationUpdateApi",notificationUpdateApi)
 notificaltionRoute.post("/studentnotificationUpdateApi",studentnotificationUpdateApi)
 notificaltionRoute.post("/NotificationAllApi",NotificationAllApi)
+notificaltionRoute.post("/notificationByBranchApi",notificationByBranchApi)
 
 module.exports = notificaltionRoute

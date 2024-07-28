@@ -63,9 +63,12 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage: storage })
 app.post('/upload', upload.single('image'), async(req, resp) => {
+
+
+  console.log("req.file",req.file);
  const{name, groupName, branchId,  groupId,institutename,affiliation,
     affiliated,medium, phone, password,username, mobile,contactperson,Address,
-    registerno, established, website}=JSON.parse(req?.body?.params) 
+    registerno, established, website,logo}=JSON.parse(req?.body?.params) 
 
  await addBranch.updateOne( 
         {$or:[{ branchId:branchId}]}, 
@@ -86,7 +89,7 @@ app.post('/upload', upload.single('image'), async(req, resp) => {
                 registerno:registerno,
                 established:established,
                 website:website,
-                logo:req.file.filename,
+                logo:req.file!==undefined?req.file.filename:logo,
                
             }
         }, 
@@ -103,6 +106,47 @@ app.post('/upload', upload.single('image'), async(req, resp) => {
   
      
 })
+app.post('/profile', async(req, resp) => {
+console.log("profile");
+
+ const{name, groupName, branchId,  groupId,institutename,affiliation,
+    affiliated,medium, phone, password,username, mobile,contactperson,Address,
+    registerno, established, website,logo}=req?.body 
+console.log(req.body);
+ await addBranch.updateOne( 
+        {$or:[{ branchId:branchId}]}, 
+        {
+          $set: 
+            {   groupName:groupName,
+                branchname:name,
+                institutename:institutename,
+                affiliation:affiliation,
+                affiliated:affiliated,
+                medium:medium,
+                phone:phone,
+                password:password,
+                username:username,
+                mobile:mobile,
+                contactperson:contactperson,
+                Address:Address,
+                registerno:registerno,
+                established:established,
+                website:website,
+              
+               
+            }
+        }, 
+        { upsert: true }
+      ).then((res)=>res).then(data=>{
+        console.log("data=>",data);
+       
+            resp.status(200).json({ success:true ,message:"upload successful",status:200 })
+       
+      }).catch(err=>{
+        resp.status(500).json({ message:err})
+       
+      })  
+    })
 
 //excel data file uploade code
 
@@ -172,8 +216,9 @@ app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{
 
 
 app.get("/download", (req, res) => {
-  console.log(JSON.parse(req.query).file);
-  let file1=JSON.parse(req.query).file
+  console.log(req.query.file);
+  let file1=req.query.file
+  console.log(file1);
   const filePath = __dirname + "/public/uploads/"+file1;
   console.log(filePath);
   res.download(
@@ -188,3 +233,14 @@ app.get("/download", (req, res) => {
           }
   });
 });
+
+/* app.get('/download', function(req, res){
+  console.log(req.query.file);
+ 
+  let file1 =req.query.file
+  console.log(file1);
+  const filePath = __dirname + "/public/uploads/"+file1;
+  console.log(filePath);
+  
+  res.download(filePath); // Set disposition and send it.
+}); */
