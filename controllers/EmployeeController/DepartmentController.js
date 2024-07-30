@@ -4,7 +4,7 @@ const departmentsApi= async(req,res,next)=>{
     let result=""
                 let status= false
                 if(req.body.Department!==""){
-                   await Departments.find({ Department:req.body.Department,}).then(async(res)=>{
+                   await Departments.find({branchid:req.body.branchid, Department:req.body.Department,}).then(async(res)=>{
                         console.log(" Department=>",res.length);
                         if(res.length==0){
                             let resp = await Departments.find({}).then((res)=>res)

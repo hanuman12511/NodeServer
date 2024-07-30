@@ -74,7 +74,6 @@ const studentsFeeApi = async (req, res, next) => {
 const getstudentsFeeApi = async (req, res, next) => {
 
     let fee = await StudentFee.find({ branchId: req.body.branchid }).then((res) => res)
-    let classres = await Class.find({ branchid: req.body.branchid }).then((res) => res)
     let resp = await Student.find({ branchId: req.body.branchid }).then((res) => res)
     let count = await Student.find({ branchId: req.body.branchid }).count()
 
@@ -85,18 +84,17 @@ const getstudentsFeeApi = async (req, res, next) => {
         let amount = 0
         classd.map(cc => {
 
-            if (d.ClassSection == cc.ClassId) {
+            if (d.ClassSection == cc.classDetailId) {
                 cc.feeDetails.map(ff => {
                     amount += parseInt(ff.fee)
                 })
             }
         })
         let className=''
-        classres.map(classname1=>{
-            console.log(d.ClassSection);
-            console.log(classname1.classId);
-            if (d.ClassSection == classname1.classId) {
-                className = classname1.Class
+        classd.map(classname1=>{
+           
+            if (d.ClassSection == classname1.classDetailId) {
+                className = classname1.classsection
             }
         })
         let fee1=0
@@ -408,14 +406,15 @@ const getStudentsApi = async (req, res, next) => {
     let studata = []
     let resp = await Student.find({ branchId: req.body.branchId, sessionName: req.body.sessionName }).then((res) => res)
 
-    let classres = await Class.find({ branchid: req.body.branchId }).then((res) => res)
-
+    let classres = await ClassDetails.find({ branchid: req.body.branchId }).then((res) => res)
+console.log("students",resp);
+console.log("classres",classres);
     datar = resp.map(d => {
 
         let classname = ""
         classres.map(classdaat => {
-            if (d.ClassSection == classdaat.classId) {
-                classname = classdaat.Class
+            if (d.ClassSection == classdaat.classDetailId) {
+                classname = classdaat.classsection
             }
         })
         studata.push({ ...d._doc, className: classname })

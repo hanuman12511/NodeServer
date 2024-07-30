@@ -214,16 +214,11 @@ app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{
            res.json("file upload")
 })
 
-
 app.get("/download", (req, res) => {
-  console.log(req.query.file);
-  let file1=req.query.file
-  console.log(file1);
-  const filePath = __dirname + "/public/uploads/"+file1;
-  console.log(filePath);
+  const filePath = __dirname + "/public/excelUploads/sample.xlsx";
   res.download(
       filePath, 
-      file1, // Remember to include file extension
+      "sample.xlsx", 
       (err) => {
           if (err) {
               res.send({
@@ -233,6 +228,26 @@ app.get("/download", (req, res) => {
           }
   });
 });
+
+
+/* app.get("/download", (req, res) => {
+  console.log(req.query.file);
+  let file1=req.query.file
+  console.log(file1);
+  const filePath = __dirname + "/public/uploads/"+file1;
+  console.log(filePath);
+  res.download(
+      filePath, 
+      file1,
+      (err) => {
+          if (err) {
+              res.send({
+                  error : err,
+                  msg   : "Problem downloading the file"
+              })
+          }
+  });
+}); */
 
 /* app.get('/download', function(req, res){
   console.log(req.query.file);
