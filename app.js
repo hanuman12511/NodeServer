@@ -163,6 +163,8 @@ var excelUploads = multer({storage:excelStorage});
 app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{  
    console.log("file=>>>",req.body.class);
     console.log("file=>>>",req.file);
+   
+   let result=""
     let id=0;
     let resp = await Student.find({}).then((res)=>res)
             console.log("display",resp);
@@ -175,21 +177,23 @@ app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{
             }else{
                 id=1;
             }
-            
+            let datastudent =await  Student.find({ branchId: req.body.branchId, sessionName:req.body.sessionName}).then(res=>res)
+          //  console.log(datastudent);
        importFile('./public' + '/excelUploads/' + req.file.filename);
             function importFile(filePath){
             
                 const file = reader.readFile(filePath) 
                  let data = [] 
                 const sheets = file.SheetNames 
-             
+            
                for(let i = 0; i < 1; i++) 
                 { 
                    const temp = reader.utils.sheet_to_json( 
                         file.Sheets[file.SheetNames[0]]) 
-                       
+                     console.log("dataexcel=>>",temp);  
                    temp.forEach((res,index) => { 
-              
+
+             
                     res["studentsId"]=id++
                     res["ClassSection"]=req.body.class
                     res["branchId"]=req.body.branchId
@@ -199,19 +203,35 @@ app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{
                     data.push(res) 
                    }) 
                 } 
-              
+           // console.log("data",data);
+
+            let dataf =[]
+            data.map(d=>{
+              datastudent.map(dd=>{
+                console.log("stu=>>",d.RegistrationEnrollNo);
+                console.log("ex=>",dd.SRNo);
+                if(d.RegistrationEnrollNo!=dd.SRNo){
+                  dataf.push({...d})
+                }
+              })
+            })
+
+           // console.log("datafinal=>>",dataf);
+
         Student.insertMany(data)
                     .then(function () {
         console.log("Successfully saved defult items to DB");
+        result="Successfully saved defult items to DB"
       })
       .catch(function (err) {
-        console.log(err);
+        console.log("duplicat=>>",err.writeErrors[0].err.errmsg);
+        result=err.writeErrors[0].err.errmsg
       }); 
                  
     }
 
 
-           res.json("file upload")
+           res.json(result)
 })
 
 app.get("/download", (req, res) => {
@@ -259,3 +279,21 @@ app.get("/download", (req, res) => {
   
   res.download(filePath); // Set disposition and send it.
 }); */
+
+
+app.get("/studentPageApi", (req, res, next) => {
+  const{ currentpage, limit, branchid, session} = req?.query
+  let page = currentpage >= 1 ? currentpage : 1;
+  page = page - 1
+  Student.find({ branchId: branchid, sessionName: session})
+      .sort({ FirstName: "asc" })
+      .limit(limit)
+      .skip(limit * page)
+      .then((results) => {
+          return res.status(200).send(results);
+      })
+      .catch((err) => {
+          return res.status(500).send(err);
+      }); 
+
+});

@@ -156,8 +156,7 @@ const addBranchUpdateApi = async (req, res) => {
 
 
         let status = false
-        console.log("data=>>", req.file ? req.file : null);
-        console.log("data=>>", req.body ? req.body : null);
+       
         if (true) {
             // let resp = await addBranch.find({}).then((res)=>res)
             let resp = await addBranch.updateOne(
@@ -226,13 +225,10 @@ const getBranchApi = async (req, res, next) => {
 
 const getBranchOneApi = async (req, res, next) => {
 
-  console.log(req.body);
-  console.log(req.body.branchId);
-  console.log(req.body.groupId);
     if(req.body.branchId !=undefined  && req.body.groupId!==""){
     await addBranch.find({ branchId: req.body.branchId , groupId: req.body.groupId  }).then(async(res) => 
     {
-        console.log("branch->>",res);
+        
         let gpid=res[0].groupId
         let gres = await addBranch.find({groupId: gpid }).then((res) => res)
        let groupName1=""
@@ -242,7 +238,7 @@ const getBranchOneApi = async (req, res, next) => {
             }
         })
      let data1 = {groupname:groupName1,...res[0]._doc}
-     console.log("data1=>>",data1);
+     
         if (res.length > 0) {
             result = { success: true, message: " get successfully", status: 200, data: data1 }
         }
@@ -255,7 +251,7 @@ const getBranchOneApi = async (req, res, next) => {
     
     else if(req.body.groupId!="" && req.body.groupStatus!=""){
        await addBranch.find({ groupId: req.body.groupId,groupStatus:req.body.groupStatus }).then((res) =>{
-console.log("res",res);
+
         if (res.length > 0) {
             result = { success: true, message: " get successfully", status: 200, data: res[0] }
         }
@@ -272,8 +268,7 @@ const getBranchControlApi = async (req, res, next) => {
 
     let result = ""
     let status = false
-    console.log("data=>>", req.file);
-    console.log("data=>>", req.body);
+  
     if (true) {
 
         let resp = await addBranch.updateOne(
@@ -288,7 +283,7 @@ const getBranchControlApi = async (req, res, next) => {
             },
             { upsert: true }
         ).then((res) => res)
-        console.log(res);
+      
         status = true
 
 
@@ -309,7 +304,7 @@ const getBranchControlApi = async (req, res, next) => {
 
 const getBranchGroupIdApi = async (req, res, next) => {
     let resp = await addBranch.find({ groupId: req.body.id, groupStatus: "" }).then((res) => res)
-console.log("groupid=>>",resp);
+
     if (resp.length > 0) {
         result = { success: true, message: " get successfully", status: 200, data: resp }
     }
@@ -387,14 +382,14 @@ const getfeeHeadsApi = async (req, res, next) => {
                         feefrename=ff.FeeFrequency
                     }
                 })
-                console.log("data->>>",feefrename);
+                
         resdata.push({feefrename:feefrename,...ss._doc})
         })
     :null
-   console.log("***",resdata);
+
     })
  let resp = resdata
- console.log("fee head",resp);
+
     if (resp.length > 0) {
         result = { success: true, message: " feeheads get successfully", status: 200, data: resp }
     }
@@ -412,7 +407,7 @@ const feeheadUpdateApi = async (req, res, next) => {
     let result = ""
     let status = false
    
-    console.log("data=>>", req.body);
+    
 
     if (true) {
 
@@ -429,7 +424,7 @@ const feeheadUpdateApi = async (req, res, next) => {
             },
             { upsert: true }
         ).then((res) => res)
-        console.log(res);
+      
         status = true
 
 
@@ -471,7 +466,7 @@ const getAllfeeHeadsApi = async (req, res, next) => {
 const sessionApi = async (req, res, next) => {
     let result = ""
     let status = false
-    console.log(req.body);
+   
     if (req.body.session !== "" && req.body.month !== "") {
 
         let resp1 = await SessionHeads.find({ branchid:req.body.branchid,SessionName: req.body.session }).then((res) => res)
@@ -547,9 +542,9 @@ const sessionUpdateApi = async (req, res, next) => {
     let result = ""
     let status = false
 
-    console.log("data=>>", req.body);
+  
     let resp1 = await SessionHeads.find({branchid:req.body.branchid}).then((res) => res)
-    console.log(Object.keys(resp1).length);
+   
     if (Object.keys(resp1).length == 0) {
 
 
@@ -565,7 +560,7 @@ const sessionUpdateApi = async (req, res, next) => {
             },
             { upsert: true }
         ).then((res) => res).then((data) => {
-            console.log(data);
+           
             status = true
             if (status) {
                 result = { success: true, message: " session update successfully", status: 200 }
@@ -608,7 +603,7 @@ const sessionControlApi = async (req, res, next) => {
             },
             { upsert: true }
         ).then((res) => res)
-        console.log(res);
+       
         status = true
 
 
@@ -663,7 +658,7 @@ const getSessionByBranchIdApi = async (req, res, next) => {
     data=mdata
     
     })
-console.log("session data",data);
+
 
     if (data.length > 0) {
         result = { success: true, message: " session data get successfully", status: 200, data: data }
@@ -678,9 +673,9 @@ console.log("session data",data);
 const classApi = async (req, res, next) => {
     let result = ""
     let status = false
-    console.log("data=>>", req.body);
+  
     let resp1 = await Class.find({ Class: req.body.ClassName, branchid: req.body.branchid }).then((res) => res)
-    console.log(Object.keys(resp1).length);
+   
     if (Object.keys(resp1).length == 0) {
 
         if (req.body.ClassName !== "") {
@@ -740,9 +735,9 @@ const classUpdateApi = async (req, res, next) => {
     let result = ""
     let status = false
 
-    console.log("data=>>", req.body);
+   
     let resp1 = await Class.find({ Class: req.body.Class }).then((res) => res)
-    console.log(Object.keys(resp1).length);
+   
     if (Object.keys(resp1).length == 0) {
 
 
@@ -758,7 +753,7 @@ const classUpdateApi = async (req, res, next) => {
             },
             { upsert: true }
         ).then((res) => res).then((data) => {
-            console.log(data);
+         
             status = true
             if (status) {
                 result = { success: true, message: " class update successfully", status: 200 }
@@ -798,7 +793,7 @@ const classControlApi = async (req, res, next) => {
             },
             { upsert: true }
         ).then((res) => res)
-        console.log(res);
+    
         status = true
 
 
@@ -823,7 +818,7 @@ const classControlApi = async (req, res, next) => {
 
 
 const getClassApi = async (req, res, next) => {
-    console.log(req.body);
+   
     let resp = await Class.find({ groupid: req.body.branchId }).then((res) => res)
 
     if (resp.length > 0) {
@@ -873,9 +868,9 @@ const SectionApi = async (req, res, next) => {
     let result = ""
     let status = false
     if (req.body.Sectionname !== "") {
-        console.log(req.body);
+      
         let resp1 = await addSection.find({ branchid:req.body.branchid,SectionName: req.body.SectionName }).then((res) => res)
-        console.log(resp1);
+    
         if (Object.keys(resp1).length == 0) {
             let resp = await addSection.find({}).then((res) => res)
             if (resp.length > 0) {
@@ -929,9 +924,9 @@ const sectionUpdateApi = async (req, res, next) => {
     let result = ""
     let status = false
 
-    console.log("data=>>", req.body);
+  
     let resp1 = await addSection.find({branchid:req.body.branchId, SectionName: req.body.Sectionname }).then((res) => res)
-    console.log(Object.keys(resp1).length);
+  
     if (Object.keys(resp1).length == 0) {
 
 
@@ -947,7 +942,7 @@ const sectionUpdateApi = async (req, res, next) => {
             },
             { upsert: true }
         ).then((res) => res).then((data) => {
-            console.log(data);
+         
             status = true
             if (status) {
                 result = { success: true, message: " section update successfully", status: 200 }
@@ -987,7 +982,7 @@ const sectionControlApi = async (req, res, next) => {
             },
             { upsert: true }
         ).then((res) => res)
-        console.log(res);
+       
         status = true
 
 
@@ -1014,9 +1009,9 @@ const FeeFrequencyApi = async (req, res, next) => {
     let result = ""
     let status = false
     if (req.body.feefrequency !== "") {
-        console.log(req.body);
+      
         let resp1 = await FeeFrequency.find({ branchid : req.body.branchid,FeeFrequency: req.body.feefrequency }).then((res) => res)
-        console.log("=>", resp1);
+       
         if (Object.keys(resp1).length == 0) {
 
             let resp = await FeeFrequency.find({}).then((res) => res)
@@ -1076,9 +1071,9 @@ const feefrequencyUpdateApi = async (req, res, next) => {
     groupid:groupid,
     FeeFrequency:feefrequency,
     feefrequencyId */
-    console.log("data=>>feefrequencyUpdateApi", req.body);
+    
     let resp1 = await FeeFrequency.find({ branchid:req.body.branchId, FeeFrequency: req.body.FeeFrequency }).then((res) => res)
-    console.log(Object.keys(resp1).length);
+    
     if (Object.keys(resp1).length == 0) {
         await FeeFrequency.updateOne(
             { branchid: req.body.branchId, groupid: req.body.groupid, feefrequencyId: req.body.feefrequencyId },
@@ -1092,7 +1087,7 @@ const feefrequencyUpdateApi = async (req, res, next) => {
             },
             { upsert: true }
         ).then((res) => res).then((data) => {
-            console.log(data);
+           
             status = true
             if (status) {
                 result = { success: true, message: " FeeFrequency update successfully", status: 200 }
@@ -1132,7 +1127,7 @@ const feefrequencyControlApi = async (req, res, next) => {
             },
             { upsert: true }
         ).then((res) => res)
-        console.log(res);
+       
         status = true
 
 
@@ -1169,9 +1164,9 @@ const getFeeFrequencyApi = async (req, res, next) => {
 
 
 const getAllFeeFrequencyApi = async (req, res, next) => {
-console.log(req.body);
+
     let resp = await FeeFrequency.find({ branchid: req.body.branchid }).then((res) => res)
-console.log(resp);
+
     if (resp.length > 0) {
         result = { success: true, message: "  fee frequncy data get successfully", status: 200, data: resp }
     }
@@ -1195,7 +1190,7 @@ const ClassDetailApi = async (req, res, next) => {
         await ClassDetails.find({ classsection: req.body.classsection, branchid: req.body.branchId }).then((res) => res).then(async (data) => {
 
             if (Object.keys(data).length > 0) {
-                console.log("class deatisl; present");
+              
                 result = { success: true, message: "class Details exist", status: 200 }
             }
             else {
@@ -1291,7 +1286,7 @@ const getClassDetailApiByclass = async (req, res, next) => {
     let result = ""
 
     let resp = await ClassDetails.find({ branchid: req.body.branchid, ClassId: req.body.classid }).then((res) => res)
-    console.log("data head", resp);
+   
     if (resp.length > 0) {
         result = { success: true, message: "  get successfully", status: 200, data: resp }
     }
@@ -1302,7 +1297,7 @@ const getClassDetailApiByclass = async (req, res, next) => {
 }
 const ClassDetailUpdateApi = async (req, res, next) => {
     let result = ""
-    console.log("classde", req.body);
+   
     await ClassDetails.updateOne({ branchid: req.body.branchId, classDetailId: req.body.classDetailId },
         {
             '$set': {
@@ -1319,7 +1314,7 @@ const ClassDetailUpdateApi = async (req, res, next) => {
         },
         { upsert: true }
     ).then((res) => res).then((data) => {
-        console.log("data return", data);
+       
 
         if (data.modifiedCount > 0) {
             result = { success: true, message: " update successfully", status: 200 }
@@ -1407,7 +1402,7 @@ const subjectheadUpdateApi = async (req, res, next) => {
     let result = ""
     let status = false
    
-    console.log("SubjectHead=>>", req.body);
+  
 
     if (true) {
 
@@ -1424,7 +1419,7 @@ const subjectheadUpdateApi = async (req, res, next) => {
             },
             { upsert: true }
         ).then((res) => res)
-        console.log(res);
+   
         status = true
 
 
@@ -1508,7 +1503,7 @@ const subjectUpdateApi = async (req, res, next) => {
     let result = ""
     let status = false
    
-    console.log("SubjectHead=>>", req.body);
+  
 
     if (true) {
 
@@ -1527,7 +1522,7 @@ const subjectUpdateApi = async (req, res, next) => {
             },
             { upsert: true }
         ).then((res) => res)
-        console.log(res);
+       
         status = true
 
 
@@ -1552,7 +1547,7 @@ const subjectUpdateApi = async (req, res, next) => {
 
 
 const getsubjectApi = async (req, res) => {
-    console.log(req.body);
+  
     let resp = await Subjects.find({ branchId: req.body.branchid }).then((res) => res)
     if (resp.length > 0) {
         result = { success: true, message: "  get successfully", status: 200, data: resp }
@@ -1560,7 +1555,7 @@ const getsubjectApi = async (req, res) => {
     else {
         result = { success: false, message: "   not  get", status: 200, data: resp }
     }
-    console.log(resp);
+   
     res.json(result)
 }
 
@@ -1581,7 +1576,7 @@ const getAllsubjectApi = async (req, res) => {
 const subjecttoHeadApi = async (req, res) => {
     let result = ""
     let status = false
-    console.log(req.body);
+   
     if (req.body.Class !== "") {
         let resp = await SubjectToHead.find({}).then((res) => res)
         if (resp.length > 0) {
@@ -1653,11 +1648,10 @@ const getsubjectheadtosubjectApi = async (req, res) => {
 }
 
 const getsubjecttoHeadApi = async (req, res) => {
-    console.log(req.body);
+    
     let resp = await SubjectToHead.find({ branchId: req.body.branchid }).then((res) => res)
     let resp1 = await SubjectHead.find({ branchId: req.body.branchid }).then((res) => res)
-    console.log(resp);
-    console.log(resp1);
+   
     let data = []
     resp.map(d1 => {
         resp1.filter(d => {
@@ -1668,7 +1662,7 @@ const getsubjecttoHeadApi = async (req, res) => {
     })
 
 
-    console.log("data api = >>", data);
+    
     if (resp.length > 0) {
         result = { success: true, message: "  get successfully", status: 200, data: data }
     }

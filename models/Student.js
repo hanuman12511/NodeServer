@@ -5,7 +5,11 @@ const userSchema = new mongoose.Schema({
   groupId:String,
   sessionName:String,
   studentsId:Number,
-  RegistrationEnrollNo:String,	
+  RegistrationEnrollNo:{
+    type: String,
+    unique: true,
+    required: [true, "Please enter record id!"],
+    },	
   RegiterPageNo:String,	
   FirstName:String,	
   LastName:String,	
@@ -40,7 +44,8 @@ const userSchema = new mongoose.Schema({
   Fare:String,
   PreviousDueFees:String, 
   status:String,
-  otp:Number
+  otp:Number,
+  PreviousDueFees:String
 
 });
    

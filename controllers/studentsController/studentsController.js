@@ -75,7 +75,7 @@ const getstudentsFeeApi = async (req, res, next) => {
 
     let fee = await StudentFee.find({ branchId: req.body.branchid }).then((res) => res)
     let resp = await Student.find({ branchId: req.body.branchid }).then((res) => res)
-    let count = await Student.find({ branchId: req.body.branchid }).count()
+    let count = await Student.find({ branchId: req.body.branchid }).countDocuments()
 
     
     let classd = await ClassDetails.find({ branchid: req.body.branchid }).then((res) => res)
@@ -114,7 +114,7 @@ let dat = { ...d._doc, amount: amount ,ClassName:className ,Deposited:fee1,Rebat
         dataclasss.push(dat)
     })
 
-   console.log("fee info=>>>",dataclasss);
+
     if (resp.length > 0) {
         result = { success: true, message: "  get successfully", status: 200, data: dataclasss ,studentcount:count}
     }
@@ -184,9 +184,9 @@ const addStudentsFeeApi = async (req, res, next) => {
 
 
 const getStudentByBranchFeeApi = async (req, res, next) => {
-    console.log(req.body);
+   
      let resp = await StudentFee.find({ branchId: req.body.branchId, studentsId: req.body.studentsId }).then((res) => res)
-    console.log("data=>>", resp);
+  
     if (resp.length > 0) {
         result = { success: true, message: "  get successfully", status: 200, data: resp }
     }
@@ -202,7 +202,7 @@ const studentLogin = async (req, res, next) => {
 
 
     let resp = await Student.find({ DOB: req.body.dob, MobileNo: req.body.mobile }).then((res) => res)
-    console.log("data=>>", resp);
+
     if (resp.length > 0) {
         result = { success: true, message: "  get successfully", status: 200, data: resp }
     }
@@ -274,7 +274,7 @@ const studentsApi = async (req, res, next) => {
     let status = false
     if (req.body.firstname !== "") {
         let resp = await Student.find({}).then((res) => res)
-        console.log("display", resp);
+        
         if (resp.length > 0) {
             let id = 0
             resp.map(d => {
@@ -328,6 +328,7 @@ const studentsApi = async (req, res, next) => {
                 branchId: req.body.branchId,
                 groupId: req.body.groupId,
                 sessionName: req.body.sessionName,
+                PreviousDueFees: req.body.PreviousDueFees,
 
 
 
@@ -380,6 +381,7 @@ const studentsApi = async (req, res, next) => {
                 branchId: req.body.branchId,
                 groupId: req.body.groupId,
                 sessionName: req.body.sessionName,
+                PreviousDueFees: req.body.PreviousDueFees,
 
 
             });
@@ -401,14 +403,145 @@ const studentsApi = async (req, res, next) => {
     res.json(result)
 }
 
+
+
+
+
+const getStudentUpdateApi = async(req,res,next)=>{
+    let result=""
+    let status= false
+    console.log(req.body);
+     await Student.updateOne({  branchId:req.body.branchId,  studentsId:req.body.studentsId,groupId:req.body.groupId,sessionName: req.body.sessionName}, 
+                {
+                  $set: 
+                     {
+                     
+                     
+                        FirstName: req.body.firstname,
+                       LastName: req.body.lastname,
+                        FName: req.body.fathername,
+                        MotherName: req.body.mothername,
+                        EmailID: req.body.email,
+                        DOB: req.body.dob,
+                        Gender: req.body.gender,
+                        Phyical: req.body.physical,
+                        Category: req.body.category,
+                        password: req.body.password,
+                        MobileNo: req.body.mobile,
+                        CAddress: req.body.address,
+                        CArea: req.body.area,
+                        CPincode: req.body.pin,
+                        CCity: req.body.city,
+                        CState: req.body.state,
+                        CCountry: req.body.country,
+                        PAddress: req.body.paddress,
+                        PArea: req.body.parea,
+                        PPincode: req.body.ppin,
+                        PCity: req.body.pcity,
+                        PState: req.body.pstate,
+                        PCountry: req.body.pcountry,
+                        RTE: req.body.rte,
+        
+                        RegiterPageNo: req.body.registerpageno,
+                        RegistrationEnrollNo: req.body.registrationenrollno,
+                        ClassSection: req.body.classsection,
+                        AdmissionDate: req.body.admissiondate,
+        
+                        Schoolname: req.body.previousschoolname,
+                        SRNo: req.body.srno,
+                        previousclassname: req.body.previousclassname,
+                        Root: req.body.root,
+                        Stand: req.body.stand,
+                        Fare: req.body.fare,
+                      
+                        PreviousDueFees: req.body.PreviousDueFees, 
+                        }
+                }, 
+                { upsert: true }
+              ).then((res)=>res).then((data)=>{
+                console.log("Students",data);
+                status=true
+                if(data.modifiedCount>0){
+                    result={success:true,message:"Students  update successfully",status:200}
+                }
+                else{
+                    result={success:false,message:"Students update not ",status:200}  
+                }
+              })
+     res.json(result)  
+}
+
+
+const getStudentsPageApi = async (req, res, next) => {
+    const{ currentpage, limit, branchid, session,selectclass} = req?.query
+    console.log(req.query);
+    let studata = []
+    let count = await Student.find({$or:[{ branchId: branchid},{ branchId: branchid,ClassSection:selectclass}]}).countDocuments()
+    console.log("stydent count=>>",count);
+    let classres = await ClassDetails.find({ branchid: branchid }).then((res) => res)
+    let page = currentpage >= 1 ? currentpage : 1;
+    page = page - 1
+
+     await Student.find({$or:[{ branchId: branchid, sessionName: session},{ branchId: branchid, sessionName: session,ClassSection:selectclass}]})
+                .sort({studentsId: "asc" })
+                .limit(limit)
+                .skip(limit * page)
+                .then((results) => {
+                    datar = results.map(d => {
+                let classname = ""
+                classres.map(classdaat => {
+                    if (d.ClassSection == classdaat.classDetailId) {
+                        classname = classdaat.classsection
+                    }
+                })
+                studata.push({ ...d._doc, className: classname })
+            })
+           /*  console.log("students=>>",studata); */
+             return res.status(200).send({success: true, message: "  get successfully", status: 200, data: {studata,studentCount:count }});
+        })
+        .catch((err) => {
+            return res.status(500).send({success:false, message: "Error", status: 500,data:err});
+        }); 
+  /* 
+   
+   
+   
+    datar = resp.map(d => {
+        let classname = ""
+        classres.map(classdaat => {
+            if (d.ClassSection == classdaat.classDetailId) {
+                classname = classdaat.classsection
+            }
+        })
+        studata.push({ ...d._doc, className: classname })
+    })
+    studata["studentCount"]=count
+    if (resp.length > 0) {
+        result = { success: true, message: "  get successfully", status: 200, data: {studata,studentCount:count }}
+    }
+    else {
+        result = { success: false, message: "   not  get", status: 200, data: resp }
+    }
+
+    res.json(result) */
+}
+
+
+
+
+
+
+
+
+
 const getStudentsApi = async (req, res, next) => {
 
     let studata = []
     let resp = await Student.find({ branchId: req.body.branchId, sessionName: req.body.sessionName }).then((res) => res)
 
     let classres = await ClassDetails.find({ branchid: req.body.branchId }).then((res) => res)
-console.log("students",resp);
-console.log("classres",classres);
+console.log(req.body);
+    let count = await Student.find({ branchId: req.body.branchId}).count()
     datar = resp.map(d => {
 
         let classname = ""
@@ -419,10 +552,10 @@ console.log("classres",classres);
         })
         studata.push({ ...d._doc, className: classname })
     })
-    console.log((studata));
+    studata["studentCount"]=count
 
     if (resp.length > 0) {
-        result = { success: true, message: "  get successfully", status: 200, data: studata }
+        result = { success: true, message: "  get successfully", status: 200, data: {studata,studentCount:count }}
     }
     else {
         result = { success: false, message: "   not  get", status: 200, data: resp }
@@ -494,33 +627,32 @@ const uploadExcelFile = async (req, res, next) => {
 
 
 
-    console.log("file=>>>", req.body.class);
-    console.log("file=>>>", req.file);
+    c
 
     importFile('./public' + '/excelUploads/' + req.file.filename);
     function importFile(filePath) {
-        console.log(filePath);
+      ;
         const file = reader.readFile(filePath)
         let data = []
         const sheets = file.SheetNames
-        console.log(sheets.length);
+      
         for (let i = 0; i < sheets.length; i++) {
             const temp = reader.utils.sheet_to_json(
                 file.Sheets[file.SheetNames[i]])
             temp.forEach((res, index) => {
-                console.log("data row", res);
+                
                 res["studentsId"] = index + 1
                 res["ClassSection"] = req.body.class
                 data.push(res)
             })
         }
-        console.log(data);
+  
         Student.insertMany(data)
             .then(function () {
-                console.log("Successfully saved defult items to DB");
+              
             })
             .catch(function (err) {
-                console.log(err);
+              
             });
 
     }
@@ -543,5 +675,7 @@ module.exports = {
     downloadApi,
     addStudentsFeeApi,
     getStudentByBranchFeeApi,
-    getDataStudentsApi
+    getDataStudentsApi,
+    getStudentsPageApi,
+    getStudentUpdateApi
 }
