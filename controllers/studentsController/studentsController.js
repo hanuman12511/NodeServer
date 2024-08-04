@@ -72,14 +72,13 @@ const studentsFeeApi = async (req, res, next) => {
 }
 
 const getstudentsFeeApi = async (req, res, next) => {
-
+console.log("fee",req.body);
     let fee = await StudentFee.find({ branchId: req.body.branchid }).then((res) => res)
-    let resp = await Student.find({ branchId: req.body.branchid }).then((res) => res)
-    let count = await Student.find({ branchId: req.body.branchid }).countDocuments()
+    let resp = await Student.find({ branchId: req.body.branchid ,sessionName:req.body.session,}).then((res) => res)
+    let count = await Student.find({ branchId: req.body.branchid,sessionName:req.body.session }).countDocuments()
+     let classd = await ClassDetails.find({ branchid: req.body.branchid }).then((res) => res)
 
-    
-    let classd = await ClassDetails.find({ branchid: req.body.branchid }).then((res) => res)
-    let dataclasss = []
+     let dataclasss = []
     resp.map(d => {
         let amount = 0
         classd.map(cc => {
@@ -535,13 +534,40 @@ const getStudentsPageApi = async (req, res, next) => {
 
 
 const getStudentsApi = async (req, res, next) => {
-
-    let studata = []
-    let resp = await Student.find({ branchId: req.body.branchId, sessionName: req.body.sessionName }).then((res) => res)
-
-    let classres = await ClassDetails.find({ branchid: req.body.branchId }).then((res) => res)
 console.log(req.body);
-    let count = await Student.find({ branchId: req.body.branchId}).count()
+    let studata = []
+    let resp = await Student.find({$or:[{ branchId: req.body.branchId, sessionName: req.body.sessionName },{ branchId: req.body.branchId, sessionName: req.body.sessionName ,ClassSection:req.body.classdata}]}).then((res) => res)
+    let classres = await ClassDetails.find({ branchid: req.body.branchId }).then((res) => res)
+    let count = await Student.find({ branchId: req.body.branchId, sessionName: req.body.sessionName}).countDocuments()
+    datar = resp.map(d => {
+
+        let classname = ""
+        classres.map(classdaat => {
+            if (d.ClassSection == classdaat.classDetailId) {
+                classname = classdaat.classsection
+            }
+        })
+        studata.push({ ...d._doc, className: classname })
+    })
+    studata["studentCount"]=count
+
+    if (resp.length > 0) {
+        result = { success: true, message: "  get successfully", status: 200, data: {studata,studentCount:count }}
+    }
+    else {
+        result = { success: false, message: "   not  get", status: 200, data: resp }
+    }
+
+    res.json(result)
+}
+
+
+const getStudentsByClassApi = async (req, res, next) => {
+console.log(req.body);
+    let studata = []
+    let resp = await Student.find({ branchId: req.body.branchId, sessionName: req.body.sessionName ,ClassSection:req.body.classdata}).then((res) => res)
+    let classres = await ClassDetails.find({ branchid: req.body.branchId }).then((res) => res)
+    let count = await Student.find({ branchId: req.body.branchId, sessionName: req.body.sessionName}).countDocuments()
     datar = resp.map(d => {
 
         let classname = ""
@@ -677,5 +703,6 @@ module.exports = {
     getStudentByBranchFeeApi,
     getDataStudentsApi,
     getStudentsPageApi,
-    getStudentUpdateApi
+    getStudentUpdateApi,
+    getStudentsByClassApi
 }

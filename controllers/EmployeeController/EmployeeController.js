@@ -1,3 +1,4 @@
+const Departments = require("../../models/Departments")
 const AddEmployee = require("../../models/Employee/AddEmployee")
 
 
@@ -152,11 +153,24 @@ const employeeApi= async(req,res,next)=>{
 
     const  getEmployeeApi = async(req,res,next)=>{
     let resp = await AddEmployee.find({branchId:req.body.branchid}).then((res)=>res)
+    let department = await Departments.find({branchid:req.body.branchid })
+    console.log("=>>",resp);
+    console.log("=>>",department);
+    let data=[]
+    resp.map(d=>{
+      department.map(dd=>{
+        if(d.departmentName==dd.Departmentid){
+          data.push({...d._doc,depratmentName:dd.Department})
+        }
+      })
+    }) 
+
+    console.log("empdaat",data);
     if(resp.length>0){
-        result={success:true,message:"  get successfully",status:200,data:resp}
+        result={success:true,message:"  get successfully",status:200,data:data}
     }
     else{
-        result={success:false,message:"   not  get",status:200,data:resp}  
+        result={success:false,message:"   not  get",status:200,data:data}  
     }
     res.json(result)
 }

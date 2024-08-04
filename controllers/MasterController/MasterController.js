@@ -1257,6 +1257,7 @@ const ClassDetailApi = async (req, res, next) => {
 
 
 const getClassDetailApi = async (req, res, next) => {
+    console.log(req.body);
     let result = ""
     let resp = await ClassDetails.find({ branchid: req.body.branchid }).then((res) => res)
     if (resp.length > 0) {
@@ -1499,25 +1500,18 @@ const subjectApi = async (req, res) => {
 
 
 const subjectUpdateApi = async (req, res, next) => {
-
-    let result = ""
+     let result = ""
     let status = false
-   
-  
-
+    console.log(req.body);
     if (true) {
-
         let resp = await Subjects.updateOne(
             {branchId: req.body.branchid, subjectId:req.body.subjectId},
             {
                 $set:
                 {
-
-                    Subjects: req.body.Subjects,
+                Subjects: req.body.Subjects,
                 SubjectCode: req.body.SubjectCode,
                 Display: req.body.Display,
-                   
-
                 }
             },
             { upsert: true }
@@ -1675,6 +1669,44 @@ const getsubjecttoHeadApi = async (req, res) => {
 
 
 
+const subjectToassignUpdateApi = async (req, res, next) => {
+    let result = ""
+   let status = false
+   console.log(req.body);
+   if (true) {
+       let resp = await SubjectToHead.updateOne(
+           {branchId: req.body.branchid, subjecttoHeadId:req.body.subjecttoHeadId},
+           {
+               $set:
+               {
+               Subjects: req.body.Subjects,
+               SubjectCode: req.body.SubjectCode,
+               Display: req.body.Display,
+               }
+           },
+           { upsert: true }
+       ).then((res) => res)
+      
+       status = true
+
+
+   }
+   else {
+       result = { success: false, message: " pls insert Data", status: 200 }
+   }
+   if (status) {
+       result = { success: true, message: " subject  update successfully", status: 200 }
+   }
+   else {
+       result = { success: false, message: "subject  not update successfully ", status: 200 }
+   }
+
+   res.json(result)
+}
+
+
+
+
 module.exports = {
     feeHeadApi,
     getfeeHeadsApi,
@@ -1720,5 +1752,6 @@ module.exports = {
     getsubjectheadtosubjectApi,
     feeheadUpdateApi,
     subjectheadUpdateApi,
-    subjectUpdateApi
+    subjectUpdateApi,
+    subjectToassignUpdateApi
 }

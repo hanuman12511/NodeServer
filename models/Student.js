@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema({
   PreviousDueFees:String, 
   status:String,
   otp:Number,
-  PreviousDueFees:String
+ 
 
 });
    

@@ -26,6 +26,7 @@ router.post("/displayStudentsClassBy", studentsController.displayStudentsClassBy
 router.post("/studentAttendance", studentsController.studentAttendance )
 router.post("/getstudentsFeeApi", studentsController.getstudentsFeeApi )
 router.post("/addStudentsFeeApi", studentsController.addStudentsFeeApi )
+router.post("/getStudentsByClassApi", studentsController.getStudentsByClassApi )
 /* router.get("/uploadFileApi", studentsController.uploadExcelFile )
 router.get("/downloadApi", studentsController.downloadApi )
  */
@@ -75,6 +76,7 @@ router.post("/getAllFeeFrequencyApi", MasterController.getAllFeeFrequencyApi)
 router.post("/feefrequencyUpdateApi", MasterController.feefrequencyUpdateApi)
 router.post("/subjectheadUpdateApi", MasterController.subjectheadUpdateApi)
 router.post("/subjectUpdateApi", MasterController.subjectUpdateApi)
+router.post("/subjectToassignUpdateApi", MasterController.subjectToassignUpdateApi)
 
 //teacher
 router.post("/getEmployeeApi", getEmployeeApi)

@@ -13,6 +13,8 @@ const studentRoutes = require('./Routers/studentRoute');
 const examRoutes = require('./Routers/ExamRoute');
 const notificaltionRoutes = require('./Routers/NotificationRoute');
 const DashboardRoutes = require('./Routers/DashboardRoute');
+
+
 const app = express()
 app.use(cors())
 app.use(express.json())
@@ -31,7 +33,6 @@ const multer = require('multer')
 
 const csvtojson = require('csvtojson')
 const reader = require('xlsx') 
-//connect.Connection("student")
 connect.Connection("studentmgmt_smt")
 app.use('/', routes);
 app.use('/', departmentRoutes);
@@ -41,15 +42,14 @@ app.use('/', studentRoutes);
 app.use('/', examRoutes);
 app.use('/', notificaltionRoutes);
 app.use('/', DashboardRoutes);
+
+
 const port = 4000
 /* const options = {key:"",cert:""};
 https.createServer(options, app) */
 
 const Student = require("./models/Student"); 
 const addBranch = require('./models/addBranch');
-
-
-
 app.listen(port, () => console.log(`The server is listening on port ${port}`))
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -66,7 +66,7 @@ app.post('/upload', upload.single('image'), async(req, resp) => {
 
 
   console.log("req.file",req.file);
- const{name, groupName, branchId,  groupId,institutename,affiliation,
+ const{email,name, groupName, branchId,  groupId,institutename,affiliation,
     affiliated,medium, phone, password,username, mobile,contactperson,Address,
     registerno, established, website,logo}=JSON.parse(req?.body?.params) 
 
@@ -80,6 +80,7 @@ app.post('/upload', upload.single('image'), async(req, resp) => {
                 affiliation:affiliation,
                 affiliated:affiliated,
                 medium:medium,
+                branchemail:email,
                 phone:phone,
                 password:password,
                 username:username,
@@ -109,7 +110,7 @@ app.post('/upload', upload.single('image'), async(req, resp) => {
 app.post('/profile', async(req, resp) => {
 console.log("profile");
 
- const{name, groupName, branchId,  groupId,institutename,affiliation,
+ const{email,name, groupName, branchId,  groupId,institutename,affiliation,
     affiliated,medium, phone, password,username, mobile,contactperson,Address,
     registerno, established, website,logo}=req?.body 
 console.log(req.body);
@@ -126,6 +127,7 @@ console.log(req.body);
                 phone:phone,
                 password:password,
                 username:username,
+                branchemail:email,
                 mobile:mobile,
                 contactperson:contactperson,
                 Address:Address,
@@ -205,7 +207,7 @@ app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{
                 } 
            // console.log("data",data);
 
-            let dataf =[]
+          /*   let dataf =[]
             data.map(d=>{
               datastudent.map(dd=>{
                 console.log("stu=>>",d.RegistrationEnrollNo);
@@ -214,7 +216,7 @@ app.post('/uploadExcelFile', excelUploads.single("file"),async (req, res) =>{
                   dataf.push({...d})
                 }
               })
-            })
+            }) */
 
            // console.log("datafinal=>>",dataf);
 
@@ -286,10 +288,9 @@ app.get("/studentPageApi", (req, res, next) => {
   let page = currentpage >= 1 ? currentpage : 1;
   page = page - 1
   Student.find({ branchId: branchid, sessionName: session})
-      .sort({ FirstName: "asc" })
-      .limit(limit)
-      .skip(limit * page)
-      .then((results) => {
+    .skip(limit * page)
+    .limit(limit)
+        .then((results) => {
           return res.status(200).send(results);
       })
       .catch((err) => {
