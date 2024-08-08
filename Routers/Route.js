@@ -3,7 +3,7 @@ const router  = express.Router();
 const UserControll = require('../controllers/userControllers/UserControll')
 const studentsController = require('../controllers/studentsController/studentsController')
 const MasterController = require('../controllers/MasterController/MasterController');
-const { employeeApi, getEmployeeApi, getEmployeeByIdApi } = require('../controllers/EmployeeController/EmployeeController');
+const { employeeApi, getEmployeeApi, getEmployeeByIdApi, employeewithimageApi, getemployeeImageUpdateApi, getEmployeeSomeApi } = require('../controllers/EmployeeController/EmployeeController');
 
 
 
@@ -19,6 +19,7 @@ router.post("/getStudentByBranchFeeApi", studentsController.getStudentByBranchFe
 router.post("/studentLogin", studentsController.studentLogin)
 router.post("/StudentsApi", studentsController.studentsApi )
 router.post("/getStudentUpdateApi", studentsController.getStudentUpdateApi )
+router.post("/StudentUpdateWithoutimageApi", studentsController.StudentUpdateWithoutimageApi )
 router.post("/studentFeeApi", studentsController.studentsFeeApi )
 router.post("/getStudentsApi", studentsController.getStudentsApi )
 router.get("/getStudentsPageApi", studentsController.getStudentsPageApi )
@@ -59,6 +60,7 @@ router.post("/SectionApi", MasterController.SectionApi)
 router.post("/classDetailsApi", MasterController.ClassDetailApi)
 router.post("/ClassDetailUpdateApi", MasterController.ClassDetailUpdateApi)
 router.post("/getclassDetailApi", MasterController.getClassDetailApi)
+router.post("/getClassDetailSomeApi", MasterController.getClassDetailSomeApi)
 router.post("/getClassDetailApiByclass", MasterController.getClassDetailApiByclass)
 router.post("/subjectHeadApi", MasterController.subjectHeadApi)
 router.get("/getAllsubjectHeadApi", MasterController.getAllsubjectHeadApi)
@@ -68,6 +70,7 @@ router.post("/subjectApi", MasterController.subjectApi)
 router.post("/getsubjectApi", MasterController.getsubjectApi)
 router.get("/getAllsubjectApi", MasterController.getAllsubjectApi)
 router.post("/subjecttoHeadApi", MasterController.subjecttoHeadApi)
+router.post("/getSubjectWithSubjecttoheadApi", MasterController.getSubjectWithSubjecttoheadApi)
 router.get("/getAllsubjecttoHeadApi", MasterController.getAllsubjecttoHeadApi)
 router.post("/getsubjecttoHeadApi", MasterController.getsubjecttoHeadApi)
 router.post("/FeeFrequencyApi", MasterController.FeeFrequencyApi)
@@ -77,9 +80,20 @@ router.post("/feefrequencyUpdateApi", MasterController.feefrequencyUpdateApi)
 router.post("/subjectheadUpdateApi", MasterController.subjectheadUpdateApi)
 router.post("/subjectUpdateApi", MasterController.subjectUpdateApi)
 router.post("/subjectToassignUpdateApi", MasterController.subjectToassignUpdateApi)
+router.post("/TimeSchedule", MasterController.TimeSchedule)
+router.post("/gettimescheduleApi", MasterController.gettimescheduleApi)
+router.post("/gettimetableperiodApi", MasterController.gettimetableperiodApi)
+router.post("/TimeScheduleUpdate", MasterController.TimeScheduleUpdate)
 
 //teacher
+router.post("/getEmployeeSomeApi", getEmployeeSomeApi)
 router.post("/getEmployeeApi", getEmployeeApi)
 router.post("/employeeApi",employeeApi)
+router.post("/employeewithimageApi",employeewithimageApi)
+router.post("/getemployeeImageUpdateApi",getemployeeImageUpdateApi)
+router.post("/TimeTableApi",MasterController.TimeTableApi)
+router.post("/TimeTableUpdateApi",MasterController.TimeTableUpdateApi)
+router.post("/getTimeTableApi",MasterController.getTimeTableApi)
+router.post("/getClassDetailByClassApi",MasterController.getClassDetailByClassApi)
 
 module.exports=router

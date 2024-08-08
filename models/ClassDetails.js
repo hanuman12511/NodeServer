@@ -11,7 +11,8 @@ var employeeSchema= new mongoose.Schema({
     branchid:String,
     groupid:String,
     feeDetails:Array,
-    classsection:String
+    classsection:String,
+    sessionId:String
     
 });
 

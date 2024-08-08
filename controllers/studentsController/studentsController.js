@@ -2,7 +2,7 @@ const Class = require("../../models/Class");
 const ClassDetails = require("../../models/ClassDetails");
 const Student = require("../../models/Student")
 const StudentFee = require("../../models/StudentFee")
-const multer = require('multer')
+/* const multer = require('multer')
 var excelStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, './public/excelUploads');      // file added to the public folder of the root directory
@@ -11,9 +11,50 @@ var excelStorage = multer.diskStorage({
         cb(null, file.originalname);
     }
 });
-var excelUploads = multer({ storage: excelStorage });
+var excelUploads = multer({ storage: excelStorage }); */
 
+const multer = require('multer')
+const path = require('path');
+var ext = ""
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        // Uploads is the Upload_folder_name
+        cb(null, "public/uploads/");
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + "-" + Date.now() + "-"+file.originalname);
+    },
+});
 
+// Define the maximum size for uploading
+// picture i.e. 1 MB. it is optional
+const maxSize = 1 * 1000 * 1000;
+
+var upload = multer({
+    storage: storage,
+    limits: { fileSize: maxSize },
+    fileFilter: function (req, file, cb) {
+        // Set the filetypes, it is optional
+        var filetypes = /jpeg|jpg|png|pdf|doc|xlsx/;
+        var mimetype = filetypes.test(file.mimetype);
+
+        var extname = filetypes.test(
+            path.extname(file.originalname).toLowerCase()
+        );
+        ext = extname
+        if (mimetype && extname) {
+            return cb(null, true);
+        }
+
+        cb(
+            "Error: File upload only supports the " +
+            "following filetypes - " +
+            filetypes
+        );
+    },
+
+    // mypic is the name of file attribute
+}).single("file");
 
 const studentsFeeApi = async (req, res, next) => {
     let result = ""
@@ -269,137 +310,174 @@ const studentAttendance = async (req, res, next) => {
 
 
 const studentsApi = async (req, res, next) => {
-    let result = ""
-    let status = false
-    if (req.body.firstname !== "") {
-        let resp = await Student.find({}).then((res) => res)
-        
+
+
+    upload(req, res, async function (err) {
+        if (err) {
+
+            res.send(err);
+        } else {
+
+            let result = ""
+            let status1 = false
+            console.log("ontis", req?.body)
+            console.log("ontis file", req?.file)
+            console.log("ontis",JSON.parse(req?.body?.params)) 
+           const  {firstname,lastname
+            ,fathername,
+            mothername,
+            email,dob,gender,physical,category,passowrd,
+            mobile,address,area,pin,city,state,country,paddress,parea,ppin,pcity,pstate,pcountry
+            ,previousschoolname,srno,previousclassname,registerpageno,registrationenrollno,
+            classsection,admissiondate,root,stand,fare,status,otp,branchId,groupId,sessionName
+            ,PreviousDueFees} = JSON.parse(req?.body?.params)
+
+
+
+   if (firstname !== "") {
+        let resp1 = await Student.find({branchId:branchId,RegistrationEnrollNo:registrationenrollno,sessionName:sessionName}).then((res) => res)
+        if (resp1.length == 0) {
+            let resp = await Student.find({branchId:branchId,sessionName:sessionName}).then((res) => res)
         if (resp.length > 0) {
             let id = 0
             resp.map(d => {
                 id = d.studentsId
             })
             id++
+            try{
             const res = new Student({
 
                 studentsId: id,
-                FirstName: req.body.firstname,
-                LastName: req.body.lastname,
-                FName: req.body.fathername,
-                MotherName: req.body.mothername,
-                EmailID: req.body.email,
-                DOB: req.body.dob,
-                Gender: req.body.gender,
-                Phyical: req.body.physical,
-                Category: req.body.category,
-                password: req.body.password,
-                MobileNo: req.body.mobile,
-                CAddress: req.body.address,
-                CArea: req.body.area,
-                CPincode: req.body.pin,
-                CCity: req.body.city,
-                CState: req.body.state,
-                CCountry: req.body.country,
-                PAddress: req.body.paddress,
-                PArea: req.body.parea,
-                PPincode: req.body.ppin,
-                PCity: req.body.pcity,
-                PState: req.body.pstate,
-                PCountry: req.body.pcountry,
-                RTE: req.body.rte,
+                FirstName:firstname,
+                LastName: lastname,
+                FName: fathername,
+                MotherName: mothername,
+                EmailID: email,
+                DOB: dob,
+                Gender: gender,
+                Phyical: physical,
+                Category:category,
+               
+                MobileNo:mobile,
+                CAddress:address,
+                CArea: area,
+                CPincode: pin,
+                CCity: city,
+                CState:state,
+                CCountry:country,
+                PAddress:paddress,
+                PArea:parea,
+                PPincode:ppin,
+                PCity: pcity,
+                PState:pstate,
+                PCountry: pcountry,
+                RTE: "",
 
-                RegiterPageNo: req.body.registerpageno,
-                RegistrationEnrollNo: req.body.registrationenrollno,
-                ClassSection: req.body.classsection,
-                AdmissionDate: req.body.admissiondate,
+                RegiterPageNo:registerpageno,
+                RegistrationEnrollNo: registrationenrollno,
+                ClassSection: classsection,
+                AdmissionDate: admissiondate,
 
-                Schoolname: req.body.previousschoolname,
-                SRNo: req.body.srno,
+                Schoolname: previousschoolname,
+                SRNo: srno,
 
 
-                previousclassname: req.body.previousclassname,
-                Root: req.body.root,
-                Stand: req.body.stand,
-                Fare: req.body.fare,
+                previousclassname: previousclassname,
+                Root: root,
+                Stand:stand,
+                Fare: fare,
                 status: "students",
-                otp: req.body.otp,
-                PreviousDueFees: req.body.PreviousDueFees,
-                branchId: req.body.branchId,
-                groupId: req.body.groupId,
-                sessionName: req.body.sessionName,
-                PreviousDueFees: req.body.PreviousDueFees,
+                otp: otp,
+                PreviousDueFees:PreviousDueFees,
+                branchId: branchId,
+                groupId: groupId,
+                sessionName: sessionName,
+                PreviousDueFees:PreviousDueFees,
+                image: req.file==undefined?"":req.file.filename,
 
 
-
-            });
+            })
             res.save();
-            status = true
+            
+            result = { success: true, message: "  create  successfully", status: 200 }
+        }catch(error){
+                console.log(error);
+        }
         }
         else {
+            try{
             const res = new Student({
                 studentsId: 1,
-                FirstName: req.body.firstname,
-                LastName: req.body.lastname,
-                FName: req.body.fathername,
-                MotherName: req.body.mothername,
-                EmailID: req.body.email,
-                DOB: req.body.dob,
-                Gender: req.body.gender,
-                Phyical: req.body.physical,
-                Category: req.body.category,
-                password: req.body.password,
-                MobileNo: req.body.mobile,
-                CAddress: req.body.address,
-                CArea: req.body.area,
-                CPincode: req.body.pin,
-                CCity: req.body.city,
-                CState: req.body.state,
-                CCountry: req.body.country,
-                PAddress: req.body.paddress,
-                PArea: req.body.parea,
-                PPincode: req.body.ppin,
-                PCity: req.body.pcity,
-                PState: req.body.pstate,
-                PCountry: req.body.pcountry,
-                RTE: req.body.rte,
+               
+                FirstName:firstname,
+                LastName: lastname,
+                FName: fathername,
+                MotherName: mothername,
+                EmailID: email,
+                DOB: dob,
+                Gender: gender,
+                Phyical: physical,
+                Category:category,
+               
+                MobileNo:mobile,
+                CAddress:address,
+                CArea: area,
+                CPincode: pin,
+                CCity: city,
+                CState:state,
+                CCountry:country,
+                PAddress:paddress,
+                PArea:parea,
+                PPincode:ppin,
+                PCity: pcity,
+                PState:pstate,
+                PCountry: pcountry,
+                RTE: "",
 
-                RegiterPageNo: req.body.registerpageno,
-                RegistrationEnrollNo: req.body.registrationenrollno,
-                ClassSection: req.body.classsection,
-                AdmissionDate: req.body.admissiondate,
+                RegiterPageNo:registerpageno,
+                RegistrationEnrollNo: registrationenrollno,
+                ClassSection: classsection,
+                AdmissionDate: admissiondate,
 
-                Schoolname: req.body.previousschoolname,
-                SRNo: req.body.srno,
-                previousclassname: req.body.previousclassname,
-                Root: req.body.root,
-                Stand: req.body.stand,
-                Fare: req.body.fare,
+                Schoolname: previousschoolname,
+                SRNo: srno,
+
+
+                previousclassname: previousclassname,
+                Root: root,
+                Stand:stand,
+                Fare: fare,
                 status: "students",
-                otp: req.body.otp,
-                PreviousDueFees: req.body.PreviousDueFees,
-                branchId: req.body.branchId,
-                groupId: req.body.groupId,
-                sessionName: req.body.sessionName,
-                PreviousDueFees: req.body.PreviousDueFees,
+                otp: otp,
+                PreviousDueFees:PreviousDueFees,
+                branchId: branchId,
+                groupId: groupId,
+                sessionName: sessionName,
+                PreviousDueFees:PreviousDueFees,
+                image: req.file==undefined?"":req.file.filename,
 
 
-            });
+            })
             res.save();
-
-            status = true
-        }
+            result = { success: true, message: "  create  successfully", status: 200 }
+           
+        }catch(error){
+            console.log(error);
     }
+        }
+    }else{
+        result = { success: false, message: "Registration roll No already exists", status: 200 }
+    }
+
+    }
+
     else {
         result = { success: false, message: " pls insert Data", status: 200 }
-    }
-    if (status) {
-        result = { success: true, message: "  create  successfully", status: 200 }
-    }
-    else {
-        result = { success: false, message: "not create", status: 200 }
-    }
-
-    res.json(result)
+    } 
+   
+     res.json(result)
+        }
+    });
 }
 
 
@@ -407,9 +485,109 @@ const studentsApi = async (req, res, next) => {
 
 
 const getStudentUpdateApi = async(req,res,next)=>{
-    let result=""
-    let status= false
-    console.log(req.body);
+    upload(req, res, async function (err) {
+        if (err) {
+
+            res.send(err);
+        } else {
+
+            let result = ""
+            //let status1 = false
+           // console.log("ontis", req?.body)
+            //console.log("ontis file", req?.file)
+            //console.log("ontis",JSON.parse(req?.body?.params)) 
+           const  {
+            studentsId,
+            firstname,lastname
+            ,fathername,
+            mothername,
+            email,dob,gender,physical,category,passowrd,
+            mobile,address,area,pin,city,state,country,paddress,parea,ppin,pcity,pstate,pcountry
+            ,previousschoolname,srno,previousclassname,registerpageno,registrationenrollno,
+            classsection,admissiondate,root,stand,fare,status,otp,branchId,groupId,sessionName
+            ,PreviousDueFees} = JSON.parse(req?.body?.params)
+
+
+
+       
+            await Student.updateOne({  branchId:branchId,  studentsId:studentsId,groupId:groupId,sessionName: sessionName}, 
+                {
+                  $set: 
+                     {
+    
+
+             
+                FirstName:firstname,
+                LastName: lastname,
+                FName: fathername,
+                MotherName: mothername,
+                EmailID: email,
+                DOB: dob,
+                Gender: gender,
+                Phyical: physical,
+                Category:category,
+               
+                MobileNo:mobile,
+                CAddress:address,
+                CArea: area,
+                CPincode: pin,
+                CCity: city,
+                CState:state,
+                CCountry:country,
+                PAddress:paddress,
+                PArea:parea,
+                PPincode:ppin,
+                PCity: pcity,
+                PState:pstate,
+                PCountry: pcountry,
+                RTE: "",
+
+                RegiterPageNo:registerpageno,
+                RegistrationEnrollNo: registrationenrollno,
+                ClassSection: classsection,
+                AdmissionDate: admissiondate,
+
+                Schoolname: previousschoolname,
+                SRNo: srno,
+
+
+                previousclassname: previousclassname,
+                Root: root,
+                Stand:stand,
+                Fare: fare,
+                status: "students",
+                otp: otp,
+                PreviousDueFees:PreviousDueFees,
+                branchId: branchId,
+                groupId: groupId,
+                sessionName: sessionName,
+                PreviousDueFees:PreviousDueFees,
+                image: req.file==undefined?"":req.file.filename,
+
+
+            }
+        }, 
+        { upsert: true }
+      ).then((res)=>res).then((data)=>{
+        console.log("Students",data);
+       
+        if(data.modifiedCount>0){
+            result={success:true,message:"Students  update successfully",status:200}
+        }
+        else{
+            result={success:false,message:"Students update not ",status:200}  
+        }
+      })
+
+     
+   
+     
+res.json(result)
+}
+});
+
+/* 
+
      await Student.updateOne({  branchId:req.body.branchId,  studentsId:req.body.studentsId,groupId:req.body.groupId,sessionName: req.body.sessionName}, 
                 {
                   $set: 
@@ -467,7 +645,105 @@ const getStudentUpdateApi = async(req,res,next)=>{
                     result={success:false,message:"Students update not ",status:200}  
                 }
               })
-     res.json(result)  
+     res.json(result)   */
+}
+
+const StudentUpdateWithoutimageApi = async(req,res,next)=>{
+   
+            let result = ""
+            //let status1 = false
+           // console.log("ontis", req?.body)
+            //console.log("ontis file", req?.file)
+            //console.log("ontis",JSON.parse(req?.body?.params)) 
+           const  {
+            studentsId,
+            firstname,lastname
+            ,fathername,
+            mothername,
+            email,dob,gender,physical,category,passowrd,
+            mobile,address,area,pin,city,state,country,paddress,parea,ppin,pcity,pstate,pcountry
+            ,previousschoolname,srno,previousclassname,registerpageno,registrationenrollno,
+            classsection,admissiondate,root,stand,fare,status,otp,branchId,groupId,sessionName
+            ,PreviousDueFees} = req?.body
+
+
+
+       
+            await Student.updateOne({  branchId:branchId,  studentsId:studentsId,groupId:groupId,sessionName: sessionName}, 
+                {
+                  $set: 
+                     {
+    
+
+             
+                FirstName:firstname,
+                LastName: lastname,
+                FName: fathername,
+                MotherName: mothername,
+                EmailID: email,
+                DOB: dob,
+                Gender: gender,
+                Phyical: physical,
+                Category:category,
+               
+                MobileNo:mobile,
+                CAddress:address,
+                CArea: area,
+                CPincode: pin,
+                CCity: city,
+                CState:state,
+                CCountry:country,
+                PAddress:paddress,
+                PArea:parea,
+                PPincode:ppin,
+                PCity: pcity,
+                PState:pstate,
+                PCountry: pcountry,
+                RTE: "",
+
+                RegiterPageNo:registerpageno,
+                RegistrationEnrollNo: registrationenrollno,
+                ClassSection: classsection,
+                AdmissionDate: admissiondate,
+
+                Schoolname: previousschoolname,
+                SRNo: srno,
+
+
+                previousclassname: previousclassname,
+                Root: root,
+                Stand:stand,
+                Fare: fare,
+                status: "students",
+                otp: otp,
+                PreviousDueFees:PreviousDueFees,
+                branchId: branchId,
+                groupId: groupId,
+                sessionName: sessionName,
+                PreviousDueFees:PreviousDueFees,
+              
+
+
+            }
+        }, 
+        { upsert: true }
+      ).then((res)=>res).then((data)=>{
+        console.log("Students",data);
+       
+        if(data.modifiedCount>0){
+            result={success:true,message:"Students  update successfully",status:200}
+        }
+        else{
+            result={success:false,message:"Students update not ",status:200}  
+        }
+      })
+
+     
+   
+     
+res.json(result)
+
+
 }
 
 
@@ -534,7 +810,7 @@ const getStudentsPageApi = async (req, res, next) => {
 
 
 const getStudentsApi = async (req, res, next) => {
-console.log(req.body);
+console.log("data get branchidand session id on getStudentsApi",req.body);
     let studata = []
     let resp = await Student.find({$or:[{ branchId: req.body.branchId, sessionName: req.body.sessionName },{ branchId: req.body.branchId, sessionName: req.body.sessionName ,ClassSection:req.body.classdata}]}).then((res) => res)
     let classres = await ClassDetails.find({ branchid: req.body.branchId }).then((res) => res)
@@ -704,5 +980,6 @@ module.exports = {
     getDataStudentsApi,
     getStudentsPageApi,
     getStudentUpdateApi,
-    getStudentsByClassApi
+    getStudentsByClassApi,
+    StudentUpdateWithoutimageApi
 }

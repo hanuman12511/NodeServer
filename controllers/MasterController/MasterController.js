@@ -11,6 +11,8 @@ const FeeFrequency = require("../../models/FeeFrequency")
 const AddEmployee = require("../../models/Employee/AddEmployee")
 const addSections = require("../../models/addSections")
 const multer = require('multer')
+const addTimeSchedule = require("../../models/addTimeSchedule")
+const TimeTable = require("../../models/TimeTable")
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -818,8 +820,10 @@ const classControlApi = async (req, res, next) => {
 
 
 const getClassApi = async (req, res, next) => {
+
+    console.log(req.body);
    
-    let resp = await Class.find({ groupid: req.body.branchId }).then((res) => res)
+    let resp = await Class.find({  branchid: req.body.branchId }).then((res) => res)
 
     if (resp.length > 0) {
         result = { success: true, message: " addClass  get successfully", status: 200, data: resp }
@@ -919,6 +923,277 @@ const SectionApi = async (req, res, next) => {
 }
 
 
+const TimeSchedule = async (req, res, next) => {
+    let result = ""
+    let status = false
+    console.log(req.body);
+    const {
+        branchid,
+        groupid,
+        timeschedulename,
+        intime,
+        outtime,
+        display,
+        } =req?.body
+    if (req.body !== "") {
+      
+        let resp1 = await addTimeSchedule.find({ branchid:branchid,timeschedulename:timeschedulename }).then((res) => res)
+    
+        if (Object.keys(resp1).length == 0) {
+            let resp = await addTimeSchedule.find({ branchid:branchid }).then((res) => res)
+            if (resp.length > 0) {
+                let id = 0
+                resp.map(d => {
+                    id = d.timescheduleid
+                })
+                id++
+                const res = new addTimeSchedule({
+                    branchid,
+                    groupid,
+                    timeschedulename,
+                    intime,
+                    outtime,
+                    display,
+                    timescheduleid:id,
+                    branchControl:true ,
+                });
+                res.save();
+                status = true
+            }
+            else {
+                 const res = new addTimeSchedule({
+                    branchid,
+                    groupid,
+                    timeschedulename,
+                    intime,
+                    outtime,
+                    display,
+                    timescheduleid:1,
+                    branchControl:true ,
+                });
+                res.save();
+
+                status = true
+            }
+        }
+        else {
+            result = { success: false, message: " pls insert Data", status: 200 }
+        }
+        if (status) {
+            result = { success: true, message: "  create  successfully", status: 200 }
+        }
+        else {
+            result = { success: false, message: "  already exists", status: 200 }
+        }
+    } else {
+        result = { success: false, message: " pls fill data", status: 200 }
+    }
+
+    res.json(result)
+}
+
+const TimeTableApi = async (req, res, next) => {
+    let result = ""
+    let status = false
+    console.log(req.body);
+    const {
+        groupid,
+        branchid,
+        classsection,
+        subject,
+        timeschedule,
+        employee,
+        sessionId,
+       selectday
+        } =req?.body
+    if (req.body !== "") {
+      
+      
+    
+       
+            let resp = await TimeTable.find({ branchid:branchid ,timeschedule:timeschedule,classsection:classsection}).then((res) => res)
+            if(resp.length==0){
+            let resp = await TimeTable.find({ branchid:branchid }).then((res) => res)
+            if (resp.length > 0) {
+                let id = 0
+                resp.map(d => {
+                    id = d.timetableid
+                })
+                id++
+                const res = new TimeTable({
+                    groupid,
+                    branchid,
+                    classsection,
+                    subject,
+                    timeschedule,
+                    employee,
+                    sessionId,
+                     selectday,
+                     timetableid:id,
+                    branchControl:true ,
+                });
+                res.save();
+                status = true
+            }
+            else {
+                const res = new TimeTable({
+                    groupid,
+                    branchid,
+                    classsection,
+                    subject,
+                    timeschedule,
+                    employee,
+                    sessionId,
+                     selectday,
+                     timetableid:1,
+                    branchControl:true ,
+                });
+                res.save();
+
+                status = true
+            }
+        
+       
+        if (status) {
+            result = { success: true, message: "  create  successfully", status: 200 }
+        }
+        else {
+            result = { success: false, message: "  already exists", status: 200 }
+        }
+   
+}else{
+    result = { success: false, message: "  already exists", status: 200 } 
+}
+} else {
+    result = { success: false, message: " pls fill data", status: 200 }
+}
+    res.json(result)
+}
+
+const TimeTableUpdateApi = async (req, res, next) => {
+    let result = ""
+    let status = false
+    const {
+        timetableid,
+        groupid,
+        branchid,
+        classsection,
+        subject,
+        timeschedule,
+        employee,
+        sessionId,
+       selectday
+        } =req?.body
+  
+    let resp1 = await TimeTable.find({branchid:branchid, sessionId:sessionId,timetableid:timetableid}).then((res) => res)
+  
+    if (Object.keys(resp1).length > 0) {
+
+
+        await TimeTable.updateOne(
+            {branchid:branchid, sessionId:sessionId,timetableid:timetableid },
+            {
+                $set:
+                {
+
+                    classsection,
+                    subject,
+                    timeschedule,
+                    employee,
+                  
+                selectday
+
+                }
+            },
+            { upsert: true }
+        ).then((res) => res).then((data) => {
+         
+            status = true
+            if (status) {
+                result = { success: true, message: " TimeTable update successfully", status: 200 }
+            }
+            else {
+                result = { success: false, message: " TimeTable update not ", status: 200 }
+            }
+        })
+
+    }
+    else {
+        result = { success: false, message: " pls change Data", status: 200 }
+    }
+
+
+    res.json(result)
+}
+
+
+const getTimeTableApi = async (req, res, next) => {
+console.log("get table req",req.body);
+    let resp = await TimeTable.find({ branchid: req.body.branchid }).then((res) => res)
+
+    if (resp.length > 0) {
+        result = { success: true, message: " time schedule get successfully", status: 200, data: resp }
+    }
+    else {
+        result = { success: false, message: "  addSection not  get", status: 200, data: resp }
+    }
+
+    res.json(result)
+}
+
+
+
+
+const gettimetableperiodApi = async (req, res, next) => {
+
+    let resp = await addTimeSchedule.find({ branchid: req.body.branchid }).then((res) => res)
+    let timetable = await TimeTable.find({ branchid: req.body.branchid }).then((res) => res)
+    let res1 = await ClassDetails.find({ branchid: req.body.branchid }).then((res) => res)
+let dataapi=[]
+    let pdata=[]
+
+    resp&&resp.map(d=>{
+        pdata.push({"name":d.timeschedulename,"time":d.intime+"-"+d.outtime})
+    })
+dataapi.push({"class":"class","schedule":pdata})
+console.log("get api",dataapi);
+res1&&res1.map(cl=>{
+    let subsir=[]
+    timetable&&timetable.map(tt=>{
+        if(tt.classsection==cl.classsection){
+            subsir.push({"name":tt.employee,"time":tt.subject})
+        }
+    }) 
+    console.log("subject sir",subsir);
+    dataapi.push({"class":cl.classsection,"schedule":subsir})
+})
+console.log("get api",dataapi);
+
+    if (dataapi.length > 0) {
+        result = { success: true, message: " time schedule get successfully", status: 200, data: dataapi }
+    }
+    else {
+        result = { success: false, message: "  addSection not  get", status: 200, data: resp }
+    }
+
+    res.json(result)
+}
+const  gettimescheduleApi = async (req, res, next) => {
+
+    let resp = await addTimeSchedule.find({ branchid: req.body.branchid }).then((res) => res)
+
+    if (resp.length > 0) {
+        result = { success: true, message: " time schedule get successfully", status: 200, data: resp }
+    }
+    else {
+        result = { success: false, message: "  addSection not  get", status: 200, data: resp }
+    }
+
+    res.json(result)
+}
+
+
+
 
 const sectionUpdateApi = async (req, res, next) => {
     let result = ""
@@ -959,6 +1234,55 @@ const sectionUpdateApi = async (req, res, next) => {
 
 
     res.json(result)
+}
+
+const TimeScheduleUpdate = async (req, res, next) => {
+    let result = ""
+    let status = false
+const { branchid,
+    groupid,
+    timeschedulename,
+    intime,
+    outtime,
+    display,
+    timescheduleid}=req?.body
+  
+    let resp1 = await addTimeSchedule.find({branchid:branchid, timescheduleid:timescheduleid }).then((res) => res)
+  
+    if (Object.keys(resp1).length > 0) {
+
+
+        await addTimeSchedule.updateOne(
+            { branchid: branchid, groupid: groupid, timescheduleid:timescheduleid},
+            {
+                $set:
+                {
+
+                   
+                    timeschedulename,
+                    intime,
+                    outtime,
+                    display,
+                   
+                }
+            },
+            { upsert: true }
+        ).then((res) => res).then((data) => {
+         
+            status = true
+            if (status) {
+                result = { success: true, message: " timeschedule update successfully", status: 200 }
+            }
+            else {
+                result = { success: false, message: "timeschedule  update not ", status: 200 }
+            }
+        })
+
+    }
+    else {
+        result = { success: false, message: " pls change Data", status: 200 }
+    }
+ res.json(result)
 }
 
 
@@ -1273,6 +1597,49 @@ const getClassDetailApi = async (req, res, next) => {
         })
 
         result = { success: true, message: "Class Detail Getsuccessfully", status: 200, data: dataclass }
+    }
+    else {
+        result = { success: false, message: "Class Detail not Get successfully", status: 200, data: resp }
+    }
+
+    res.json(result)
+}
+
+const getClassDetailSomeApi = async (req, res, next) => {
+    console.log(req.body);
+    let result = ""
+    let resp = await ClassDetails.find({ branchid: req.body.branchid }).then((res) => res)
+    if (resp.length > 0) {
+        let data = []
+        resp.map(d=>{
+            data.push({classsection:d.classsection,classDetailId:d.classDetailId,SubjectId:d.SubjectId})
+        })
+
+        result = { success: true, message: "Class Detail Getsuccessfully", status: 200, data: data}
+    }
+    else {
+        result = { success: false, message: "Class Detail not Get successfully", status: 200, data: resp }
+    }
+
+    res.json(result)
+}
+
+const getClassDetailByClassApi = async (req, res, next) => {
+    console.log("by class=",req.body);
+
+    const{
+        branchid,classsection
+    }=req?.body
+    let result = ""
+    let resp = await ClassDetails.find({ branchid:branchid,classsection:classsection }).then((res) => res)
+    console.log("by class",resp);
+    if (resp.length > 0) {
+        let data = []
+        resp.map(d=>{
+            data.push({classsection:d.classsection,classDetailId:d.classDetailId,SubjectId:d.SubjectId})
+        })
+
+        result = { success: true, message: "Class Detail Get successfully", status: 200, data: data}
     }
     else {
         result = { success: false, message: "Class Detail not Get successfully", status: 200, data: resp }
@@ -1629,6 +1996,21 @@ const getAllsubjecttoHeadApi = async (req, res) => {
     }
     res.json(result)
 }
+
+const getSubjectWithSubjecttoheadApi= async (req, res) => {
+    const{branchId,subjecttoHeadId}=req?.body
+    console.log(req.body);
+    let resp = await SubjectToHead.find({branchId:branchId,subjecttoHeadId:subjecttoHeadId}).then((res) => res)
+    console.log(resp);
+    if (resp.length > 0) {
+        result = { success: true, message: "  get successfully", status: 200, data: resp }
+    }
+    else {
+        result = { success: false, message: "   not  get", status: 200, data: resp }
+    }
+    res.json(result)
+}
+
 const getsubjectheadtosubjectApi = async (req, res) => {
 
     let resp = await SubjectToHead.find({ branchId: req.body.branchid, subjecttoHeadId: req.body.subjectheadid }).then((res) => res)
@@ -1753,5 +2135,15 @@ module.exports = {
     feeheadUpdateApi,
     subjectheadUpdateApi,
     subjectUpdateApi,
-    subjectToassignUpdateApi
+    subjectToassignUpdateApi,
+    TimeSchedule,
+    gettimescheduleApi,
+    TimeScheduleUpdate,
+    getClassDetailSomeApi,
+    getSubjectWithSubjecttoheadApi,
+    TimeTableApi,
+    getTimeTableApi ,
+    TimeTableUpdateApi,
+    getClassDetailByClassApi,
+    gettimetableperiodApi
 }

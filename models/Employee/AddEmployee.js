@@ -46,6 +46,7 @@ periods:String,
 paidleave:String,
 intime:String,
 outtime:String,
+image:String
 
 });
 

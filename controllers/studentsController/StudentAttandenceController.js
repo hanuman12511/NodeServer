@@ -1,5 +1,5 @@
-const Class = require("../../models/Class")
-const CLass = require("../../models/Class")
+
+const ClassDetails = require("../../models/ClassDetails")
 const Student = require("../../models/Student")
 const studentAttandence = require("../../models/Students/studentAttendence")
 
@@ -57,9 +57,10 @@ const AddAttandenceApi = async (req, res, next) => {
 
 const getAttandenceBranchbyApi = async (req, res, next) => {
     let datar = []
-
-    let resp = await studentAttandence.find({ branchId: req.body.branchid, date: req.body.date }).then((res) => res)
-    let res1 = await Student.find({ branchId: req.body.branchid }).then((res) => res)
+console.log(req.body);
+    let resp = await studentAttandence.find({ branchId: req.body.branchid, date: req.body.date,"data.Class" :req.body.classsection,sessionId:req.body.session}).then((res) => res)
+   console.log("=>>",resp);
+    let res1 = await Student.find({ branchId: req.body.branchid ,sessionName:req.body.session}).then((res) => res)
     if (resp.length > 0) {
 
         let datar1 = resp.map(d => {
@@ -79,18 +80,12 @@ const getAttandenceBranchbyApi = async (req, res, next) => {
 
     }
     else {
-
-        /*  let dept= await Departments.find().then((res)=>res) */
-
-        let resp = await Class.find({ branchid: req.body.branchid }).then((res) => res)
-        console.log("android=>>", resp);
-        /*  console.log(res1); */
+         let resp = await ClassDetails.find({ branchid: req.body.branchid,sessionId:req.body.session,classsection:req.body.classsection }).then((res) => res)
         datar = res1.map(d => {
-            console.log(d);
             let classname = ""
             resp.map(classdaat => {
-                if (d.ClassSection == classdaat.classId) {
-                    classname = classdaat.Class
+                if (d.ClassSection == classdaat.classDetailId) {
+                    classname = classdaat.classsection
                 }
             })
             return { Class: classname, studentsId: d.studentsId, firstName: d.FirstName, lastName: d.LastName, fatherName: d.FName, isChecked: false, intime: "--:--", outtime: "--:--", isInTime: false, isOutTime: false, ontime: "08:00", offtime: "02:00", AttendenceType: "Manual" }
