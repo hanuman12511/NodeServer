@@ -407,6 +407,7 @@ const employeeApi= async(req,res,next)=>{
     const  getEmployeeSomeApi = async(req,res,next)=>{
     let resp = await AddEmployee.find({branchId:req.body.branchid}).then((res)=>res)
     let data=[]
+    data.push({label:"Select",value:""})
     resp.map(d=>{
       data.push({label:d.firstName+" "+d.lastName,value:d.employeeId})
     })
