@@ -7,6 +7,7 @@ const SubjectToHead = require("../../models/SubjectToHead")
 const MainExam = require("../../models/MainExam")
 const SubjectHead = require("../../models/SubjectHead")
 const InternalExam = require("../../models/InternalExam")
+const ClassDetails = require("../../models/ClassDetails")
 
 const mainExamDataApi= async(req,res,next)=>{
     let result=""
@@ -15,7 +16,7 @@ const mainExamDataApi= async(req,res,next)=>{
                    await MainExamData.find({ Subject:req.body.subject,branchid:req.body.branchid, Class:req.body.classname,Exam:req.body.examname}).then(async(res)=>{
                        
                         if(res.length==0){
-                            let resp = await MainExamData.find({}).then((res)=>res)
+                            let resp = await MainExamData.find({branchid:req.body.branchid,}).then((res)=>res)
                             if(resp.length>0){
                                 let id = 0
                                 resp.map(d=>{
@@ -34,12 +35,12 @@ const mainExamDataApi= async(req,res,next)=>{
                                         Marks:req.body.marks,
                                         Writtenmaxno:req.body.written,
                                         Vivamaxno:req.body.viva,
-                                        Practicalmaxno:req.body.Practicalmaxno,
+                                        Practicalmaxno:req.body.practical,
                                         Class:req.body.classname,
                                         SubjectHead:req.body.subjecthead,
                                         Subject:req.body.subject,
                                         Marks:req.body. Studentlist,
-                                        branchControl:true
+                                       
                              });
                                 res.save();
                               
@@ -63,12 +64,12 @@ const mainExamDataApi= async(req,res,next)=>{
                                         Marks:req.body.marks,
                                         Writtenmaxno:req.body.written,
                                         Vivamaxno:req.body.viva,
-                                        Practicalmaxno:req.body.Practicalmaxno,
+                                        Practicalmaxno:req.body.practical,
                                         Class:req.body.classname,
                                         SubjectHead:req.body.subjecthead,
                                         Subject:req.body.subject,
                                         Marks:req.body. Studentlist,
-                                        branchControl:true
+                                       
                                         
                                     });
                                 res.save();
@@ -186,20 +187,23 @@ const mainExamDataApi= async(req,res,next)=>{
 res.json( result)
         }  
         
-        
+  
+const   getStudentMainExamMarksBySubjectApi = async(req,res,next)=>{
+    /* branchid:bid,sessionId,classid,subjectid,examid */
+    console.log(req.body);
+    let resp = await MainExamData.find({branchid:req.body.branchid,sessionName:req.body.sessionId,Exam:req.body.examid,
+        Class :req.body.classid,
+         Subject:req.body.subjectid
+        }).then((res)=>res)
 
 
-    
-const  getMainExamDataApi = async(req,res,next)=>{
-    let resp = await MainExamData.find({branchid:req.body.branchid}).then((res)=>res)
-    let classd = await Class.find({branchid:req.body.branchid}).then((res)=>res)
-    let subject = await SubjectToHead.find({}).then((res)=>res)
-    let subjecthead = await SubjectHead.find({}).then((res)=>res)
-    let exam1 = await MainExam.find({branchid:req.body.branchid}).then((res)=>res)
-   
+    /* let classd = await ClassDetails.find({branchid:req.body.branchid}).then((res)=>res)
+    let subjecthead1 = await SubjectToHead.find({branchId:req.body.branchid}).then((res)=>res)
+    let subjecthead = await SubjectHead.find({branchId:req.body.branchid}).then((res)=>res)
+    let exam1 = await MainExam.find({branchid:req.body.branchid}).then((res)=>res) */
+   /* 
     let dataf = []
     resp.map(d=>{
-        console.log("data exam=>>",d);
         let data = []
         exam1.map(ex=>{
             if(d.Exam==ex.ExamId){
@@ -207,18 +211,84 @@ const  getMainExamDataApi = async(req,res,next)=>{
             }
         })
         classd.map(cl=>{
-            if(d.Class==cl.classId)
-            data.push({classname:cl.Class})
+            if(d.Class==cl.classDetailId)
+            data.push({classname:cl.classsection})
         })
         
-        subjecthead.map(sh=>{
-            if(d.SubjectHead==sh.subjectHeadId)
-            data.push({SubjectHead:sh.SubjectHead})
+        subjecthead1.map(sh=>{
+            if(d.SubjectHead==sh.SubjectHead){
+                subjecthead.map(shs=>{
+                    if(sh.SubjectHead==shs.subjectHeadId){
+                        data.push({SubjectHead:shs.SubjectHead})
+                    }
+                })
+          
+                sh.Subjects.map(sub=>{
+                    if(sub.id==d.Subject){
+                        data.push({"subject":sub.subect})
+                    }
+                })
+            }
         })
-        console.log("data=>>",data);
-        console.log(("************************************"));
-        dataf.push({exam:data[0].exam,classname:data[1].classname,subjecthead:data[2].SubjectHead})
+    console.log(data);
+if(data.length>0){
+        dataf.push({...d. _doc,exam:data[0].exam,classname:data[1].classname,subjecthead:data[2].SubjectHead,subject:data[3].subject})
+}
+    }) */
 
+ /*    console.log("daat fibal=>>>",dataf); */
+    if(resp.length>0){
+        result={success:true,message:"  get successfully",status:200,data:resp}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:resp}  
+    }
+    res.json(result)
+}
+       
+
+    
+    
+const  getMainExamDataApi = async(req,res,next)=>{
+    console.log(req.body);
+    let resp = await MainExamData.find({branchid:req.body.branchid}).then((res)=>res)
+    let classd = await ClassDetails.find({branchid:req.body.branchid}).then((res)=>res)
+    let subjecthead1 = await SubjectToHead.find({branchId:req.body.branchid}).then((res)=>res)
+    let subjecthead = await SubjectHead.find({branchId:req.body.branchid}).then((res)=>res)
+    let exam1 = await MainExam.find({branchid:req.body.branchid}).then((res)=>res)
+   
+    let dataf = []
+    resp.map(d=>{
+        let data = []
+        exam1.map(ex=>{
+            if(d.Exam==ex.ExamId){
+                data.push({exam:ex.Exam})
+            }
+        })
+        classd.map(cl=>{
+            if(d.Class==cl.classDetailId)
+            data.push({classname:cl.classsection})
+        })
+        
+        subjecthead1.map(sh=>{
+            if(d.SubjectHead==sh.SubjectHead){
+                subjecthead.map(shs=>{
+                    if(sh.SubjectHead==shs.subjectHeadId){
+                        data.push({SubjectHead:shs.SubjectHead})
+                    }
+                })
+          
+                sh.Subjects.map(sub=>{
+                    if(sub.id==d.Subject){
+                        data.push({"subject":sub.subect})
+                    }
+                })
+            }
+        })
+    console.log(data);
+if(data.length>0){
+        dataf.push({...d. _doc,exam:data[0].exam,classname:data[1].classname,subjecthead:data[2].SubjectHead,subject:data[3].subject})
+}
     })
 
     console.log("daat fibal=>>>",dataf);
@@ -243,7 +313,6 @@ const  getInternalExamDataApi = async(req,res,next)=>{
    
     let dataf = []
     resp.map(d=>{
-        console.log("data exam=>>",d);
         let data = []
         exam1.map(ex=>{
             if(d.Exam==ex.ExamId){
@@ -259,8 +328,6 @@ const  getInternalExamDataApi = async(req,res,next)=>{
             if(d.SubjectHead==sh.subjectHeadId)
             data.push({SubjectHead:sh.SubjectHead})
         })
-        console.log("data=>>",data);
-        console.log(("************************************"));
         dataf.push({exam:data[0].exam,classname:data[1].classname,subjecthead:data[2].SubjectHead})
 
     })
@@ -358,20 +425,30 @@ const getInternalExamDataControlApi = async(req,res,next)=>{
 
 
 const getMainExamDataUpdateApi = async(req,res,next)=>{
+    console.log(req.body);
     let result=""
     let status= false
-    let resp1= await MainExamData.find({ ExamId:req.body.Examid,branchid:req.body.branchid}).then((res)=>res)
+    let resp1= await MainExamData.find({ ExamId:req.body.ExamId,branchid:req.body.branchid}).then((res)=>res)
     console.log(Object.keys(resp1).length);
-    if(Object.keys(resp1).length>=0){
+    if(Object.keys(resp1).length>0){
     
           
-           await MainExamData.updateOne({ branchid:req.body.branchid,  ExamId:req.body.Examid,groupid:req.body.groupid}, 
+           await MainExamData.updateOne({ branchid:req.body.branchid,  ExamId:req.body.ExamId,groupid:req.body.groupid}, 
                 {
                   $set: 
                      {
                        
-                        Exam:req.body.Exam,
-                        Display:req.body.Display,
+                                Exam:req.body.examname,
+                                Display:req.body.Display,
+                                Marks:req.body.marks,
+                                Writtenmaxno:req.body.written,
+                                Vivamaxno:req.body.viva,
+                                Practicalmaxno:req.body.Practicalmaxno,
+                                Class:req.body.classname,
+                                SubjectHead:req.body.subjecthead,
+                                Subject:req.body.subject,
+                                Marks:req.body. Studentlist,
+                                branchControl:true
                        }
                 }, 
                 { upsert: true }
@@ -443,5 +520,6 @@ getMainExamDataControlApi,
 getInternalExamDataControlApi,
 getMainExamDataUpdateApi,
 getInternalExamDataUpdateApi,
-getInternalExamDataApi
+getInternalExamDataApi,
+getStudentMainExamMarksBySubjectApi
 }

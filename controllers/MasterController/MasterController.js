@@ -1624,6 +1624,48 @@ const getClassDetailSomeApi = async (req, res, next) => {
     res.json(result)
 }
 
+const getSubjectByClassApi = async (req, res, next) => {
+    console.log("by class=",req.body);
+    let result = ""
+    let resp = await ClassDetails.find({ branchid:req.body.branchid,sessionIs:req.sessionId,classDetailId:req.body.classDetailId}).then((res) => res)
+    let sub = await SubjectToHead.find({ branchId:req.body.branchid,}).then((res) => res)
+   
+   let data=[]
+   let subject=[]
+   if(resp.length>0){
+
+       
+       resp.map(cd=>{
+        cd.SubjectId.map(ss=>{
+
+            sub.map(s=>{
+                if(ss.subjectHeadId==s.subjecttoHeadId){
+                    s.Subjects.map(sj=>{
+
+                        subject.push({...sj})
+                    })
+
+                }
+            })
+        })
+       })
+       
+   }
+   console.log(subject);
+    if (resp.length > 0) {
+        /* let data = []
+        resp.map(d=>{
+            data.push({classsection:d.classsection,classDetailId:d.classDetailId,SubjectId:d.SubjectId})
+        }) */
+
+        result = { success: true, message: "Class Detail Get successfully", status: 200, data: subject}
+    }
+    else {
+        result = { success: false, message: "Class Detail not Get successfully", status: 200, data: resp }
+    }
+
+    res.json(result)
+}
 const getClassDetailByClassApi = async (req, res, next) => {
     console.log("by class=",req.body);
 
@@ -2145,5 +2187,6 @@ module.exports = {
     getTimeTableApi ,
     TimeTableUpdateApi,
     getClassDetailByClassApi,
-    gettimetableperiodApi
+    gettimetableperiodApi,
+    getSubjectByClassApi
 }

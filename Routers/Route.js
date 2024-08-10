@@ -33,6 +33,7 @@ router.get("/downloadApi", studentsController.downloadApi )
  */
 
 // master
+router.post("/getSubjectByClassApi", MasterController.getSubjectByClassApi)
 router.post("/feefrequencyControlApi", MasterController.feefrequencyControlApi)
 router.post("/sectionControlApi", MasterController.sectionControlApi)
 router.post("/sectionUpdateApi", MasterController.sectionUpdateApi)

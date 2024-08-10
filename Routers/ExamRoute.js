@@ -1,6 +1,6 @@
 const express = require('express');
 const examRoute  = express.Router();
-const { mainExamDataApi, internalExamDataApi, getMainExamDataApi, getMainExamDataControlApi, getInternalExamDataControlApi, getMainExamDataUpdateApi, getInternalExamDataUpdateApi, getInternalExamDataApi } = require('../controllers/MasterController/ExamController');
+const { mainExamDataApi, internalExamDataApi, getMainExamDataApi, getMainExamDataControlApi, getInternalExamDataControlApi, getMainExamDataUpdateApi, getInternalExamDataUpdateApi, getInternalExamDataApi, getStudentMainExamMarksBySubjectApi } = require('../controllers/MasterController/ExamController');
 const { mainExamApi, internalExamApi, getMainExamApi, getMainExamControlApi, getInternalExamControlApi, getMainExamUpdateApi, getInternalExamUpdateApi, getInternalExamApi, MainExamMasterUpdateApi } = require('../controllers/MasterController/ExamControllerMaster');
 
 
@@ -21,6 +21,7 @@ examRoute.post("/getInternalExamControlApi",getInternalExamControlApi),
 examRoute.post("/getMainExamUpdateApi",getMainExamUpdateApi),
 examRoute.post("/getInternalExamApi",getInternalExamApi)
 examRoute.post("/getInternalExamUpdateApi",getInternalExamUpdateApi)
+examRoute.post("/getStudentMainExamMarksBySubjectApi",getStudentMainExamMarksBySubjectApi)
     
 
 module.exports=examRoute
