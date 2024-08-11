@@ -112,6 +112,67 @@ const studentsFeeApi = async (req, res, next) => {
     res.json(resp)
 }
 
+const getstudentsFeebyclassApi = async (req, res, next) => {
+console.log("getstudentsFeebyclassApi",req.body);
+let count =0
+let classd=[]
+let fee=[]
+    let resp = await Student.find({ branchId: req.body.branchid ,sessionName:req.body.sessionId,}).then((res) => res)
+ let stdata=[]
+ if(req.body.classDetailId==""){
+     fee = await StudentFee.find({ branchId: req.body.branchid,}).then((res) => res)
+    console.log("feee details",fee);
+    stdata = await Student.find({ branchId: req.body.branchid,sessionName:req.body.sessionId,})
+     classd = await ClassDetails.find( {sessionId: req.body.sessionId  ,branchid: req.body.branchid,}).then((res) => res)
+ }
+ else{
+    fee = await StudentFee.find({ branchId: req.body.branchid,classDetailId:req.body.classDetailId }).then((res) => res)
+    console.log("feee details",fee);
+    stdata = await Student.find({ branchId: req.body.branchid,sessionName:req.body.sessionId,ClassSection:req.body.classDetailId  })
+    classd = await ClassDetails.find( {sessionId: req.body.sessionId  ,branchid: req.body.branchid,classDetailId:req.body.classDetailId}).then((res) => res)
+ }
+     let dataclasss = []
+     let amount = 0
+    
+     classd.map( async(cl)=>{
+        let amount=0
+        
+        cl.feeDetails.map(fd=>{
+            amount+=parseInt( fd.fee)
+        })
+let count1=0
+stdata.map(sd=>{
+    if(sd.ClassSection==cl.classDetailId){
+        count1++
+    }
+})
+let deposited=0
+let Rebat=0
+fee.map(fe=>{
+    if(fe.classDetailId==cl.classDetailId){
+    deposited+=fe.Deposited
+    Rebat+=fe.Rebat
+    }
+
+})
+
+        dataclasss.push({"class":cl.classsection,"amount":amount,"count":count1,"deposited":deposited,"Rebat":Rebat})
+     })
+console.log(dataclasss);
+let finaldata = dataclasss.filter(d=>d.count>0)
+console.log(finaldata);
+    if (resp.length > 0) {
+        result = { success: true, message: "  get successfully", status: 200, data: finaldata ,studentcount:count}
+    }
+    else {
+        result = { success: false, message: "   not  get", status: 200, data: resp }
+    }
+
+    res.json(result)
+}
+
+
+
 const getstudentsFeeApi = async (req, res, next) => {
 console.log("fee",req.body);
     let fee = await StudentFee.find({ branchId: req.body.branchid }).then((res) => res)
@@ -981,5 +1042,6 @@ module.exports = {
     getStudentsPageApi,
     getStudentUpdateApi,
     getStudentsByClassApi,
-    StudentUpdateWithoutimageApi
+    StudentUpdateWithoutimageApi,
+    getstudentsFeebyclassApi
 }
