@@ -13,7 +13,13 @@ const studentRoutes = require('./Routers/studentRoute');
 const examRoutes = require('./Routers/ExamRoute');
 const notificaltionRoutes = require('./Routers/NotificationRoute');
 const DashboardRoutes = require('./Routers/DashboardRoute');
+const dotenv = require('dotenv');
 
+// get config vars
+dotenv.config();
+
+// access config var
+process.env.TOKEN_SECRET;
 
 const app = express()
 app.use(cors())
@@ -51,6 +57,9 @@ https.createServer(options, app) */
 const Student = require("./models/Student"); 
 const addBranch = require('./models/addBranch');
 app.listen(port, () => console.log(`The server is listening on port ${port}`))
+
+
+
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
           console.log("store=>>",req);

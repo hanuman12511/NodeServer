@@ -2,9 +2,17 @@ var mongoose=require("mongoose");
 
 // Creating EmployeeSchema 
 var employeeSchema= new mongoose.Schema({
-    HolidayName:String,
-    FromDate:String,
-    ToDate:String
+    holidayId:Number,
+    branchId:Number,
+    groupId:String,
+    sessionId:String,
+    startdate:String,
+    enddate:String,
+     title:String,
+    description: String,
+    filename: String,
+    
+   
 });
 
 //Exporting Employee Schema

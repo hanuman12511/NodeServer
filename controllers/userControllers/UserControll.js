@@ -162,6 +162,7 @@ const userLogin = async (req, res, next) => {
         
 let data1= user==null?user1:user1==null?user:null
 console.log("data get=>>",data1);
+
             if (data1) {
                 resultdata.push({ success: true, message: "login data get successfully", data: data1, "length": 1 })
             }

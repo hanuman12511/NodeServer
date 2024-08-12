@@ -4,6 +4,7 @@ const AddEmployee = require("../../models/Employee/AddEmployee")
 
 const multer = require('multer')
 const path = require('path');
+const addBranch = require("../../models/addBranch");
 var ext = ""
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -235,7 +236,7 @@ const employeewithimageApi = async (req, res, next) => {
 
 const employeeApi= async(req,res,next)=>{
     let result=""
-                let status= false
+             
                 if(req.body.firstname!==""){
 
             await  AddEmployee.find({ mobile:req.body.mobile}).then(async(res)=>{
@@ -300,7 +301,7 @@ const employeeApi= async(req,res,next)=>{
                                     
                                 });
                             res.save();
-                            status=true
+                         
                             result={success:true,message:"  create  successfully",status:200}
                           
                          
@@ -357,7 +358,7 @@ const employeeApi= async(req,res,next)=>{
                                 });
                                 res.save();
                             
-                                status=true
+                             
                                 result={success:true,message:"  create  successfully",status:200}
                               
                                
@@ -371,12 +372,7 @@ const employeeApi= async(req,res,next)=>{
                     else{
                      result= {success:false,message:" pls insert Data",status:200}
                     }
-                   /*  if(status){
-                        result={success:true,message:"  create  successfully",status:200}
-                    }
-                    else{
-                        result={success:false,message:"not create",status:200}  
-                    } */
+                 
           
         res.json( result)
     }
@@ -404,6 +400,33 @@ const employeeApi= async(req,res,next)=>{
     }
     res.json(result)
 }
+    const  getEmployeeProfileApi = async(req,res,next)=>{
+      let branch = await addBranch.find({branchId:req.body.branchId,}).then((res)=>res)
+      console.log("branch",branch);
+    let resp = await AddEmployee.find({branchId:req.body.branchId,employeeId:req.body.employeeId}).then((res)=>res)
+    let department = await Departments.find({branchid:req.body.branchId })
+    let data=[]
+    resp.map(d=>{
+      department.map(dd=>{
+        if(d.departmentName==dd.Departmentid){
+          data.push({...d._doc,depratmentName1:dd.Department,branchname:branch[0].branchname,branchlogo:branch[0].logo,branchmobile:branch[0].mobile,branchphone:branch[0].phone})
+        }
+      })
+    }) 
+
+  
+    if(resp.length>0){
+        result={success:true,message:"  get successfully",status:200,data:data}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:data}  
+    }
+    res.json(result)
+}
+
+
+
+
     const  getEmployeeSomeApi = async(req,res,next)=>{
     let resp = await AddEmployee.find({branchId:req.body.branchid}).then((res)=>res)
     let data=[]
@@ -432,7 +455,7 @@ const getemployeeUpdateApi = async(req,res,next)=>{
                 {
                   $set: 
                      {
-                     
+                      status:"employee",
                       intime:req.body.intime,
                       outtime:req.body.outtime,
                       branchId:req.body.branchid,
@@ -546,12 +569,13 @@ const getemployeeImageUpdateApi = async(req,res,next)=>{
         paidleave,
         intime,
         employeeId,
+        
         outtime}=JSON.parse(req?.body?.params)
      await AddEmployee.updateOne({  branchId:branchid,  employeeId:employeeId,groupId:groupid}, 
                 {
                   $set: 
                      {
-                     
+                      status:"employee",
                       intime:intime,
                       outtime:outtime,
                         branchId:branchid,
@@ -620,6 +644,7 @@ module.exports={
         getEmployeeSomeApi,
         getemployeeUpdateApi,
         employeewithimageApi,
-        getemployeeImageUpdateApi
+        getemployeeImageUpdateApi,
+        getEmployeeProfileApi
         
 }

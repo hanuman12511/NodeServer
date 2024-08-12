@@ -1,6 +1,8 @@
 const notification = require("../../models/Notification/NotificationStudent")
 const multer = require('multer')
 const path = require('path');
+const addHolidayList = require("../../models/addHolidayList");
+const addnews = require("../../models/addnews");
 var ext = ""
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -43,6 +45,67 @@ var upload = multer({
 }).single("file");
 
 const NotificationAllApi = async (req, res, next) => {
+
+    if(req.file==undefined){
+        const { status,
+            statustype,
+            branchid,
+            groupid,
+            sessionid,
+            date,
+            title,
+            description } = req?.body
+        if (date !== "") {
+            let resp = await notification.find({ branchId: branchid })
+            if (resp.length > 0) {
+                let id = 0
+                resp.map(d => {
+                    id = d.notificationId
+                })
+                id++
+                const res = new notification({
+                    notificationId: id,
+                    branchId: branchid,
+                    groupId: groupid,
+                    sessionId: sessionid,
+                    date: date,
+                    title: title,
+                    description: description,
+                  
+                    status: status,
+                    statustype: statustype,
+                    readstatus:"no"
+                });
+                res.save();
+                result = { success: true, message: "notification add successfully", status: 200 }
+            } else {
+                const res = new notification({
+                    notificationId: 1,
+                    branchId: branchid,
+                    groupId: groupid,
+                    sessionId: sessionid,
+                    date: date,
+                    title: title,
+                    description: description,
+                   
+                    status: status,
+                    statustype: statustype,
+                    readstatus:"no"
+
+
+                });
+                res.save();
+                result = { success: true, message: "notification add successfully", status: 200 }
+            }
+        }
+        else {
+            result = { success: false, message: " pls fill data", status: 200 }
+        }
+
+        res.json(result)
+    }
+    
+    else{
     upload(req, res, async function (err) {
         if (err) {
 
@@ -79,7 +142,8 @@ const NotificationAllApi = async (req, res, next) => {
                         description: description,
                         filename: req.file==undefined?"":req.file.filename,
                         status: status,
-                        statustype: statustype
+                        statustype: statustype,
+                        readstatus:"no"
                     });
                     res.save();
                     result = { success: true, message: "notification add successfully", status: 200 }
@@ -94,7 +158,8 @@ const NotificationAllApi = async (req, res, next) => {
                         description: description,
                         filename: req.file==undefined?"":req.file.filename,
                         status: status,
-                        statustype: statustype
+                        statustype: statustype,
+                        readstatus:"no"
 
 
                     });
@@ -109,7 +174,301 @@ const NotificationAllApi = async (req, res, next) => {
             res.json(result)
         }
     });
+
+    }
+
+
+
+
 }
+
+
+const holidayApi = async (req, res, next) => {
+
+    if(req.file==undefined){
+        const { 
+            branchid,
+            groupid,
+            sessionid,
+            startdate,
+            enddate,
+            title,
+            description } = req?.body
+        if (startdate !== "") {
+            let resp = await addHolidayList.find({ branchId: branchid })
+            if (resp.length > 0) {
+                let id = 0
+                resp.map(d => {
+                    id = d.holidayId
+                })
+                id++
+                const res = new addHolidayList({
+                    holidayId: id,
+                        branchId: branchid,
+                        groupId: groupid,
+                        sessionId: sessionid,
+                        startdate: startdate,
+                        enddate: enddate,
+                        title: title,
+                        description: description,
+                       
+                });
+                res.save();
+                result = { success: true, message: "holiday add successfully", status: 200 }
+            } else {
+                const res = new addHolidayList({
+                    holidayId: 1,
+                        branchId: branchid,
+                        groupId: groupid,
+                        sessionId: sessionid,
+                        startdate: startdate,
+                        enddate: enddate,
+                        title: title,
+                        description: description,
+                       
+                   
+                  
+
+
+                });
+                res.save();
+                result = { success: true, message: "holiday add successfully", status: 200 }
+            }
+        }
+        else {
+            result = { success: false, message: " pls fill data", status: 200 }
+        }
+
+        res.json(result)
+    }
+    
+    else{
+
+
+    upload(req, res, async function (err) {
+        if (err) {
+
+            res.send(err);
+        } else {
+
+            let result = ""
+            
+            const { 
+                branchid,
+                groupid,
+                sessionid,
+                startdate,
+                enddate,
+                title,
+                description } = JSON.parse(req?.body?.params)
+            if (startdate !== "") {
+                let resp = await addHolidayList.find({ branchId: branchid })
+                if (resp.length > 0) {
+                    let id = 0
+                    resp.map(d => {
+                        id = d.holidayId
+                    })
+                    id++
+                    const res = new addHolidayList({
+                        holidayId: id,
+                        branchId: branchid,
+                        groupId: groupid,
+                        sessionId: sessionid,
+                        startdate: startdate,
+                        enddate: enddate,
+                        title: title,
+                        description: description,
+                        filename:req.file.filename,
+                    });
+                    res.save();
+                    result = { success: true, message: "holiday add successfully", status: 200 }
+                } else {
+                    const res = new addHolidayList({
+                        holidayId: 1,
+                        branchId: branchid,
+                        groupId: groupid,
+                        sessionId: sessionid,
+                        startdate: startdate,
+                        enddate: enddate,
+                        title: title,
+                        description: description,
+                        filename:req.file.filename,
+                        
+                    });
+                    res.save();
+                    result = { success: true, message: "holiday add successfully", status: 200 }
+                }
+            }
+            else {
+                result = { success: false, message: " pls fill data", status: 200 }
+            }
+
+            res.json(result)
+        }
+    });
+
+    }
+}
+
+
+const getHolidayApi = async (req, res, next) => {
+    let resp = await addHolidayList.find({ branchId: req.body.branchid,}).then((res) => res)
+    if (resp.length > 0) {
+        result = { success: true, message: "get successfully", status: 200, data: resp }
+    }
+    else {
+        result = { success: false, message: "not  get", status: 200, data: resp }
+    }
+    res.json(result)
+}
+
+
+
+
+
+
+const NewsApi = async (req, res, next) => {
+
+    if(req.file==undefined){
+        const { 
+            branchid,
+            groupid,
+            sessionid,
+            startdate,
+            enddate,
+            title,
+            description } = req?.body
+        if (startdate !== "") {
+            let resp = await addnews.find({ branchId: branchid })
+            if (resp.length > 0) {
+                let id = 0
+                resp.map(d => {
+                    id = d.newsId
+                })
+                id++
+                const res = new addnews({
+                    newsId: id,
+                        branchId: branchid,
+                        groupId: groupid,
+                        sessionId: sessionid,
+                        startdate: startdate,
+                        enddate: enddate,
+                        title: title,
+                        description: description,
+                       
+                });
+                res.save();
+                result = { success: true, message: "addnews add successfully", status: 200 }
+            } else {
+                const res = new addnews({
+                    newsId: 1,
+                        branchId: branchid,
+                        groupId: groupid,
+                        sessionId: sessionid,
+                        startdate: startdate,
+                        enddate: enddate,
+                        title: title,
+                        description: description,
+                       
+                   
+                  
+
+
+                });
+                res.save();
+                result = { success: true, message: "addnews add successfully", status: 200 }
+            }
+        }
+        else {
+            result = { success: false, message: " pls fill data", status: 200 }
+        }
+
+        res.json(result)
+    }
+    
+    else{
+
+
+    upload(req, res, async function (err) {
+        if (err) {
+
+            res.send(err);
+        } else {
+
+            let result = ""
+            
+            const { 
+                branchid,
+                groupid,
+                sessionid,
+                startdate,
+                enddate,
+                title,
+                description } = JSON.parse(req?.body?.params)
+            if (startdate !== "") {
+                let resp = await addnews.find({ branchId: branchid })
+                if (resp.length > 0) {
+                    let id = 0
+                    resp.map(d => {
+                        id = d.newsId
+                    })
+                    id++
+                    const res = new addnews({
+                        holidayId: id,
+                        branchId: branchid,
+                        groupId: groupid,
+                        sessionId: sessionid,
+                        startdate: startdate,
+                        enddate: enddate,
+                        title: title,
+                        description: description,
+                        filename:req.file.filename,
+                    });
+                    res.save();
+                    result = { success: true, message: "holiday add successfully", status: 200 }
+                } else {
+                    const res = new addnews({
+                        newsId: 1,
+                        branchId: branchid,
+                        groupId: groupid,
+                        sessionId: sessionid,
+                        startdate: startdate,
+                        enddate: enddate,
+                        title: title,
+                        description: description,
+                        filename:req.file.filename,
+                        
+                    });
+                    res.save();
+                    result = { success: true, message: "holiday add successfully", status: 200 }
+                }
+            }
+            else {
+                result = { success: false, message: " pls fill data", status: 200 }
+            }
+
+            res.json(result)
+        }
+    });
+
+    }
+}
+
+
+const getNewsApi = async (req, res, next) => {
+    let resp = await addnews.find({ branchId: req.body.branchid,}).then((res) => res)
+    if (resp.length > 0) {
+        result = { success: true, message: "get successfully", status: 200, data: resp }
+    }
+    else {
+        result = { success: false, message: "not  get", status: 200, data: resp }
+    }
+    res.json(result)
+}
+
+
+
+
 
 
 const NotificationApi = async (req, res, next) => {
@@ -134,6 +493,7 @@ const NotificationApi = async (req, res, next) => {
                 data: req.body.data,
                  title: req.body.title,
                 description: req.body.description,
+                readstatus:"no"
                
                 });
             res.save();
@@ -148,7 +508,7 @@ const NotificationApi = async (req, res, next) => {
                 data: req.body.data,
                 title: req.body.title,
                 description: req.body.description,
-             
+                readstatus:"no"
               
 
             });
@@ -166,18 +526,49 @@ const NotificationApi = async (req, res, next) => {
 
 
 
-const getemployeeNotificationApi = async (req, res, next) => {
-    let resp = await notification.find({ branchId: req.body.branchId, "data.employeeId": req.body.employeeId }).then((res) => res)
-    console.log(resp);
-    let datap = []
-    resp.map(d => {
-        d.data.map(dd => {
-            if (dd.employeeId == req.body.employeeId)
-                datap.push({ notificationId: d.notificationId, branchId: d.branchId, date: d.date, ...dd })
-        })
-    })
 
-    console.log("emp=>>", datap);
+
+
+const getemployeeNotificationApi = async (req, res, next) => {
+
+    console.log(req.body);
+    const {branchId,employeeId,depratmentid, status}=req?.body 
+    let resp= await notification.find({branchId:branchId, status: status}).then((res) => res)
+    console.log(resp);
+    let statustype=[]
+    
+    if(resp.length>0){
+        resp.map(n=>{
+            if(n.statustype==0){
+                statustype.push(n)
+            }
+        })
+    }
+    let statusdpt=[]
+    if(resp.length>0){
+        
+        resp.map(n=>{
+            if(n.statustype==depratmentid){
+                statusdpt.push(n)
+            }
+        })
+    }
+    
+console.log("statustype",statustype);    
+console.log(" statusdpt", statusdpt);    
+    let resp1 = await notification.find({ branchId:branchId,  "data.employeeId": req.body.employeeId }).then((res) => res)
+   
+    let datap = []
+    datap.push({ common:statustype, depratment:statusdpt})
+    let empdata=[]
+    resp1.map(d => {
+        d.data.map(dd => {
+            if (dd.employeeId == employeeId)
+                empdata.push({ notificationId: d.notificationId, branchId: d.branchId, date: d.date, ...dd })
+        })
+    }) 
+datap.push({empdata:empdata})
+ 
     if (resp.length > 0) {
         result = { success: true, message: "get successfully", status: 200, data: datap }
     }
@@ -187,6 +578,10 @@ const getemployeeNotificationApi = async (req, res, next) => {
 
     res.json(result)
 }
+
+
+
+
 
 
 const notificationUpdateApi = async (req, res, next) => {
@@ -279,6 +674,10 @@ const NotificationByApi = async (req, res, next) => {
 
     res.json(result)
 }
+
+
+
+
 const notificationByBranchApi = async (req, res, next) => {
 
     console.log(req.body);
@@ -309,5 +708,9 @@ module.exports = {
     notificationUpdateApi,
     studentnotificationUpdateApi,
     NotificationAllApi,
-    notificationByBranchApi
+    notificationByBranchApi,
+    holidayApi,
+    getHolidayApi,
+    NewsApi,
+getNewsApi
 }

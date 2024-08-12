@@ -9,6 +9,7 @@ var employeeSchema= new mongoose.Schema({
     subject:String,
     timeschedule:String,
     employee:String,
+    employeeid:String,
     sessionId:String,
     selectday:Array,
     timetableid:Number

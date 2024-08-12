@@ -3,7 +3,7 @@ const router  = express.Router();
 const UserControll = require('../controllers/userControllers/UserControll')
 const studentsController = require('../controllers/studentsController/studentsController')
 const MasterController = require('../controllers/MasterController/MasterController');
-const { employeeApi, getEmployeeApi, getEmployeeByIdApi, employeewithimageApi, getemployeeImageUpdateApi, getEmployeeSomeApi } = require('../controllers/EmployeeController/EmployeeController');
+const { employeeApi, getEmployeeApi, getEmployeeByIdApi, employeewithimageApi, getemployeeImageUpdateApi, getEmployeeSomeApi, getEmployeeProfileApi } = require('../controllers/EmployeeController/EmployeeController');
 
 
 
@@ -90,6 +90,7 @@ router.post("/TimeScheduleUpdate", MasterController.TimeScheduleUpdate)
 //teacher
 router.post("/getEmployeeSomeApi", getEmployeeSomeApi)
 router.post("/getEmployeeApi", getEmployeeApi)
+router.post("/getEmployeeProfileApi", getEmployeeProfileApi)
 router.post("/employeeApi",employeeApi)
 router.post("/employeewithimageApi",employeewithimageApi)
 router.post("/getemployeeImageUpdateApi",getemployeeImageUpdateApi)
@@ -97,5 +98,6 @@ router.post("/TimeTableApi",MasterController.TimeTableApi)
 router.post("/TimeTableUpdateApi",MasterController.TimeTableUpdateApi)
 router.post("/getTimeTableApi",MasterController.getTimeTableApi)
 router.post("/getClassDetailByClassApi",MasterController.getClassDetailByClassApi)
+router.post("/getEmployeeTimeTableApi",MasterController.getEmployeeTimeTableApi)
 
 module.exports=router

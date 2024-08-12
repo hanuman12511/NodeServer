@@ -1004,7 +1004,8 @@ const TimeTableApi = async (req, res, next) => {
         timeschedule,
         employee,
         sessionId,
-       selectday
+       selectday,
+       employeeid
         } =req?.body
     if (req.body !== "") {
       
@@ -1027,6 +1028,7 @@ const TimeTableApi = async (req, res, next) => {
                     subject,
                     timeschedule,
                     employee,
+                    employeeid,
                     sessionId,
                      selectday,
                      timetableid:id,
@@ -1044,6 +1046,7 @@ const TimeTableApi = async (req, res, next) => {
                     timeschedule,
                     employee,
                     sessionId,
+                    employeeid,
                      selectday,
                      timetableid:1,
                     branchControl:true ,
@@ -1140,6 +1143,33 @@ console.log("get table req",req.body);
 
     res.json(result)
 }
+
+const getEmployeeTimeTableApi = async (req, res, next) => {
+const {branchId,employeeId,groupId} = req.body
+    let resp = await TimeTable.find({ branchid:branchId, groupid:groupId,employeeid:employeeId }).then((res) => res)
+    let schedul = await addTimeSchedule.find({ branchid:branchId, groupid:groupId}).then((res) => res)
+let data=[]
+    resp.map(tt=>{
+    schedul.map(sc=>{
+        if(tt.timetableid==sc.timescheduleid){
+            data.push({...tt._doc,intime:sc.intime,outtime:sc.outtime})
+        }
+    })
+})
+
+console.log(data);
+    if (resp.length > 0) {
+        result = { success: true, message: " time schedule get successfully", status: 200, data: data }
+    }
+    else {
+        result = { success: false, message: "  addSection not  get", status: 200, data: resp }
+    }
+
+    res.json(result)
+}
+
+
+
 
 
 
@@ -2188,5 +2218,6 @@ module.exports = {
     TimeTableUpdateApi,
     getClassDetailByClassApi,
     gettimetableperiodApi,
-    getSubjectByClassApi
+    getSubjectByClassApi,
+    getEmployeeTimeTableApi
 }
