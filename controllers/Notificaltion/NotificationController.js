@@ -3,6 +3,7 @@ const multer = require('multer')
 const path = require('path');
 const addHolidayList = require("../../models/addHolidayList");
 const addnews = require("../../models/addnews");
+const addLeave = require("../../models/addLeave");
 var ext = ""
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -468,6 +469,182 @@ const getNewsApi = async (req, res, next) => {
 
 
 
+const leaveapplicationApi = async (req, res, next) => {
+
+        const {
+            personId,
+            persontype, 
+            branchid,
+            groupid,
+            sessionid,
+            startdate,
+            enddate,
+            title,
+            status,
+            description } = req?.body
+        if (startdate !== "") {
+            let resp = await addLeave.find({ branchId: branchid })
+            if (resp.length > 0) {
+                let id = 0
+                resp.map(d => {
+                    id = d.leaveId
+                })
+                id++
+                const res = new addLeave({
+                    leaveId: id,
+                    branchId: branchid,
+                    groupId: groupid,
+                    sessionId: sessionid,
+                    startdate: startdate,
+                    enddate: enddate,
+                    title: title,
+                    description: description,
+                    status:status,
+                    personId,
+                    persontype,
+                    filename:"",
+                    leavestatus:"panding"
+                });
+                res.save();
+                result = { success: true, message: "leave add successfully", status: 200 }
+            } else {
+                const res = new addLeave({
+                    leaveId: 1,
+                    branchId: branchid,
+                    groupId: groupid,
+                    sessionId: sessionid,
+                    startdate: startdate,
+                    enddate: enddate,
+                    title: title,
+                    description: description,
+                    status:status,
+                    personId,
+                    persontype,
+                    filename:"",
+                    leavestatus:"panding"
+                   
+                  
+
+
+                });
+                res.save();
+                result = { success: true, message: "leaveadd successfully", status: 200 }
+            }
+        }
+        else {
+            result = { success: false, message: " pls fill data", status: 200 }
+        }
+
+        res.json(result)
+    
+    
+  
+        
+    
+
+    
+}
+
+
+const leaveapplicationfileApi = async (req, res, next) => {
+
+    console.log("req.file",req.file);
+    console.log("req.body",req.body);
+
+    upload(req, res, async function (err) {
+
+        
+        if (err) {
+
+            res.send(err);
+        } else {
+            console.log("req.file",req.file);
+            console.log("req.body",req.body);
+            let result = ""
+            
+            const { 
+                personId,
+                persontype,
+                branchid,
+                groupid,
+                sessionid,
+                startdate,
+                enddate,
+                title,
+                status,
+                description 
+            } = JSON.parse(req?.body?.params)
+            if (startdate !== "") {
+                let resp = await addLeave.find({ branchId: branchid })
+                if (resp.length > 0) {
+                    let id = 0
+                    resp.map(d => {
+                        id = d.leaveId
+                    })
+                    id++
+                    const res = new addLeave({
+                        leaveId: id,
+                        branchId: branchid,
+                        groupId: groupid,
+                        sessionId: sessionid,
+                        startdate: startdate,
+                        enddate: enddate,
+                        title: title,
+                        status:status,
+                        description: description,
+                        filename:req.file.filename,
+                        personId,
+                        persontype,
+                        leavestatus:"panding"
+                    });
+                    res.save();
+                    result = { success: true, message: "leave with doc add successfully", status: 200 }
+                } else {
+                    const res = new addLeave({
+                        leaveId: 1,
+                        branchId: branchid,
+                        groupId: groupid,
+                        sessionId: sessionid,
+                        startdate: startdate,
+                        enddate: enddate,
+                        title: title,
+                        status: status,
+                        description: description,
+                        filename:req.file.filename,
+                        personId,
+                        persontype,
+                        leavestatus:"panding"
+                        
+                    });
+                    res.save();
+                    result = { success: true, message: "leave with doc add successfully", status: 200 }
+                }
+            }
+            else {
+                result = { success: false, message: " pls fill data", status: 200 }
+            }
+
+            res.json(result)
+        }
+    });
+
+    
+}
+
+const getLeaveApi = async (req, res, next) => {
+    const {branchid,personId,status} = req?.body
+    console.log(req.body);
+    let resp = await addLeave.find({ branchId:branchid,personId:personId,status:status}).then((res) => res)
+    console.log(resp);
+    if (resp.length > 0) {
+        result = { success: true, message: "get successfully", status: 200, data: resp }
+    }
+    else {
+        result = { success: false, message: "not  get", status: 200, data: resp }
+    }
+    res.json(result)
+}
+
 
 
 
@@ -611,17 +788,48 @@ const notificationUpdateApi = async (req, res, next) => {
 
 
 const getstudentNotificationApi = async (req, res, next) => {
-    let resp = await notification.find({ branchId: req.body.branchId, "data.studentsId": req.body.studentId }).then((res) => res)
+   /*  let resp = await notification.find({ branchId: req.body.branchId, "data.studentsId": req.body.studentId }).then((res) => res) */
+   
+    console.log(req.body);
+  
+    const { branchId, studentId,ClassSection, status}=req?.body 
+    let resp= await notification.find({branchId:branchId, status: status}).then((res) => res)
     console.log(resp);
-    let datap = []
-    resp.map(d => {
-        d.data.map(dd => {
-            if (dd.studentsId == req.body.studentId)
-                datap.push({ notificationId: d.notificationId, branchId: d.branchId, date: d.date, ...dd })
+    let statustype=[]
+    
+    if(resp.length>0){
+        resp.map(n=>{
+            if(n.statustype==0){
+                statustype.push(n)
+            }
         })
-    })
-
-    console.log("emp=>>", datap);
+    }
+    let statusdpt=[]
+    if(resp.length>0){
+        
+        resp.map(n=>{
+            if(n.statustype==ClassSection){
+                statusdpt.push(n)
+            }
+        })
+    }
+    
+console.log("statustype",statustype);    
+console.log(" statusdpt", statusdpt);    
+    let resp1 = await notification.find({ branchId:branchId,  "data.studentId": studentId }).then((res) => res)
+   
+    let datap = []
+    datap.push({ common:statustype, depratment:statusdpt})
+    let empdata=[]
+    resp1.map(d => {
+        d.data.map(dd => {
+            if (dd.studentId == studentId)
+                empdata.push({ notificationId: d.notificationId, branchId: d.branchId, date: d.date, ...dd })
+        })
+    }) 
+datap.push({empdata:empdata})
+ 
+console.log("student notification ",datap);
     if (resp.length > 0) {
         result = { success: true, message: "get successfully", status: 200, data: datap }
     }
@@ -712,5 +920,8 @@ module.exports = {
     holidayApi,
     getHolidayApi,
     NewsApi,
-getNewsApi
+getNewsApi,
+leaveapplicationApi,
+getLeaveApi,
+leaveapplicationfileApi
 }

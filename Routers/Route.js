@@ -14,6 +14,7 @@ router.post("/registeruser", UserControll.userRegister )
 
 //students
 
+router.post("/getStudentOneinfoApi", studentsController.getStudentOneinfoApi)
 router.post("/getDataStudentsApi", studentsController.getDataStudentsApi)
 router.post("/getStudentByBranchFeeApi", studentsController.getStudentByBranchFeeApi)
 router.post("/studentLogin", studentsController.studentLogin)
@@ -99,5 +100,6 @@ router.post("/TimeTableUpdateApi",MasterController.TimeTableUpdateApi)
 router.post("/getTimeTableApi",MasterController.getTimeTableApi)
 router.post("/getClassDetailByClassApi",MasterController.getClassDetailByClassApi)
 router.post("/getEmployeeTimeTableApi",MasterController.getEmployeeTimeTableApi)
+router.post("/getStudentTimeTbaleApi",MasterController.getStudentTimeTbaleApi)
 
 module.exports=router

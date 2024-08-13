@@ -11,7 +11,10 @@ const {
     holidayApi,
     getHolidayApi,
     getNewsApi,
-    NewsApi} = require('../controllers/Notificaltion/NotificationController');
+    NewsApi,
+    leaveapplicationApi,
+    getLeaveApi,
+    leaveapplicationfileApi} = require('../controllers/Notificaltion/NotificationController');
 const notificaltionRoute = express.Router();
 
 
@@ -27,6 +30,9 @@ notificaltionRoute.post("/holidayApi",holidayApi)
 notificaltionRoute.post("/getHolidayApi",getHolidayApi)
 notificaltionRoute.post("/NewsApi",NewsApi)
 notificaltionRoute.post("/getNewsApi",getNewsApi)
+notificaltionRoute.post("/leaveapplicationApi",leaveapplicationApi)
+notificaltionRoute.post("/getLeaveApi",getLeaveApi)
+notificaltionRoute.post("/leaveapplicationfileApi",leaveapplicationfileApi)
 
 module.exports = notificaltionRoute
 

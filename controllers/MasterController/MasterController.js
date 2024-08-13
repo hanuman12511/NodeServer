@@ -1169,6 +1169,36 @@ console.log(data);
 }
 
 
+const  getStudentTimeTbaleApi = async (req, res, next) => {
+const {branchId,classsection,groupId} = req.body
+    let resp = await TimeTable.find({ branchid:branchId, groupid:groupId, classsection:classsection}).then((res) => res)
+    let schedul = await addTimeSchedule.find({ branchid:branchId, groupid:groupId}).then((res) => res)
+let data=[]
+    resp.map(tt=>{
+        let period=""
+    schedul.map(sc=>{
+        console.log(sc);
+        if(tt.timeschedule==sc.timescheduleid){
+            period={intime:sc.intime,outtime:sc.outtime}
+        }
+    })
+    console.log(period);
+    data.push({...tt._doc,"period":period})
+
+})
+
+console.log("data",data);
+    if (resp.length > 0) {
+        result = { success: true, message: " time schedule get successfully", status: 200, data: data }
+    }
+    else {
+        result = { success: false, message: " not  get", status: 200, data: resp }
+    }
+
+    res.json(result)
+}
+
+
 
 
 
@@ -2219,5 +2249,6 @@ module.exports = {
     getClassDetailByClassApi,
     gettimetableperiodApi,
     getSubjectByClassApi,
-    getEmployeeTimeTableApi
+    getEmployeeTimeTableApi,
+    getStudentTimeTbaleApi
 }

@@ -15,6 +15,7 @@ var excelUploads = multer({ storage: excelStorage }); */
 
 const multer = require('multer')
 const path = require('path');
+const addBranch = require("../../models/addBranch");
 var ext = ""
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -899,6 +900,47 @@ console.log("data get branchidand session id on getStudentsApi",req.body);
 }
 
 
+
+
+const getStudentOneinfoApi = async (req, res, next) => {
+    console.log("dgetStudentOneinfoApi",req.body);
+        let studata = []
+        const {branchId,sessionName,studentId} =req?.body
+        let resp = await Student.find({ branchId: branchId, sessionName: sessionName,studentsId:studentId }).then((res) => res)
+        let classres = await ClassDetails.find({ branchid:branchId ,sessionId: sessionName,}).then((res) => res)
+        let branch = await addBranch.find({ branchId: branchId }).then((res) => res)
+        console.log("b=>",branch);
+        console.log("s=>",resp);
+        console.log("cs=>",classres);
+       
+       
+        resp.map(d => {
+    
+            let classname = ""
+            classres.map(classdaat => {
+                if (d.ClassSection == classdaat.classDetailId) {
+                    classname = classdaat.classsection
+                }
+            })
+            studata.push({ ...d._doc, className: classname ,branchphone:branch[0].branchemail,branchname:branch[0].branchname,branchlogo:branch[0].logo,branchweb:branch[0].website,branchphone:branch[0].phone,branchmobile:branch[0].mobile,})
+        })
+      
+    
+        if (resp.length > 0) {
+            result = { success: true, message: "  get successfully", status: 200, data: studata }
+        }
+        else {
+            result = { success: false, message: "   not  get", status: 200, data: resp }
+        }
+    
+        res.json(result)
+    }
+    
+
+
+
+
+
 const getStudentsByClassApi = async (req, res, next) => {
 console.log(req.body);
     let studata = []
@@ -1043,5 +1085,6 @@ module.exports = {
     getStudentUpdateApi,
     getStudentsByClassApi,
     StudentUpdateWithoutimageApi,
-    getstudentsFeebyclassApi
+    getstudentsFeebyclassApi,
+    getStudentOneinfoApi
 }
