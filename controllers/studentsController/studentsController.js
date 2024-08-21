@@ -16,6 +16,7 @@ var excelUploads = multer({ storage: excelStorage }); */
 const multer = require('multer')
 const path = require('path');
 const addBranch = require("../../models/addBranch");
+const { createSecretToken } = require("../../auth/generateToken");
 var ext = ""
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -202,7 +203,7 @@ console.log("fee",req.body);
         let fee1=0
         fee.map(f1=>{
             if (d.studentsId == f1.studentsId) {
-                fee1+=f1.Deposited
+                fee1+=parseInt(f1.Deposited)
             }
         })
         
@@ -301,17 +302,23 @@ const getStudentByBranchFeeApi = async (req, res, next) => {
 
 
 const studentLogin = async (req, res, next) => {
-
-
-    let resp = await Student.find({ DOB: req.body.dob, MobileNo: req.body.mobile }).then((res) => res)
-
-    if (resp.length > 0) {
-        result = { success: true, message: "  get successfully", status: 200, data: resp }
+let result={}
+try{
+await Student.find({ DOB: req.body.dob, MobileNo: req.body.mobile }).then((res) =>{
+    console.log(res);
+    if (res.length > 0) {
+        const token = createSecretToken(token.MobileNo);
+        result = { success: true, message: "user login successfully", status: 200, token: token }
     }
     else {
-        result = { success: false, message: "   not  get", status: 200, data: resp }
+        result = { success: false, message: "user not register ", status: 200, token: [] }
     }
-    res.json(result)
+   })
+}catch(error){
+    result = { success: false, message: "user login error", status: 200, }
+    
+}
+res.json(result)
 }
 
 
@@ -385,8 +392,9 @@ const studentsApi = async (req, res, next) => {
             console.log("ontis", req?.body)
             console.log("ontis file", req?.file)
             console.log("ontis",JSON.parse(req?.body?.params)) 
-           const  {firstname,lastname
-            ,fathername,
+           const  {firstname,lastname,
+            rte,
+            fathername,
             mothername,
             email,dob,gender,physical,category,passowrd,
             mobile,address,area,pin,city,state,country,paddress,parea,ppin,pcity,pstate,pcountry
@@ -433,16 +441,17 @@ const studentsApi = async (req, res, next) => {
                 PCity: pcity,
                 PState:pstate,
                 PCountry: pcountry,
-                RTE: "",
+                RTE:  rte,
 
                 RegiterPageNo:registerpageno,
                 RegistrationEnrollNo: registrationenrollno,
                 ClassSection: classsection,
                 AdmissionDate: admissiondate,
 
-                Schoolname: previousschoolname,
-                SRNo: srno,
-
+                PreviousSchoolname: previousschoolname,
+                PreviousSchoolSRNo: srno,
+                
+                
 
                 previousclassname: previousclassname,
                 Root: root,
@@ -494,15 +503,16 @@ const studentsApi = async (req, res, next) => {
                 PCity: pcity,
                 PState:pstate,
                 PCountry: pcountry,
-                RTE: "",
+                RTE:  rte,
 
                 RegiterPageNo:registerpageno,
                 RegistrationEnrollNo: registrationenrollno,
                 ClassSection: classsection,
                 AdmissionDate: admissiondate,
 
-                Schoolname: previousschoolname,
-                SRNo: srno,
+                
+                PreviousSchoolname: previousschoolname,
+                PreviousSchoolSRNo: srno,
 
 
                 previousclassname: previousclassname,
@@ -559,6 +569,7 @@ const getStudentUpdateApi = async(req,res,next)=>{
             //console.log("ontis file", req?.file)
             //console.log("ontis",JSON.parse(req?.body?.params)) 
            const  {
+            rte,
             studentsId,
             firstname,lastname
             ,fathername,
@@ -602,16 +613,16 @@ const getStudentUpdateApi = async(req,res,next)=>{
                 PCity: pcity,
                 PState:pstate,
                 PCountry: pcountry,
-                RTE: "",
+                RTE:  rte,
 
                 RegiterPageNo:registerpageno,
                 RegistrationEnrollNo: registrationenrollno,
                 ClassSection: classsection,
                 AdmissionDate: admissiondate,
 
-                Schoolname: previousschoolname,
-                SRNo: srno,
-
+               
+                PreviousSchoolname: previousschoolname,
+                PreviousSchoolSRNo: srno,
 
                 previousclassname: previousclassname,
                 Root: root,
@@ -718,6 +729,7 @@ const StudentUpdateWithoutimageApi = async(req,res,next)=>{
             //console.log("ontis file", req?.file)
             //console.log("ontis",JSON.parse(req?.body?.params)) 
            const  {
+            rte,
             studentsId,
             firstname,lastname
             ,fathername,
@@ -761,15 +773,16 @@ const StudentUpdateWithoutimageApi = async(req,res,next)=>{
                 PCity: pcity,
                 PState:pstate,
                 PCountry: pcountry,
-                RTE: "",
+                RTE: rte,
 
                 RegiterPageNo:registerpageno,
                 RegistrationEnrollNo: registrationenrollno,
                 ClassSection: classsection,
                 AdmissionDate: admissiondate,
 
-                Schoolname: previousschoolname,
-                SRNo: srno,
+               
+                PreviousSchoolname: previousschoolname,
+                PreviousSchoolSRNo: srno,
 
 
                 previousclassname: previousclassname,
@@ -942,11 +955,21 @@ const getStudentOneinfoApi = async (req, res, next) => {
 
 
 const getStudentsByClassApi = async (req, res, next) => {
-console.log(req.body);
+console.log("stu class by",req.body);
     let studata = []
-    let resp = await Student.find({ branchId: req.body.branchId, sessionName: req.body.sessionName ,ClassSection:req.body.classdata}).then((res) => res)
+    let resp
+    let count
+    if(req.body.classdata==""){
+
+        resp = await Student.find({ branchId: req.body.branchId, sessionName: req.body.sessionName }).then((res) => res)
+        count = await Student.find({ branchId: req.body.branchId, sessionName: req.body.sessionName}).countDocuments()
+    }
+    else{
+         resp = await Student.find({ branchId: req.body.branchId, sessionName: req.body.sessionName ,ClassSection:req.body.classdata}).then((res) => res)
+         count = await Student.find({ branchId: req.body.branchId, sessionName: req.body.sessionName,ClassSection:req.body.classdata}).countDocuments()
+    }
     let classres = await ClassDetails.find({ branchid: req.body.branchId }).then((res) => res)
-    let count = await Student.find({ branchId: req.body.branchId, sessionName: req.body.sessionName}).countDocuments()
+    
     datar = resp.map(d => {
 
         let classname = ""
@@ -1066,6 +1089,69 @@ const uploadExcelFile = async (req, res, next) => {
     res.json("fbfhfghgfh")
 }
 
+
+const getProfilestudentsFeeApi = async (req, res, next) => {
+
+
+    const{branchid,
+        session,
+        studentId,
+         className}=req.body
+    console.log("fee",req.body);
+        let fee = await StudentFee.find({ branchId: branchid,studentsId:studentId,sessionName:session }).then((res) => res)
+         let classd = await ClassDetails.find({ branchid: branchid,classsection:className}).then((res) => res)
+    console.log(fee);
+    console.log(classd);
+    let amount=0
+            classd.map(cc => {
+    
+               
+                    cc.feeDetails.map(ff => {
+                        amount += parseInt(ff.fee)
+                    })
+               
+            })
+            let fee1=0
+            fee.map(f1=>{
+               
+                    fee1+=f1.Deposited
+               
+            })
+            
+            let feerebat1=0
+            fee.map(f1=>{
+              
+                    feerebat1+=f1.Rebat
+              
+            })
+
+            let data = {"amount":amount,"fee":fee1,"rebat":feerebat1}
+  
+        if (fee.length > 0) {
+            result = { success: true, message: "  get successfully", status: 200, data: data }
+        }
+        else {
+            result = { success: false, message: "   not  get", status: 200, data:[] }
+        } 
+    
+        res.json(result)
+    }
+    const getclassDetailsFeeApi=async(req, res, next)=>{
+        const {branchId,classsection} = req?.body
+        let classres = await ClassDetails.find({ branchid:branchId ,classsection:classsection}).then((res) => res)
+    
+        if (classres.length > 0) {
+            result = { success: true, message: "  get successfully", status: 200, data:classres }
+        }
+        else {
+            result = { success: false, message: "   not  get", status: 200, data:[] }
+        } 
+    
+        res.json(result)
+    }
+    
+
+
 //******************************** */
 
 module.exports = {
@@ -1086,5 +1172,7 @@ module.exports = {
     getStudentsByClassApi,
     StudentUpdateWithoutimageApi,
     getstudentsFeebyclassApi,
-    getStudentOneinfoApi
+    getStudentOneinfoApi,
+    getProfilestudentsFeeApi,
+    getclassDetailsFeeApi
 }

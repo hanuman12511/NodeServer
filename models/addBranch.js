@@ -25,7 +25,7 @@ var employeeSchema= new mongoose.Schema({
     logo:String,
     status:String,
     branchControl:Boolean ,
-    otp:Number
+    otp:String
 });
 
 //Exporting Employee Schema

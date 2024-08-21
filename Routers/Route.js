@@ -9,6 +9,7 @@ const { employeeApi, getEmployeeApi, getEmployeeByIdApi, employeewithimageApi, g
 
 //user
 
+router.post("/otp", UserControll.otp )
 router.post("/loginuser", UserControll.userLogin )
 router.post("/registeruser", UserControll.userRegister )
 
@@ -26,10 +27,11 @@ router.post("/getStudentsApi", studentsController.getStudentsApi )
 router.get("/getStudentsPageApi", studentsController.getStudentsPageApi )
 router.post("/displayStudentsClassBy", studentsController.displayStudentsClassBy )
 router.post("/studentAttendance", studentsController.studentAttendance )
-router.post("/getstudentsFeeApi", studentsController.getstudentsFeeApi )
+router.post("/", studentsController.getstudentsFeeApi )
 router.post("/getstudentsFeebyclassApi", studentsController.getstudentsFeebyclassApi )
 router.post("/addStudentsFeeApi", studentsController.addStudentsFeeApi )
 router.post("/getStudentsByClassApi", studentsController.getStudentsByClassApi )
+router.post("/getProfilestudentsFeeApi", studentsController.getProfilestudentsFeeApi )
 /* router.get("/uploadFileApi", studentsController.uploadExcelFile )
 router.get("/downloadApi", studentsController.downloadApi )
  */

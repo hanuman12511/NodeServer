@@ -1575,7 +1575,7 @@ const ClassDetailApi = async (req, res, next) => {
 
             if (Object.keys(data).length > 0) {
               
-                result = { success: true, message: "class Details exist", status: 200 }
+                result = { success: false, message: "class Details exist", status: 200 }
             }
             else {
 
@@ -1646,14 +1646,28 @@ const getClassDetailApi = async (req, res, next) => {
     let resp = await ClassDetails.find({ branchid: req.body.branchid }).then((res) => res)
     if (resp.length > 0) {
         let class1 = await Class.find().then((res) => res)
+        let section1 = await addSection.find().then((res) => res)
         let dataclass = []
+        let classd=""
         resp.map(d => {
             class1.map(dd => {
                 if (d.ClassId == dd.classId) {
-                    dataclass.push({ ...d._doc, Class: dd.Class })
+                   // dataclass.push({ ...d._doc, Class: dd.Class })
+                classd=dd.Class
                 }
 
             })
+let sec=""
+            section1.map(ss=>{
+                if(ss.sectionId==d.SectionId){
+         //           dataclass.push({ ...d._doc, Class: dd.Class }) 
+           
+        sec=ss.SectionName
+        }
+            })
+
+            dataclass.push({ ...d._doc, Class: classd,section:sec }) 
+
         })
 
         result = { success: true, message: "Class Detail Getsuccessfully", status: 200, data: dataclass }

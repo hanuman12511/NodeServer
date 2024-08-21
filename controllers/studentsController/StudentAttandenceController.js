@@ -57,7 +57,7 @@ const AddAttandenceApi = async (req, res, next) => {
 
 const getAttandenceBranchbyApi = async (req, res, next) => {
     let datar = []
-console.log(req.body);
+console.log("class by",req.body);
     let resp = await studentAttandence.find({ branchId: req.body.branchid, date: req.body.date,"data.Class" :req.body.classsection,sessionId:req.body.session}).then((res) => res)
    console.log("=>>",resp);
     let res1 = await Student.find({ branchId: req.body.branchid ,sessionName:req.body.session}).then((res) => res)
@@ -140,7 +140,12 @@ const months = [
 const getstudentAttandenceApi = async (req, res, next) => {
     let result = ""
     console.log(req.body);
-    await studentAttandence.find({ branchId: req.body.branchId, "data.studentsId": req.body.studentsId }).then((res) => res).then((data) => {
+
+    const { studentsId,
+        groupId,
+        branchId,
+        session}=req?.body
+    await studentAttandence.find({ branchId:branchId, "data.studentsId":studentsId}).then((res) => res).then((data) => {
         console.log("att=>>", data);
         console.log("************************");
         /* const dateObj = new Date();

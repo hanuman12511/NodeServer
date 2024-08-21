@@ -56,6 +56,17 @@ https.createServer(options, app) */
 
 const Student = require("./models/Student"); 
 const addBranch = require('./models/addBranch');
+
+app.use((req, res, next) => {
+  // Set CORS headers
+  res.header("Access-Control-Allow-Origin", process.env.FRONTEND_URL); // Replace with your frontend domain
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true"); // Allow credentials (cookies, etc.)
+
+  // Pass to next layer of middleware
+  next();
+});
 app.listen(port, () => console.log(`The server is listening on port ${port}`))
 
 
@@ -307,3 +318,65 @@ app.get("/studentPageApi", (req, res, next) => {
       }); 
 
 });
+
+
+
+
+
+// Import the functions you need from the SDKs you need
+const { initializeApp } = require("firebase/app");
+const { getMessaging } = require("firebase/messaging");
+const admin = require('firebase-admin');
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDS1T3smvl3yJXbHxNzXE7xFv9GlNdn648",
+  authDomain: "leadapp-c39d8.firebaseapp.com",
+  projectId: "leadapp-c39d8",
+  storageBucket: "leadapp-c39d8.appspot.com",
+  messagingSenderId: "834823755671",
+  appId: "1:834823755671:web:c6a69fe90221e387dfd6d2",
+  measurementId: "G-VG7WP9SNVZ",
+  credential: admin.credential.applicationDefault(),
+};
+
+// Initialize Firebase
+/* const app1 = initializeApp(firebaseConfig); */
+
+
+var serviceAccount = require("./serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+/* let message1 = getMessaging(app1) */
+
+
+app.post("/sendNotification", (req, res) => {
+  const receivedToken = req.body.fcmToken; // Fcm token received by front end application
+  const message = {
+  notification: {
+  title: "Notification Received !",
+  body: "You received this push notification using Firebase and Node js ",
+  },
+  token: receivedToken,
+  };
+/*   let m=app1.messaging(); */
+/* admin.messaging().sendMulticast(message) */
+admin.messaging().send(message)
+  .then((response) => {
+  res
+  .status(200)
+  .json({ message: "Notification Sent", token: receivedToken });
+  console.log("Notification Sent");
+  })
+  
+  .catch((error) => {
+  res.status(400).send(error);
+  console.log("Error sending message:", error);
+  });
+  });

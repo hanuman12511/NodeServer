@@ -8,7 +8,7 @@ var employeeSchema= new mongoose.Schema({
     studentsId:Number,
     feeId:Number,
     classDetailId:Number,
-    Deposited:Number,
+    Deposited:Array,
     Rebat:Number,
     Due:Number,
     feeDetails:Array,
