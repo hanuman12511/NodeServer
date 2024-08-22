@@ -6,17 +6,23 @@ const studentAttandence = require("../../models/Students/studentAttendence")
 const attandenceApi = async (req, res, next) => {
     let result = ""
     let status = false
+    console.log("add atten", req.body);
     if (req.body.date !== "") {
-        await studentAttandence.find({ date: req.body.date, branchId: req.body.branchid }).then(async (res) => {
+
+
+        await studentAttandence.find({ date: req.body.date, class: req.body.class, branchId: req.body.branchid, sessionId: req.body.sessionId }).then(async (res) => {
             if (res.length > 0) {
                 result = { success: false, message: "date exites", status: 200 }
             }
             else {
                 const res = new studentAttandence({
+                    class: req.body.class,
                     AttendenceType: req.body.AttendenceType,
                     branchId: req.body.branchid,
                     date: req.body.date,
-                    data: req.body.data
+                    data: req.body.data,
+                    sessionId: req.body.sessionId,
+                    statusatt: true
 
                 });
                 res.save();
@@ -57,10 +63,8 @@ const AddAttandenceApi = async (req, res, next) => {
 
 const getAttandenceBranchbyApi = async (req, res, next) => {
     let datar = []
-console.log("class by",req.body);
-    let resp = await studentAttandence.find({ branchId: req.body.branchid, date: req.body.date,"data.Class" :req.body.classsection,sessionId:req.body.session}).then((res) => res)
-   console.log("=>>",resp);
-    let res1 = await Student.find({ branchId: req.body.branchid ,sessionName:req.body.session}).then((res) => res)
+
+    let resp = await studentAttandence.find({ branchId: req.body.branchid, date: req.body.date, "data.Class": req.body.classsection, sessionId: req.body.session }).then((res) => res)
     if (resp.length > 0) {
 
         let datar1 = resp.map(d => {
@@ -80,22 +84,35 @@ console.log("class by",req.body);
 
     }
     else {
-         let resp = await ClassDetails.find({ branchid: req.body.branchid,sessionId:req.body.session,classsection:req.body.classsection }).then((res) => res)
-        datar = res1.map(d => {
+        let res1 = await Student.find({ branchId: req.body.branchid, sessionName: req.body.session }).then((res) => res)
+        let resp = await ClassDetails.find({ branchid: req.body.branchid, sessionId: req.body.session, classsection: req.body.classsection }).then((res) => res)
+
+        console.log("class", resp);
+        let datar1 = res1.map(d => {
             let classname = ""
             resp.map(classdaat => {
+
                 if (d.ClassSection == classdaat.classDetailId) {
                     classname = classdaat.classsection
                 }
             })
-            return { Class: classname, studentsId: d.studentsId, firstName: d.FirstName, lastName: d.LastName, fatherName: d.FName, isChecked: false, intime: "--:--", outtime: "--:--", isInTime: false, isOutTime: false, ontime: "08:00", offtime: "02:00", AttendenceType: "Manual" }
+            return { statusatt: false, Class: classname, studentsId: d.studentsId, firstName: d.FirstName, lastName: d.LastName, fatherName: d.FName, isChecked: false, intime: "--:--", outtime: "--:--", isInTime: false, isOutTime: false, ontime: "08:00", offtime: "02:00", AttendenceType: "Manual" }
         })
+        let data = []
+        datar1.map(dd => {
+            if (dd.Class == req.body.classsection) {
+                data.push({ ...dd })
+            }
+        })
+        datar = data
     }
-    if (resp.length > 0) {
+
+
+    if (datar.length > 0) {
         result = { success: true, message: "get successfully", status: 200, data: datar }
     }
     else {
-        result = { success: false, message: "not  get", status: 200, data: datar }
+        result = { success: false, message: "not  get", status: 200, data: [] }
     }
     res.json(result)
 }
@@ -132,80 +149,125 @@ const months = [
     { label: "June", value: "6", monthday: 30 },
     { label: "July", value: "7", monthday: 31 },
     { label: "August", value: "8", monthday: 31 },
-    { label: "September", value: "9", monthday: 30 },
+     { label: "September", value: "9", monthday: 30 },
     { label: "October", value: "10", monthday: 31 },
     { label: "November", value: "11", monthday: 30 },
-    { label: "December", value: "12", monthday: 31 }
+    { label: "December", value: "12", monthday: 31 } 
 ]
-const getstudentAttandenceApi = async (req, res, next) => {
-    let result = ""
-    console.log(req.body);
 
+const moment = require('moment');
+moment.suppressDeprecationWarnings = true;
+const getstudentAttandenceApi = async (req, res, next) => {
+    let year = 2024
+    let attendance = []
+    const url = "https://calendar-json-app.adaptable.app/fullyear/" + year;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+        const json = await response.json();
+
+        attendance = json
+    } catch (error) {
+        console.error(error.message);
+    }
+
+    let att = []
+    let day1 = ["S", "M", "T", "W", "Th", "F", "St"]
+    months.map(d => {
+
+        let day = []
+        attendance[d.label].map(l => {
+            let week = [];
+
+            l.map((ll, index) => {
+                if (day1[index] != "S") {
+                    week.push({ "date": ll, "day": day1[index], "re": "A" })
+                }
+                else {
+                    week.push({ "date": ll, "day": day1[index], "re": "-" })
+                }
+
+            })
+
+            day.push(...week)
+        })
+        att.push({ "modth": d.label, "day": day, monthnum: d.value })
+    })
+
+
+
+    let data = []
+    att.map(d => {
+        let P = 0;
+        let A = 0;
+        d.day.map(ss => {
+
+
+            if (ss.date != 0 && ss.day != "S" && ss.re == "A") {
+                A++
+            }
+
+        })
+        data.push({ ...d, "P": P, "A": A })
+    })
+   
+
+    let result = ""
     const { studentsId,
         groupId,
         branchId,
-        session}=req?.body
-    await studentAttandence.find({ branchId:branchId, "data.studentsId":studentsId}).then((res) => res).then((data) => {
-        console.log("att=>>", data);
-        console.log("************************");
-        /* const dateObj = new Date();
-        const month   = dateObj.getUTCMonth() + 1; // months from 1-12
-        const day     = dateObj.getUTCDate();
-        const year    = dateObj.getUTCFullYear();
-        console.log(day,"+",month,"+",year); */
-        /* let attenstu=[
-           {
-               months:"",present:"",absence:"",date:[
-                   {date:"",present:"",absence:""}
-               ]
-           }
-       ] */
-        let dataatt = []
-        data.map(d => {
-            console.log(d.date);
-            let month = {}
-            months.map(mo => {
-                if (mo.value == parseInt(d.date.split("-")[1].split("-")[0])) {
-                    console.log(d.date);
-                    let countp = 0
-                    let counta = 0
-                    for (i = 1; i <= mo.monthday; i++) {
-                        d.data.map(s => {
-                            console.log(d.date);
-                            if (s.studentsId == req.body.studentsId) {
-                               
-                                if (s.isChecked) {
-                                    console.log(s.isChecked);
-                                    countp++
-                                }
-                                else {
-                                    counta++
-                                }
-                            }
-                        })
-                    }
+        session } = req?.body
 
-                    month = { monthname: mo.label, p: countp, A: counta }
+let attdata = []
+    await studentAttandence.find({ branchId: branchId, "data.studentsId": studentsId }).then((res) => res).then((data) => {
+        data.map(s => {
+            s.data.map(d => {
+                if (d.studentsId == studentsId) {
 
+                    attdata.push({ "date": s.date, "isChecked": d.isChecked, })
                 }
-
-
             })
-            dataatt.push(month)
         })
-
-
-        console.log("***********************");
-        console.log(dataatt);
-        console.log("***********************");
-        if (data.length > 0) {
-            result = { success: true, message: "attendence get successfully", status: 200 }
-        }
-        else {
-            result = { success: false, message: "attendence not get successfully", status: 200 }
-        }
     })
-    res.json(result)
+let datafinalatt=[]
+    data.map(data=>{
+        let dataatt1=data.day
+        let mday
+        mday=[]
+        attdata.map(att=>{
+            let datedata = att.date.split("-")
+            let day1 = datedata[0]
+            let month1 = datedata[1]
+            let year1 = datedata[2]
+           
+            if(data.monthnum== parseInt(month1)){
+                data.day.map(date=>{
+                    if(date.date==parseInt(day1)){
+                        mday.push({...date,"re":"P"})
+                    }
+                   
+                })
+            }
+
+        })
+      
+    const map = new Map([...dataatt1, ...mday]
+        .map(obj => [obj.date, obj]));
+        
+    const mergedArray = Array.from(map.values());datafinalatt.push({months:data.modth,day:mergedArray,monthnum:data.monthnum})
+    })
+   
+            if (datafinalatt.length > 0) {
+                result = { success: true, message: "attendence get successfully", status: 200 ,data:datafinalatt}
+            }
+            else {
+                result = { success: false, message: "attendence not get successfully", status: 200 }
+            }
+   
+    res.json( result)
 }
 
 

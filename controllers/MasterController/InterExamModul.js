@@ -17,6 +17,8 @@ var employeeSchema= new mongoose.Schema({
     Subject:String,
     StudentId:String,
     branchControl:Boolean
+
+    
 });
 
 //Exporting Employee Schema

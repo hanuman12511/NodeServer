@@ -203,10 +203,12 @@ console.log("fee",req.body);
         let fee1=0
         fee.map(f1=>{
             if (d.studentsId == f1.studentsId) {
-                fee1+=parseInt(f1.Deposited)
+                f1.Deposited.map(dp=>{
+                    fee1+=parseInt(dp.fee)
+                })
             }
         })
-        
+     
         let feerebat1=0
         fee.map(f1=>{
             if (d.studentsId == f1.studentsId) {
@@ -1113,8 +1115,11 @@ const getProfilestudentsFeeApi = async (req, res, next) => {
             })
             let fee1=0
             fee.map(f1=>{
-               
-                    fee1+=f1.Deposited
+                console.log("feee",f1);
+               f1.Deposited.map(dp=>{
+                   fee1+= parseInt(dp.fee)
+
+               })
                
             })
             

@@ -304,14 +304,13 @@ if(data.length>0){
 
 
 const  getInternalExamDataApi = async(req,res,next)=>{
-   
+   console.log("internal exam",req.body);
     let resp = await InternalExamData.find({branchid:req.body.branchid}).then((res)=>res)
-    let classd = await Class.find({branchid:req.body.branchid}).then((res)=>res)
-    let subject = await SubjectToHead.find({}).then((res)=>res)
-    let subjecthead = await SubjectHead.find({}).then((res)=>res)
+    let classd = await ClassDetails.find({branchid:req.body.branchid}).then((res)=>res)
+    let subjecthead1 = await SubjectToHead.find({branchId:req.body.branchid}).then((res)=>res)
+    let subjecthead = await SubjectHead.find({branchId:req.body.branchid}).then((res)=>res)
     let exam1 = await InternalExam.find({branchid:req.body.branchid}).then((res)=>res)
-   
-    let dataf = []
+   let dataf = []
     resp.map(d=>{
         let data = []
         exam1.map(ex=>{
@@ -320,16 +319,29 @@ const  getInternalExamDataApi = async(req,res,next)=>{
             }
         })
         classd.map(cl=>{
-            if(d.Class==cl.classId)
-            data.push({classname:cl.Class})
+            if(d.Class==cl.classDetailId)
+            data.push({classname:cl.classsection})
         })
         
-        subjecthead.map(sh=>{
-            if(d.SubjectHead==sh.subjectHeadId)
-            data.push({SubjectHead:sh.SubjectHead})
+        subjecthead1.map(sh=>{
+            if(d.SubjectHead==sh.SubjectHead){
+                subjecthead.map(shs=>{
+                    if(sh.SubjectHead==shs.subjectHeadId){
+                        data.push({SubjectHead:shs.SubjectHead})
+                    }
+                })
+          
+                sh.Subjects.map(sub=>{
+                    if(sub.id==d.Subject){
+                        data.push({"subject":sub.subect})
+                    }
+                })
+            }
         })
-        dataf.push({exam:data[0].exam,classname:data[1].classname,subjecthead:data[2].SubjectHead})
-
+    console.log(data);
+if(data.length>0){
+        dataf.push({...d. _doc,exam:data[0].exam,classname:data[1].classname,subjecthead:data[2].SubjectHead,subject:data[3].subject})
+}
     })
 
     console.log("daat fibal=>>>",dataf);
@@ -338,6 +350,100 @@ const  getInternalExamDataApi = async(req,res,next)=>{
     }
     else{
         result={success:false,message:"   not  get",status:200,data:resp}  
+    }
+    res.json(result)
+}
+    
+
+const  getInternalExamDataByStudentsApi = async(req,res,next)=>{
+   const{studentsId, groupId, branchId, session} = req?.body
+    let resp = await InternalExamData.find({branchid:branchId,sessionName:session,"Marks.studentsId":studentsId}).then((res)=>res)
+ 
+    let exam1 = await InternalExam.find({branchid:branchId}).then((res)=>res)
+   
+    let subjecthead1 = await SubjectToHead.find({branchId:branchId}).then((res)=>res)
+    let subjecthead = await SubjectHead.find({branchId:branchId}).then((res)=>res)
+    let dataf = []
+     resp.map(d=>{
+        console.log(d);
+        let data = []
+        d.Marks.map(ss=>{
+            if(ss.studentsId==studentsId){
+                let subject="";
+                subjecthead1.map(sh=>{
+                        sh.Subjects.map(sub=>{
+                            if(sub.id==d.Subject){
+                              
+                                subject=sub.subect
+                            }
+                        })
+                  
+                })
+             exam1.map(ex=>{
+                if(d.Exam==ex.ExamId){
+                    data.push({...ss,exam:ex.Exam,Writtenmaxno:d.Writtenmaxno ,Vivamaxno:d.Vivamaxno,"subject":subject})
+                }
+            })
+            }
+        })
+         
+       
+         dataf.push(...data)
+     })
+
+
+    
+    if( dataf.length>0){
+        result={success:true,message:"  get successfully",status:200,data: dataf}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:[]}  
+    }
+    res.json(result)
+}
+    
+
+const   getMainExamDataByStudentsApi = async(req,res,next)=>{
+   const{studentsId, groupId, branchId, session} = req?.body
+ let resp = await MainExamData.find({branchid:branchId,sessionName:session,"Marks.studentsId":studentsId}).then((res)=>res)
+    let exam1 = await MainExam.find({branchid:branchId}).then((res)=>res)
+    let subjecthead1 = await SubjectToHead.find({branchId:branchId}).then((res)=>res)
+    let subjecthead = await SubjectHead.find({branchId:branchId}).then((res)=>res)
+    let dataf = []
+     resp.map(d=>{
+        console.log(d);
+        let data = []
+        d.Marks.map(ss=>{
+            if(ss.studentsId==studentsId){
+                let subject="";
+                subjecthead1.map(sh=>{
+                        sh.Subjects.map(sub=>{
+                            if(sub.id==d.Subject){
+                              
+                                subject=sub.subect
+                            }
+                        })
+                  
+                })
+             exam1.map(ex=>{
+                if(d.Exam==ex.ExamId){
+                    data.push({...ss,exam:ex.Exam,Writtenmaxno:d.Writtenmaxno ,Vivamaxno:d.Vivamaxno,"subject":subject})
+                }
+            })
+            }
+        })
+         
+       
+         dataf.push(...data)
+     })
+
+
+    
+    if( dataf.length>0){
+        result={success:true,message:"  get successfully",status:200,data: dataf}
+    }
+    else{
+        result={success:false,message:"   not  get",status:200,data:[]}  
     }
     res.json(result)
 }
@@ -514,12 +620,14 @@ const getInternalExamDataUpdateApi = async(req,res,next)=>{
 
 module.exports={
     mainExamDataApi,
+    getMainExamDataApi,
+    getMainExamDataControlApi,
+    getMainExamDataUpdateApi,
+    getStudentMainExamMarksBySubjectApi,
+    getMainExamDataByStudentsApi,
 internalExamDataApi,
-getMainExamDataApi,
-getMainExamDataControlApi,
-getInternalExamDataControlApi,
-getMainExamDataUpdateApi,
-getInternalExamDataUpdateApi,
 getInternalExamDataApi,
-getStudentMainExamMarksBySubjectApi
+getInternalExamDataUpdateApi,
+getInternalExamDataControlApi,
+getInternalExamDataByStudentsApi,
 }
